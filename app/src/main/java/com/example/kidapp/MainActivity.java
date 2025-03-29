@@ -4,7 +4,6 @@ package com.example.kidapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
@@ -130,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Nếu đã lật sang mặt sau, setup nút "Start Learning"
                 if (!numbersFlipAnimation.isFront()) {
-                    ImageView btnStart = backNumbers.findViewById(R.id.Imv_numbers);
+                    ImageView btnStart = backNumbers.findViewById(R.id.Imv_letter);
                     btnStart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -195,6 +194,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 vocabFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
                 vocabFlipAnimation.flipCard();
+                ImageView btnLetter= backVocab.findViewById(R.id.Imv_letter);
+                btnLetter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Start ProfileActivity
+                        Intent intent = new Intent(MainActivity.this, LetterActivity.class);
+                        startActivity(intent);
+                    }
+                });
             }
         });
 

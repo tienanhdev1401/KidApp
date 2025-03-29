@@ -8,7 +8,7 @@
     android:background="@color/white"
     >
     <ImageView
-        android:id="@+id/Imv_numbers"
+        android:id="@+id/Imv_letter"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:src="@drawable/lettersa"></ImageView>

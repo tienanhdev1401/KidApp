@@ -29,6 +29,8 @@
             android:exported="false" />
         <activity android:name=".ProfileActivity"/>
         <activity android:name=".ShapesGameActivity"/>
+        <activity android:name=".LetterActivity"/>
+        <activity android:name=".LoginActivity"/>
     </application>
 
 </manifest>
