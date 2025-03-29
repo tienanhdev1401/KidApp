@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">KidApp</string>
-
+    <string name="triangle">Triangle</string>
+    <string name="hexagon">Hexagon</string>
+    <string name="circle">Circle</string>
+    <string name="rectangle">Rectangle</string>
 </resources>

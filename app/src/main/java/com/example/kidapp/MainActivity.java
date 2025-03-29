@@ -4,6 +4,7 @@ package com.example.kidapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private View frontVocab, backVocab;
     private View frontAnalysis, backAnalysis;
     private View frontSettings, backSettings;
-
+    private ImageView profileButton;
     private FlipAnimationUtil numbersFlipAnimation;
     private FlipAnimationUtil readingFlipAnimation;
     private FlipAnimationUtil shapesFlipAnimation;
@@ -134,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             // Khởi chạy NumbersActivity ở đây
-                            // Intent intent = new Intent(MainActivity.this, NumbersActivity.class);
-                            // startActivity(intent);
+                             Intent intent = new Intent(MainActivity.this, NumberLearnActivity.class);
+                             startActivity(intent);
                         }
                     });
 
@@ -143,7 +144,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
+        profileButton = findViewById(R.id.profileButton);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start ProfileActivity
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
         // Làm tương tự cho các thẻ khác
         cardReading.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +178,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 shapesFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
                 shapesFlipAnimation.flipCard();
+                ImageView gameButton = backShapes.findViewById(R.id.Imv_sharps);
+                gameButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Start ProfileActivity
+                        Intent intent = new Intent(MainActivity.this, ShapesGameActivity.class);
+                        startActivity(intent);
+                    }
+                });
             }
         });
 
