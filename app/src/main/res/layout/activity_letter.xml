@@ -27,10 +27,13 @@
             app:cardBackgroundColor="#fbf5f2">
 
             <ImageView
-                android:layout_width="24dp"
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
                 android:layout_height="24dp"
-                android:src="@drawable/arrow_back_24px"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:contextClickable="true"
+                android:src="@drawable/arrow_back_24px">
 
             </ImageView>
         </androidx.cardview.widget.CardView>

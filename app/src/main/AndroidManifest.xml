@@ -16,7 +16,7 @@
             android:name=".ReadingActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".GameXepHinhActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,6 +31,8 @@
         <activity android:name=".ShapesGameActivity"/>
         <activity android:name=".LetterActivity"/>
         <activity android:name=".LoginActivity"/>
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".GameLatTheActivity"/>
     </application>
 
 </manifest>
