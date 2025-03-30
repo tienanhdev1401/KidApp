@@ -96,14 +96,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageA"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
-                    android:src="@drawable/a"
+                    android:src="@drawable/lettersa"
                     android:scaleType="fitCenter"
                     android:layout_marginEnd="4dp"/>
 
@@ -121,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageC"
@@ -145,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageE"
@@ -169,7 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageG"
@@ -193,7 +193,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageI"
@@ -218,7 +218,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageK"
@@ -244,7 +244,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="12dp">
 
             <ImageView
                 android:id="@+id/imageM"
@@ -268,7 +268,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageO"
@@ -292,7 +292,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageQ"
@@ -316,7 +316,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageS"
@@ -340,7 +340,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageU"
@@ -364,7 +364,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageW"
@@ -388,7 +388,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp">
 
                 <ImageView
                     android:id="@+id/imageY"
