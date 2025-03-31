@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,6 @@ public class LetterActivity extends AppCompatActivity {
     private LinearLayout letterContainer;
     private Map<String, String> letterInfoMap;
     private Map<String, Integer> letterImageMap;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +27,8 @@ public class LetterActivity extends AppCompatActivity {
         initializeViews();
         setupLetterResources();
         setupClickListeners();
+        CardView btnBack = findViewById(R.id.backButton);
+        btnBack.setOnClickListener(v -> finish());
     }
 
     private void initializeViews() {
@@ -102,6 +104,8 @@ public class LetterActivity extends AppCompatActivity {
                 imageView.setOnClickListener(v -> handleLetterClick(letter));
             }
         }
+
+
     }
 
     private void handleLetterClick(String letter) {

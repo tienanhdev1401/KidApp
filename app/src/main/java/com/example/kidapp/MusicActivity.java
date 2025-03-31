@@ -2,12 +2,15 @@ package com.example.kidapp;
 
 import static com.bumptech.glide.load.resource.bitmap.TransformationUtils.setAlpha;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -26,6 +29,16 @@ public class MusicActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_music);
         setupImageSlider();
+
+        ImageView btnBack = findViewById(R.id.backButton);
+        btnBack.setOnClickListener(v -> finish());
+        CardView item1 = findViewById(R.id.item1);
+
+        item1.setOnClickListener(v -> {
+            Intent intent = new Intent(MusicActivity.this, MusicDetailActivity.class);
+            startActivity(intent);
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -52,6 +65,7 @@ public class MusicActivity extends AppCompatActivity {
 
         // Liên kết Indicator với ViewPager
         indicator.setViewPager(viewPager);
+
 
         // Thêm hiệu ứng chuyển trang
         viewPager.setPageTransformer(new ViewPager2.PageTransformer() {

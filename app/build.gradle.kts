@@ -46,6 +46,7 @@ dependencies {
     implementation ("com.tbuonomo:dotsindicator:4.3")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation ("me.relex:circleindicator:2.1.6")
+    implementation ("androidx.gridlayout:gridlayout:1.0.0")
 
 
 }

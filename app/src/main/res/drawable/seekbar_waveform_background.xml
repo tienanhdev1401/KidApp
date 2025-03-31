@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- seekbar_waveform.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Lớp nền: waveform màu xám -->
+    <item
+        android:id="@android:id/background"
+        android:drawable="@drawable/waveform_gray"
+        android:gravity="fill" />
+
+    <!-- Lớp progress: waveform màu cam, được clip theo tiến trình -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <bitmap
+                android:src="@drawable/waveform_orange"
+                android:gravity="fill"
+                android:tileMode="repeat"/>
+        </clip>
+    </item>
+</layer-list>

@@ -335,6 +335,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 gameFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
                 gameFlipAnimation.flipCard();
+                ImageView gifView = backGame.findViewById(R.id.Imv_game);
+                gifView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowGameOptionsDialog();
+                    }
+                });
+
             }
         });
 
@@ -353,6 +361,54 @@ public class MainActivity extends AppCompatActivity {
         listenFlipAnimation.cancelAutoFlip();
         gameFlipAnimation.cancelAutoFlip();
         // Hủy tất cả animation util khác...
+    }
+
+
+    private void ShowGameOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialogTheme);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_games_options, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        // Custom animation
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+        }
+
+        // Xử lý click Music
+        ImageView btnMusic = dialogView.findViewById(R.id.Imv_puzzel);
+        Glide.with(MainActivity.this)
+                .asGif()
+                .load(R.drawable.puzzel_game) // Thay bằng tên file GIF của bạn
+                .into(btnMusic);
+        btnMusic.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, GameXepHinhActivity.class));
+            dialog.dismiss();
+        });
+
+        // Xử lý click Story
+        ImageView btnStory = dialogView.findViewById(R.id.Imv_card);
+//        Glide.with(MainActivity.this)
+//                .asGif()
+//                .load(R.drawable.memory_card_game) // Thay bằng tên file GIF của bạn
+//                .into(btnStory);
+        btnStory.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
+            dialog.dismiss();
+        });
+
+        ImageView btnGameDoanAnh = dialogView.findViewById(R.id.Imv_DoanAnh);
+        Glide.with(MainActivity.this)
+                .asGif()
+                .load(R.drawable.puzzel_game) // Thay bằng tên file GIF của bạn
+                .into(btnGameDoanAnh);
+        btnGameDoanAnh.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void showListenOptionsDialog() {
@@ -382,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView btnStory = dialogView.findViewById(R.id.Imv_story);
         Glide.with(MainActivity.this)
                 .asGif()
-                .load(R.drawable.story) // Thay bằng tên file GIF của bạn
+                .load(R.drawable.story2) // Thay bằng tên file GIF của bạn
                 .into(btnStory);
         btnStory.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, MusicActivity.class));

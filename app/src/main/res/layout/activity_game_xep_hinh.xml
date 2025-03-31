@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/kids_bg_gradient"
+    tools:context=".GameXepHinhActivity">
+
+    <!-- Header với hình ảnh trang trí -->
+    <ImageView
+        android:id="@+id/decorImageView"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:text="Trò Chơi Xếp Hình"
+        android:textColor="#FF4081"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:shadowColor="#80000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/timerCard"
+        android:layout_width="248dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#FFECB3"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView">
+
+        <TextView
+            android:id="@+id/timerTextView"
+            android:layout_width="234dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableStart="@drawable/ic_timer"
+            android:drawablePadding="8dp"
+            android:text="00:00"
+            android:textColor="#FF7043"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Puzzle Grid in a decorative frame -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/puzzleCardContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#FFECB3"
+        app:cardElevation="8dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timerCard"
+        app:layout_constraintHeight_percent="0.45">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <GridLayout
+                    android:id="@+id/puzzleGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/puzzle_grid_bg"
+                    android:columnCount="3"
+                    android:padding="8dp"
+                    android:rowCount="3">
+                    <!-- Buttons will be added programmatically -->
+                </GridLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Decorative elements around the grid -->
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="top|start"
+                android:src="@drawable/puzzle_corner_decoration" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="top|end"
+                android:src="@drawable/puzzle_corner_decoration"
+                android:rotation="90" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|start"
+                android:src="@drawable/puzzle_corner_decoration"
+                android:rotation="270" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom|end"
+                android:rotation="180"
+                android:src="@drawable/puzzle_corner_decoration" />
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Preview Image in a fun frame -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/previewCard"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:cardBackgroundColor="#E1BEE7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/puzzleCardContainer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/previewImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/puzzle_image" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+
+                android:gravity="center"
+                android:text="Hình mẫu"
+                android:textColor="#9C27B0"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:id="@+id/buttonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/previewCard">
+
+        <Button
+            android:id="@+id/newGameButton"
+            android:layout_width="140dp"
+            android:layout_height="56dp"
+            app:backgroundTint="@drawable/kid_friendly_button"
+            android:text="Chơi mới"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:drawableStart="@drawable/star_icon"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp" />
+
+
+        <Space
+            android:layout_width="24dp"
+            android:layout_height="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/hintButton"
+            android:layout_width="140dp"
+            android:layout_height="56dp"
+            android:backgroundTint="@drawable/kid_friendly_button_secondary"
+            android:text="Gợi ý"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp" />
+    </LinearLayout>
+
+    <!-- Stars decoration -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+
+        android:alpha="0.5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonsLayout"
+        app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
