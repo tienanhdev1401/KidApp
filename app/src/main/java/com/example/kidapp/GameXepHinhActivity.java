@@ -9,6 +9,7 @@ import android.view.ViewTreeObserver;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,6 +87,8 @@ public class GameXepHinhActivity extends AppCompatActivity {
                 startNewGame();
             }
         });
+        ImageButton btn_Back = findViewById(R.id.btn_Back);
+        btn_Back.setOnClickListener(v -> finish());
     }
 
     private void initializePuzzle() {
