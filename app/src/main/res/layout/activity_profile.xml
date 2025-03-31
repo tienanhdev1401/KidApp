@@ -2,388 +2,230 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#E3F2FD">
 
-    <!-- Top navigation -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topNavigation"
+    <!-- Thanh tiêu đề -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PROFILE"
+        android:textSize="18sp"
+        android:textColor="#42A5F5"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <ImageButton
+        android:id="@+id/settings_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_back"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Hình nền Profile -->
+    <RelativeLayout
+        android:id="@+id/profile_background"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#42A5F5"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        android:layout_marginTop="16dp">
+
+        <!-- Avatar -->
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/animal_avatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"/>
+
+
+        <!-- Cấp độ và điểm số -->
+        <TextView
+            android:id="@+id/level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beginner"
+            android:textSize="16sp"
+            android:textColor="#00E5FF"
+            android:layout_below="@id/avatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1536 ★"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:layout_below="@id/level"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"/>
+    </RelativeLayout>
+
+    <!-- Thanh ngày và thứ -->
+    <LinearLayout
+        android:id="@+id/date_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/profile_background"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="S\n18"
+            android:textAlignment="center"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="M\n19"
+            android:textAlignment="center"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="T\n20"
+            android:textAlignment="center"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="W\n21"
+            android:textAlignment="center"
+            android:background="#42A5F5"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="T\n22"
+            android:textAlignment="center"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="F\n23"
+            android:textAlignment="center"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="S\n24"
+            android:textAlignment="center"
+            android:textColor="#000000"/>
+    </LinearLayout>
+
+    <!-- Vocabulary Skills -->
+    <LinearLayout
+        android:id="@+id/vocabulary_skills"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
         android:padding="16dp"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/date_bar"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp">
 
-        <ImageView
-            android:id="@+id/backButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_back"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="#FFFFFF" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vocabulary Skills"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
 
-        <ImageView
-            android:id="@+id/optionsButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_options"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="#FFFFFF" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Profile section -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/profileSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardBackgroundColor="#1E1E1E"
-        app:layout_constraintTop_toBottomOf="@id/topNavigation">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progress="10"
+            android:layout_marginTop="8dp"/>
 
-            <FrameLayout
-                android:id="@+id/profileImageContainer"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profileButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/profile_placeholder"
-                    app:civ_border_width="2dp"
-                    app:civ_border_color="#E91E63" />
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/profileName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hùng Anh Skibidi"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profileImageContainer" />
-
-            <TextView
-                android:id="@+id/profileActiveStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Active since - Jul. 2019"
-                android:textColor="#9E9E9E"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profileName" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- Personal Information Section -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/personalInfoSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardBackgroundColor="#1E1E1E"
-        app:layout_constraintTop_toBottomOf="@id/profileSection">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vocabulary_recycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_marginTop="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"/>
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/personalInfoTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Personal Information"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/editButton"
-                android:adjustViewBounds="true"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_edit"
-                android:padding="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="#E91E63" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/personalInfoTitle">
-
-                <!-- Date of Birth -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_calendar"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Date of Birth"
-                        android:textColor="#9E9E9E"
-                        android:layout_marginStart="16dp" />
-
-                    <TextView
-                        android:id="@+id/dob"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="15/03/2004"
-                        android:textColor="#FFFFFF" />
-                </LinearLayout>
-
-                <!-- Gender -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_gender"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Gender"
-                        android:textColor="#9E9E9E"
-                        android:layout_marginStart="16dp" />
-
-                    <TextView
-                        android:id="@+id/gender"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Female"
-                        android:textColor="#FFFFFF" />
-                </LinearLayout>
-
-                <!-- Address -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_location"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Address"
-                        android:textColor="#9E9E9E"
-                        android:layout_marginStart="16dp" />
-
-                    <TextView
-                        android:id="@+id/address"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="123 Main St, Antigua"
-                        android:textColor="#FFFFFF" />
-                </LinearLayout>
-
-                <!-- Phone -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_phone"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Phone"
-                        android:textColor="#9E9E9E"
-                        android:layout_marginStart="16dp" />
-
-                    <TextView
-                        android:id="@+id/phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="03297444414"
-                        android:textColor="#FFFFFF" />
-                </LinearLayout>
-
-                <!-- Email -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_email"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Email"
-                        android:textColor="#9E9E9E"
-                        android:layout_marginStart="16dp" />
-
-                    <TextView
-                        android:id="@+id/email"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="phanhunganh@gmail.com"
-                        android:textColor="#FFFFFF" />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- Utilities Section -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/utilitiesSection"
+    <!-- Reading Skills -->
+    <LinearLayout
+        android:id="@+id/reading_skills"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardBackgroundColor="#1E1E1E"
-        app:layout_constraintTop_toBottomOf="@id/personalInfoSection">
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/vocabulary_skills"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reading Skills"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <ProgressBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progress="5"
+            android:layout_marginTop="8dp"/>
 
-            <TextView
-                android:id="@+id/utilitiesTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Utilities"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/reading_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"/>
+    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/utilitiesTitle">
-
-                <!-- Ask Help-Desk -->
-                <LinearLayout
-                    android:id="@+id/helpDeskOption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_help"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Ask Help-Desk"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginStart="16dp" />
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="#9E9E9E" />
-                </LinearLayout>
-
-                <!-- Log-Out -->
-                <LinearLayout
-                    android:id="@+id/logOutOption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_logout"
-                        app:tint="#9E9E9E" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Log-Out"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginStart="16dp" />
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_chevron_right"
-                        app:tint="#9E9E9E" />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

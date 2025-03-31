@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#4BA5F8">
+
+    <!-- Top Bar with Progress and Close Button -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Progress Heart Icon -->
+        <ImageView
+            android:id="@+id/heartIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_heart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- Progress Counter -->
+        <TextView
+            android:id="@+id/progressCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9/30"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/heartIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Math"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Close Button -->
+        <ImageButton
+            android:id="@+id/closeButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Main Content Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/mainCard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#2196F3"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintBottom_toTopOf="@id/answerOptionsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <!-- Main Math Problem Container -->
+            <LinearLayout
+                android:id="@+id/mathProblemContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- First Number Image -->
+                <ImageView
+                    android:id="@+id/number1ImageView"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="fitCenter"
+                    tools:src="@drawable/number1"/>
+
+                <!-- Operation Sign -->
+                <TextView
+                    android:id="@+id/operationTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:textColor="@android:color/white"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:layout_marginHorizontal="16dp"/>
+
+                <!-- Second Number Image -->
+                <ImageView
+                    android:id="@+id/number2ImageView"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="fitCenter"
+                    tools:src="@drawable/number2"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Answer Options Layout -->
+    <GridLayout
+        android:id="@+id/answerOptionsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:padding="16dp"
+        android:useDefaultMargins="true"
+        app:layout_constraintBottom_toTopOf="@id/dontKnowButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Answer Option 1 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/option1Card"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#4CAF50">
+
+            <ImageView
+                android:id="@+id/option1ImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                tools:src="@drawable/number3"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Option 2 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/option2Card"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <ImageView
+                android:id="@+id/option2ImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                tools:src="@drawable/number4"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Option 3 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/option3Card"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#64B5F6">
+
+            <ImageView
+                android:id="@+id/option3ImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                tools:src="@drawable/number5"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Answer Option 4 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/option4Card"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#FF5252">
+
+            <ImageView
+                android:id="@+id/option4ImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                tools:src="@drawable/number6"/>
+        </androidx.cardview.widget.CardView>
+    </GridLayout>
+
+    <!-- I Don't Know Button -->
+    <Button
+        android:id="@+id/dontKnowButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="I Don't Know"
+        android:textColor="#757575"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
