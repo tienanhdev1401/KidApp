@@ -87,8 +87,9 @@ public class GameXepHinhActivity extends AppCompatActivity {
                 startNewGame();
             }
         });
-        ImageButton btn_Back = findViewById(R.id.btn_Back);
-        btn_Back.setOnClickListener(v -> finish());
+        ImageButton bntBack = findViewById(R.id.btn_Back);
+        bntBack.setOnClickListener(v-> finish());
+
     }
 
     private void initializePuzzle() {

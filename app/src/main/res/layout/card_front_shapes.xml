@@ -21,6 +21,8 @@
         android:text="Shapes"
         android:textColor="#000000"
         android:textSize="16sp"
+        android:fontFamily="@font/kids_font"
+
         android:textStyle="bold" />
 
     <TextView
@@ -28,5 +30,7 @@
         android:layout_height="wrap_content"
         android:text="(Formas)"
         android:textColor="#888888"
+        android:fontFamily="@font/kids_font"
+
         android:textSize="12sp" />
 </LinearLayout>

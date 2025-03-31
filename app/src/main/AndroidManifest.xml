@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KidApp"
         tools:targetApi="31">
+
         <activity
             android:name=".StoryActivity"
             android:exported="false" />
@@ -43,6 +51,14 @@
         <activity android:name=".GameLatTheActivity"/>
         <activity android:name=".GameXepHinhActivity"/>
         <activity android:name=".GameDoanChuActivity"/>
+        <activity android:name=".MusicDetailActivity"/>
+        <activity android:name=".MathQuizActivity"/>
+        <activity android:name=".ProfileDetailActivity"/>
+        <activity android:name=".FavoriteActivity"/>
+        <service
+            android:name=".MusicService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

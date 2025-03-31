@@ -8,6 +8,22 @@
     tools:context=".GameLatTheActivity">
 
     <!-- Header -->
+
+    <ImageButton
+        android:id="@+id/btn_Back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/tvLevel"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back button"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintEnd_toStartOf="@+id/tvTitle"
+        app:layout_constraintHorizontal_bias="0.057"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="16dp" />
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"

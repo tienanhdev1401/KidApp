@@ -14,12 +14,13 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
+        android:layout_marginEnd="310dp"
         android:layout_toStartOf="@+id/tvLevel"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back button"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_arrow_back"
-        tools:layout_editor_absoluteX="2dp"
+        app:layout_constraintEnd_toEndOf="@+id/titleTextView"
         tools:layout_editor_absoluteY="28dp" />
 
     <ImageView
@@ -27,21 +28,22 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:scaleType="fitCenter"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp" />
 
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:text="Trò Chơi Xếp Hình"
-        android:textColor="#FF4081"
-        android:textSize="36sp"
-        android:textStyle="bold"
         android:shadowColor="#80000000"
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="3"
+        android:text="Trò Chơi Xếp Hình"
+        android:textColor="#FF4081"
+        android:textSize="36sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -79,14 +81,14 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        app:cardBackgroundColor="#FFECB3"
         app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#FFECB3"
         app:cardElevation="8dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.45"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timerCard">
+        app:layout_constraintTop_toBottomOf="@+id/timerCard"
+        app:layout_constraintHeight_percent="0.45">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -96,9 +98,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
 
                 <GridLayout
                     android:id="@+id/puzzleGrid"
@@ -123,15 +125,15 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="top|end"
-                android:rotation="90"
-                android:src="@drawable/puzzle_corner_decoration" />
+                android:src="@drawable/puzzle_corner_decoration"
+                android:rotation="90" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="bottom|start"
-                android:rotation="270"
-                android:src="@drawable/puzzle_corner_decoration" />
+                android:src="@drawable/puzzle_corner_decoration"
+                android:rotation="270" />
 
             <ImageView
                 android:layout_width="50dp"
@@ -191,26 +193,25 @@
     <!-- Action Buttons -->
     <LinearLayout
         android:id="@+id/buttonsLayout"
-        android:layout_width="391dp"
-        android:layout_height="55dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/previewCard"
-        tools:layout_editor_absoluteX="2dp">
+        app:layout_constraintTop_toBottomOf="@+id/previewCard">
 
         <Button
             android:id="@+id/newGameButton"
             android:layout_width="140dp"
             android:layout_height="56dp"
-            android:drawableStart="@drawable/star_icon"
-            android:drawablePadding="8dp"
-            android:paddingStart="16dp"
+            app:backgroundTint="@drawable/kid_friendly_button"
             android:text="Chơi mới"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            app:backgroundTint="@drawable/kid_friendly_button" />
+            android:drawableStart="@drawable/star_icon"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp" />
 
 
         <Space
@@ -222,24 +223,23 @@
             android:layout_width="140dp"
             android:layout_height="56dp"
             android:backgroundTint="@drawable/kid_friendly_button_secondary"
-            android:drawableStart="@drawable/ic_star"
-            android:drawablePadding="8dp"
-            android:paddingStart="16dp"
             android:text="Gợi ý"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp" />
     </LinearLayout>
 
     <!-- Stars decoration -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="171dp"
-        android:alpha="0.5"
         android:scaleType="fitXY"
-        android:src="@drawable/stars_decoration"
-        app:layout_constraintBottom_toTopOf="@+id/puzzleCardContainer"
+
+        android:alpha="0.5"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonsLayout"
         app:layout_constraintVertical_bias="1.0" />
 
