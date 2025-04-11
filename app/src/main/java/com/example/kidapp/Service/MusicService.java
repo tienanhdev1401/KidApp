@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -9,8 +9,9 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.example.kidapp.R;
+
 import java.io.IOException;
-import java.security.Provider;
 
 public class MusicService extends Service {
 

@@ -1,7 +1,6 @@
-package com.example.kidapp;
+package com.example.kidapp.Adapter;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.kidapp.R;
+import com.example.kidapp.models.Animal;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 
 import android.content.Intent;
@@ -15,6 +15,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.kidapp.R;
+import com.example.kidapp.Utils.FlipAnimationUtil;
 
 public class MainActivity extends AppCompatActivity {
 

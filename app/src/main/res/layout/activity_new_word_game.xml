@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F3FBFF"
     android:paddingTop="16dp"
-    tools:context=".GameDoanChuActivity">
+    tools:context=".Activity.GameDoanChuActivity">
 
 
     <!-- Card chứa nội dung trò chơi -->

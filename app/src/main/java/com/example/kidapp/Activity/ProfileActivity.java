@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageButton;
+
+import com.example.kidapp.Adapter.SkillAdapter;
+import com.example.kidapp.R;
+import com.example.kidapp.models.SkillItem;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,19 +1,16 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.example.kidapp.Adapter.AnimalPagerAdapter;
+import com.example.kidapp.R;
+import com.example.kidapp.models.Animal;
 
 import java.util.ArrayList;
 import java.util.List;

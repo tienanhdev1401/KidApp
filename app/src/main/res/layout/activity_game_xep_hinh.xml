@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/kids_bg_gradient"
-    tools:context=".GameXepHinhActivity">
+    tools:context=".Activity.GameXepHinhActivity">
 
     <!-- Header với hình ảnh trang trí -->
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btn_Back"
-        android:layout_width="48dp"
+        android:layout_width="40dp"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
         android:layout_marginEnd="310dp"
@@ -19,7 +19,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back button"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_arrow_back"
+        android:src="@drawable/ic_back"
         app:layout_constraintEnd_toEndOf="@+id/titleTextView"
         tools:layout_editor_absoluteY="28dp" />
 
@@ -29,7 +29,7 @@
         android:layout_height="90dp"
         android:scaleType="fitCenter"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/titleTextView"

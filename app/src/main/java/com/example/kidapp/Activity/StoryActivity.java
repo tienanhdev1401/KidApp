@@ -1,21 +1,18 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.airbnb.lottie.LottieAnimationView;
+import com.example.kidapp.Adapter.ImageSliderAdapter;
+import com.example.kidapp.R;
 
 import java.util.Arrays;
 import java.util.List;

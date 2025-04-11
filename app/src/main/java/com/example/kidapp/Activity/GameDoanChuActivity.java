@@ -1,18 +1,18 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.kidapp.R;
 import com.google.android.flexbox.FlexboxLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class GameDoanChuActivity extends AppCompatActivity {
@@ -43,7 +43,7 @@ public class GameDoanChuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.new_word_game);
+        setContentView(R.layout.activity_new_word_game);
 
         wordFrame = findViewById(R.id.wordFrame);
         wordCardsContainer = findViewById(R.id.wordCardsContainer);

@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 
 import android.graphics.Color;
@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.kidapp.R;
 
 public class ReadingActivity extends AppCompatActivity {
     private ImageView ivBookPage;

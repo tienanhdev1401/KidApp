@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 import android.content.ClipData;
 import android.graphics.Point;
@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.kidapp.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

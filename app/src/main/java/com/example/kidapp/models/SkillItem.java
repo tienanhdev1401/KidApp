@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.models;
 
 public class SkillItem {
     private String name;

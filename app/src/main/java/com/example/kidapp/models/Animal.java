@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.models;
 
 public class Animal {
     private String name;

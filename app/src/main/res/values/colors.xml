@@ -3,4 +3,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple_500">#FF6200EE</color>
+    <color name="story_title_color">#FF5722</color>
+    <color name="story_text_color">#333333</color>
+    <color name="moral_card_bg">#E8F5E9</color>
+    <color name="moral_title_color">#388E3C</color>
+    <color name="moral_content_color">#1B5E20</color>
+    <color name="quiz_card_bg">#E3F2FD</color>
+    <color name="quiz_title_color">#1976D2</color>
+    <color name="quiz_question_color">#0D47A1</color>
+    <color name="transparent">#00000000</color>
+
 </resources>

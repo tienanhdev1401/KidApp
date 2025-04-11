@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
@@ -8,6 +8,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+
+import com.example.kidapp.R;
 
 public class FlipAnimationUtil {
     private AnimatorSet frontAnimation;

@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import androidx.cardview.widget.CardView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.kidapp.R;
 import com.google.android.material.tabs.TabLayout;
 
 public class StoryDetailActivity extends AppCompatActivity {

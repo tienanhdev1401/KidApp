@@ -1,4 +1,4 @@
-package com.example.kidapp;
+package com.example.kidapp.Activity;
 
 import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
@@ -24,12 +24,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
+import com.example.kidapp.R;
+import com.example.kidapp.Service.MusicService;
 
 public class MusicDetailActivity extends AppCompatActivity {
 
     private ImageView btnplayPauseButton, backButton;
     private boolean isPlaying = false; // Trạng thái phát nhạc
-    private  MusicService musicService;
+    private MusicService musicService;
     private SeekBar seekBar;
     private TextView tvCurrentTime, tvTotalTime;
     private final Handler handler = new Handler();
