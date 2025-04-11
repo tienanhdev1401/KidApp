@@ -27,7 +27,7 @@ public class MathQuizActivity extends AppCompatActivity implements View.OnClickL
     private ImageView option1ImageView, option2ImageView, option3ImageView, option4ImageView;
     private CardView option1Card, option2Card, option3Card, option4Card;
     private Button dontKnowButton;
-    private ImageButton closeButton;
+    private ImageView closeButton;
 
     // Game variables
     private int currentProblem = 1;

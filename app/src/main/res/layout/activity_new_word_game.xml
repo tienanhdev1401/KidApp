@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F3FBFF"
+    android:paddingTop="16dp"
+    tools:context=".GameDoanChuActivity">
+
+
+    <!-- Card chứa nội dung trò chơi -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/gameCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#FFFBF3"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- Header với Level và Sound Button -->
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                app:layout_constraintBottom_toBottomOf="@+id/tvLevel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvLevel"
+                app:tint="#333333" />
+
+            <TextView
+                android:id="@+id/tvLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Level 2"
+                android:textColor="#333333"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnSound"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_sound_on"
+                app:layout_constraintBottom_toBottomOf="@+id/tvLevel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvLevel"
+                app:tint="#45D8E3" />
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="16dp"
+                android:progress="35"
+                android:progressDrawable="@drawable/progress_drawable"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLevel" />
+
+            <!-- Hình ảnh cần đoán -->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@id/progressBar"
+                android:layout_marginTop="20dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/coffee"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressBar"/>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/wordFrame"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/white"
+                android:minHeight="80dp"
+                android:padding="8dp"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:justifyContent="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+
+
+
+
+    <!-- ScrollView bao bọc các thẻ từ -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layoutBtnCheck"
+        android:layout_below="@id/gameCard"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <!-- Container các thẻ từ (sử dụng FlexboxLayout) -->
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/wordCardsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:flexWrap="wrap"
+            app:alignItems="center"
+            app:justifyContent="center" />
+    </ScrollView>
+
+    <!-- Nút kiểm tra -->
+    <LinearLayout
+        android:id="@+id/layoutBtnCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:paddingHorizontal="32dp"
+        android:background="@drawable/gradient_btn_bg">
+        <Button
+            android:id="@+id/btnCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KIỂM TRA"
+            android:textColor="@color/white"
+            android:background="@color/transparent"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+    </LinearLayout>
+</RelativeLayout>

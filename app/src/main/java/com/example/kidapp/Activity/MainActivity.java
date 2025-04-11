@@ -451,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                 .load(R.drawable.story2) // Thay bằng tên file GIF của bạn
                 .into(btnStory);
         btnStory.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, MusicActivity.class));
+            startActivity(new Intent(MainActivity.this, StoryActivity.class));
             dialog.dismiss();
         });
 

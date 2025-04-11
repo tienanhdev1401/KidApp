@@ -38,10 +38,12 @@ public class GameDoanChuActivity extends AppCompatActivity {
     private static final int NORMAL_BG = R.drawable.textview_black_border;
     private static final int SELECTED_BG = R.drawable.textview_selected_bg;
 
+    private static final int INFRAME_BG = R.drawable.textview_inframe_bg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_doan_chu);
+        setContentView(R.layout.new_word_game);
 
         wordFrame = findViewById(R.id.wordFrame);
         wordCardsContainer = findViewById(R.id.wordCardsContainer);
@@ -49,7 +51,7 @@ public class GameDoanChuActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
 
         setupLevel(currentLevel);
-        ImageButton btn_Back = findViewById(R.id.btn_Back);
+        ImageView btn_Back = findViewById(R.id.btnBack);
         btn_Back.setOnClickListener(v -> finish());
 
     }
@@ -83,8 +85,8 @@ public class GameDoanChuActivity extends AppCompatActivity {
 
         // Styling ban đầu
         card.setBackgroundResource(NORMAL_BG);
-        card.setTextSize(18);
-        card.setTextColor(Color.BLACK);
+        card.setTextSize(30);
+        card.setTextColor(Color.parseColor("#BDE1F7"));
         card.setGravity(Gravity.CENTER);
         card.setPadding(20, 20, 20, 20);
 
@@ -102,10 +104,13 @@ public class GameDoanChuActivity extends AppCompatActivity {
                 addWordToFrame(clickedWord);
                 selectedWords.add(clickedWord);
                 clickedView.setBackgroundResource(SELECTED_BG);
+                clickedView.setTextColor(Color.WHITE);
             } else {
                 removeWordFromFrame(clickedWord);
                 selectedWords.remove(clickedWord);
                 clickedView.setBackgroundResource(NORMAL_BG);
+                clickedView.setTextColor(Color.parseColor("#BDE1F7"));
+
             }
         });
 
@@ -117,9 +122,9 @@ public class GameDoanChuActivity extends AppCompatActivity {
         wordView.setText(word);
         wordView.setTag(word);
 
-        wordView.setBackgroundResource(NORMAL_BG);
-        wordView.setTextSize(18);
-        wordView.setTextColor(Color.BLACK);
+        wordView.setBackgroundResource(INFRAME_BG);
+        wordView.setTextSize(30);
+        wordView.setTextColor(Color.WHITE);
         wordView.setGravity(Gravity.CENTER);
         wordView.setPadding(20, 20, 20, 20);
 

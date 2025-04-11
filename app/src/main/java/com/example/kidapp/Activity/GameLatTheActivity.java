@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +67,7 @@ public class GameLatTheActivity extends AppCompatActivity {
 
         // Initialize the game
         initializeGame();
-        ImageButton btnBack = findViewById(R.id.btn_Back);
+        ImageView btnBack = findViewById(R.id.btn_Back);
         btnBack.setOnClickListener(v -> finish());
     }
 
