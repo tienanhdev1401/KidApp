@@ -27,15 +27,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/searchButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Search"
-            android:src="@drawable/search"
-            app:layout_constraintEnd_toStartOf="@+id/menuButton"
-            app:layout_constraintTop_toTopOf="parent" />
+
 
         <ImageButton
             android:id="@+id/menuButton"

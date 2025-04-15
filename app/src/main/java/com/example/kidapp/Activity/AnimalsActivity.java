@@ -54,7 +54,7 @@ public class AnimalsActivity extends AppCompatActivity {
 
 
         // Nút quay lại
-        ImageButton backButton = findViewById(R.id.btn_back);
+        ImageView backButton = findViewById(R.id.btn_back);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

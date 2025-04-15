@@ -88,7 +88,7 @@ public class GameXepHinhActivity extends AppCompatActivity {
                 startNewGame();
             }
         });
-        ImageButton bntBack = findViewById(R.id.btn_Back);
+        ImageView bntBack = findViewById(R.id.btn_Back);
         bntBack.setOnClickListener(v-> finish());
 
     }

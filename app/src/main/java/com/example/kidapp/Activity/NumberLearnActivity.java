@@ -43,7 +43,7 @@ public class NumberLearnActivity extends AppCompatActivity {
         tvEquation = findViewById(R.id.tvEquation);
 
         // Set up the back button
-        ImageButton btnBack = findViewById(R.id.btn_back);
+        ImageView btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
 
         // Initialize number buttons
