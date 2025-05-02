@@ -10,6 +10,7 @@
     android:background="@drawable/kids_background">
 
     <!-- Header -->
+
     <LinearLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
@@ -18,12 +19,13 @@
         android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btn_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="back"
+            android:contentDescription="Back button"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_back" />
 
         <TextView
