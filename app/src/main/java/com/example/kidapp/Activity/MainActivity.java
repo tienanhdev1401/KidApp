@@ -1,24 +1,35 @@
 package com.example.kidapp.Activity;
 
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
+import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals;
     private View frontNumbers, backNumbers;
@@ -43,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private FlipAnimationUtil mathsFlipAnimation;
     private FlipAnimationUtil listenFlipAnimation;
     private FlipAnimationUtil gameFlipAnimation;
+    private DrawerLayout drawer;
+    private ImageButton menuButton;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +65,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initViews();
         setupCardFlips();
+        drawer = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        // Tạo toggle button cho navigation drawer
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        // Xử lý nút menu để mở navigation drawer
+        menuButton = findViewById(R.id.menuButton);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(GravityCompat.START);
+            }
+        });
+        // Hiển thị fragment mặc định khi ứng dụng khởi động
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -58,9 +91,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void initViews() {
-        // Khởi tạo các CardView
+        // Initialize CardViews
         cardNumbers = findViewById(R.id.cardNumbers);
         cardReading = findViewById(R.id.cardReading);
         cardShapes = findViewById(R.id.cardShapes);
@@ -72,54 +104,59 @@ public class MainActivity extends AppCompatActivity {
         cardListen = findViewById(R.id.cardListen);
         cardGame = findViewById(R.id.cardGame);
 
-        // Inflate layouts cho mặt sau của thẻ
+        // Initialize front and back views
         inflateFrontBackViews();
 
-        // Setup các animations
+        // Setup animations
         setupAnimations();
     }
 
     private void inflateFrontBackViews() {
         // Numbers Card
-        frontNumbers = getLayoutInflater().inflate(R.layout.card_front_numbers, cardNumbers, false);
-        backNumbers = getLayoutInflater().inflate(R.layout.card_back_numbers, cardNumbers, false);
+        frontNumbers = getLayoutInflater().inflate(R.layout.card_front_numbers, null);
+        backNumbers = getLayoutInflater().inflate(R.layout.card_back_numbers, null);
 
-        // Làm tương tự cho các thẻ khác
-        frontReading = getLayoutInflater().inflate(R.layout.card_front_reading, cardReading, false);
-        backReading = getLayoutInflater().inflate(R.layout.card_back_reading, cardReading, false);
+        // Reading Card
+        frontReading = getLayoutInflater().inflate(R.layout.card_front_reading, null);
+        backReading = getLayoutInflater().inflate(R.layout.card_back_reading, null);
 
-        frontShapes = getLayoutInflater().inflate(R.layout.card_front_shapes, cardShapes, false);
-        backShapes = getLayoutInflater().inflate(R.layout.card_back_shapes, cardShapes, false);
+        // Shapes Card
+        frontShapes = getLayoutInflater().inflate(R.layout.card_front_shapes, null);
+        backShapes = getLayoutInflater().inflate(R.layout.card_back_shapes, null);
 
-        frontVocab = getLayoutInflater().inflate(R.layout.card_front_vocab, cardVocab, false);
-        backVocab = getLayoutInflater().inflate(R.layout.card_back_vocab, cardVocab, false);
+        // Vocab Card
+        frontVocab = getLayoutInflater().inflate(R.layout.card_front_vocab, null);
+        backVocab = getLayoutInflater().inflate(R.layout.card_back_vocab, null);
 
-        frontAnalysis = getLayoutInflater().inflate(R.layout.card_front_analysis, cardAnalysis, false);
-        backAnalysis = getLayoutInflater().inflate(R.layout.card_back_analysis, cardAnalysis, false);
+        // Analysis Card
+        frontAnalysis = getLayoutInflater().inflate(R.layout.card_front_analysis, null);
+        backAnalysis = getLayoutInflater().inflate(R.layout.card_back_analysis, null);
 
-        frontSettings = getLayoutInflater().inflate(R.layout.card_front_settings, cardSettings, false);
-        backSettings = getLayoutInflater().inflate(R.layout.card_back_settings, cardSettings, false);
+        // Settings Card
+        frontSettings = getLayoutInflater().inflate(R.layout.card_front_settings, null);
+        backSettings = getLayoutInflater().inflate(R.layout.card_back_settings, null);
 
-        frontAnimals = getLayoutInflater().inflate(R.layout.card_front_animals, cardAnimals, false);
-        backAnimals = getLayoutInflater().inflate(R.layout.card_back_animals, cardAnimals, false);
+        // Animals Card
+        frontAnimals = getLayoutInflater().inflate(R.layout.card_front_animals, null);
+        backAnimals = getLayoutInflater().inflate(R.layout.card_back_animals, null);
 
-        frontMaths = getLayoutInflater().inflate(R.layout.card_front_maths, cardMaths, false);
-        backMaths = getLayoutInflater().inflate(R.layout.card_back_maths, cardMaths, false);
+        // Maths Card
+        frontMaths = getLayoutInflater().inflate(R.layout.card_front_maths, null);
+        backMaths = getLayoutInflater().inflate(R.layout.card_back_maths, null);
 
-        frontListen = getLayoutInflater().inflate(R.layout.card_front_listen, cardListen, false);
-        backListen = getLayoutInflater().inflate(R.layout.card_back_listen, cardListen, false);
+        // Listen Card
+        frontListen = getLayoutInflater().inflate(R.layout.card_front_listen, null);
+        backListen = getLayoutInflater().inflate(R.layout.card_back_listen, null);
 
-        frontGame = getLayoutInflater().inflate(R.layout.card_front_game, cardGame, false);
-        backGame = getLayoutInflater().inflate(R.layout.card_back_game, cardGame, false);
+        // Game Card
+        frontGame = getLayoutInflater().inflate(R.layout.card_front_game, null);
+        backGame = getLayoutInflater().inflate(R.layout.card_back_game, null);
 
-        // Khởi tạo các animation util
-
-        // Thêm views vào CardView
+        // Add views to CardViews
         cardNumbers.removeAllViews();
         cardNumbers.addView(frontNumbers);
         cardNumbers.addView(backNumbers);
 
-        // Làm tương tự cho các thẻ khác
         cardReading.removeAllViews();
         cardReading.addView(frontReading);
         cardReading.addView(backReading);
@@ -155,12 +192,10 @@ public class MainActivity extends AppCompatActivity {
         cardGame.removeAllViews();
         cardGame.addView(frontGame);
         cardGame.addView(backGame);
-
-
     }
 
     private void setupAnimations() {
-        // Khởi tạo animations cho từng thẻ
+        // Initialize flip animations for all cards
         numbersFlipAnimation = new FlipAnimationUtil(this, frontNumbers, backNumbers);
         readingFlipAnimation = new FlipAnimationUtil(this, frontReading, backReading);
         shapesFlipAnimation = new FlipAnimationUtil(this, frontShapes, backShapes);
@@ -171,210 +206,166 @@ public class MainActivity extends AppCompatActivity {
         mathsFlipAnimation = new FlipAnimationUtil(this, frontMaths, backMaths);
         listenFlipAnimation = new FlipAnimationUtil(this, frontListen, backListen);
         gameFlipAnimation = new FlipAnimationUtil(this, frontGame, backGame);
-        // Khởi tạo animation util khác...
     }
 
     private void setupCardFlips() {
-        // Set OnClickListener cho từng thẻ
-        cardNumbers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                numbersFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                numbersFlipAnimation.flipCard();
+        // Set up card flip animations and actions
+        setupNumbersCard();
+        setupReadingCard();
+        setupShapesCard();
+        setupVocabCard();
+        setupAnalysisCard();
+        setupSettingsCard();
+        setupAnimalsCard();
+        setupMathsCard();
+        setupListenCard();
+        setupGameCard();
 
-                // Nếu đã lật sang mặt sau, setup nút "Start Learning"
-                if (!numbersFlipAnimation.isFront()) {
-                    ImageView btnStart = backNumbers.findViewById(R.id.Imv_letter);
-                    btnStart.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Khởi chạy NumbersActivity ở đây
-                            Intent intent = new Intent(MainActivity.this, NumberLearnActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                }
-            }
-        });
+        // Set up profile button click
         profileButton = findViewById(R.id.profileButton);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start ProfileActivity
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
-            }
+        profileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
         });
-        // Làm tương tự cho các thẻ khác
-        cardReading.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sửa thành readingFlipAnimation
-                shapesFlipAnimation.cancelAutoFlip();
-                readingFlipAnimation.flipCard();
+    }
 
-                // Tìm nút Start trong backReading (mặt sau của card Reading)
-                ImageView btnStart = backReading.findViewById(R.id.Imv_reading); // Thay R.id.Imv_reading bằng ID thực tế
-                btnStart.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, ReadingActivity.class);
-                        startActivity(intent);
-                    }
+    private void setupNumbersCard() {
+        cardNumbers.setOnClickListener(v -> {
+            numbersFlipAnimation.cancelAutoFlip();
+            numbersFlipAnimation.flipCard();
+
+            if (!numbersFlipAnimation.isFront()) {
+                ImageView btnStart = backNumbers.findViewById(R.id.Imv_letter);
+                btnStart.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, NumberLearnActivity.class);
+                    startActivity(intent);
                 });
             }
         });
+    }
 
-        cardShapes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shapesFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                shapesFlipAnimation.flipCard();
+    private void setupReadingCard() {
+        cardReading.setOnClickListener(v -> {
+            readingFlipAnimation.cancelAutoFlip();
+            readingFlipAnimation.flipCard();
+
+            if (!readingFlipAnimation.isFront()) {
+                ImageView btnStart = backReading.findViewById(R.id.Imv_reading);
+                btnStart.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, ReadingActivity.class);
+                    startActivity(intent);
+                });
+            }
+        });
+    }
+
+    private void setupShapesCard() {
+        cardShapes.setOnClickListener(v -> {
+            shapesFlipAnimation.cancelAutoFlip();
+            shapesFlipAnimation.flipCard();
+
+            if (!shapesFlipAnimation.isFront()) {
                 ImageView gameButton = backShapes.findViewById(R.id.Imv_sharps);
-                gameButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start ProfileActivity
-                        Intent intent = new Intent(MainActivity.this, ShapesGameActivity.class);
-                        startActivity(intent);
-                    }
+                gameButton.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, ShapesGameActivity.class);
+                    startActivity(intent);
                 });
             }
         });
+    }
 
-        cardVocab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vocabFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                vocabFlipAnimation.flipCard();
-                ImageView btnLetter= backVocab.findViewById(R.id.Imv_letter);
-                btnLetter.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start ProfileActivity
-                        Intent intent = new Intent(MainActivity.this, LetterActivity.class);
-                        startActivity(intent);
-                    }
+    private void setupVocabCard() {
+        cardVocab.setOnClickListener(v -> {
+            vocabFlipAnimation.cancelAutoFlip();
+            vocabFlipAnimation.flipCard();
+
+            if (!vocabFlipAnimation.isFront()) {
+                ImageView btnLetter = backVocab.findViewById(R.id.Imv_letter);
+                btnLetter.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, LetterActivity.class);
+                    startActivity(intent);
                 });
             }
         });
+    }
 
-        cardAnalysis.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                analysisFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                analysisFlipAnimation.flipCard();
-            }
+    private void setupAnalysisCard() {
+        cardAnalysis.setOnClickListener(v -> {
+            analysisFlipAnimation.cancelAutoFlip();
+            analysisFlipAnimation.flipCard();
         });
+    }
 
-        cardSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                settingsFlipAnimation.flipCard();
-            }
+    private void setupSettingsCard() {
+        cardSettings.setOnClickListener(v -> {
+            settingsFlipAnimation.cancelAutoFlip();
+            settingsFlipAnimation.flipCard();
         });
-        cardAnimals.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animalsFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                animalsFlipAnimation.flipCard();
+    }
+
+    private void setupAnimalsCard() {
+        cardAnimals.setOnClickListener(v -> {
+            animalsFlipAnimation.cancelAutoFlip();
+            animalsFlipAnimation.flipCard();
+
+            if (!animalsFlipAnimation.isFront()) {
                 ImageView gifView = backAnimals.findViewById(R.id.Imv_animals);
-                if(!animalsFlipAnimation.isFront() && backAnimals != null){
-                    Glide.with(MainActivity.this)
-                            .asGif()
-                            .load(R.drawable.panda) // Thay bằng tên file GIF của bạn
-                            .into(gifView);
-                }
-                gifView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start ProfileActivity
-                        Intent intent = new Intent(MainActivity.this, AnimalsActivity.class);
-                        startActivity(intent);
-                    }
-                });
+                Glide.with(MainActivity.this)
+                        .asGif()
+                        .load(R.drawable.panda)
+                        .into(gifView);
 
-
-            }
-
-        });
-
-        cardMaths.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mathsFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                mathsFlipAnimation.flipCard();
-                ImageView btnMaths= backMaths.findViewById(R.id.Imv_maths);
-                btnMaths.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Start ProfileActivity
-                        Intent intent = new Intent(MainActivity.this, MathQuizActivity.class);
-                        startActivity(intent);
-                    }
+                gifView.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, AnimalsActivity.class);
+                    startActivity(intent);
                 });
             }
-
         });
+    }
 
-        cardListen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listenFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                listenFlipAnimation.flipCard();
+    private void setupMathsCard() {
+        cardMaths.setOnClickListener(v -> {
+            mathsFlipAnimation.cancelAutoFlip();
+            mathsFlipAnimation.flipCard();
+
+            if (!mathsFlipAnimation.isFront()) {
+                ImageView btnMaths = backMaths.findViewById(R.id.Imv_maths);
+                btnMaths.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, MathQuizActivity.class);
+                    startActivity(intent);
+                });
+            }
+        });
+    }
+
+    private void setupListenCard() {
+        cardListen.setOnClickListener(v -> {
+            listenFlipAnimation.cancelAutoFlip();
+            listenFlipAnimation.flipCard();
+
+            if (!listenFlipAnimation.isFront()) {
                 ImageView gifView = backListen.findViewById(R.id.Imv_listen);
+                Glide.with(MainActivity.this)
+                        .asGif()
+                        .load(R.drawable.story)
+                        .into(gifView);
 
-                if(!listenFlipAnimation.isFront()){
-                    Glide.with(MainActivity.this)
-                            .asGif()
-                            .load(R.drawable.story) // Thay bằng tên file GIF của bạn
-                            .into(gifView);
-                }
-                gifView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showListenOptionsDialog();
-                    }
-                });
-
-
+                gifView.setOnClickListener(view -> showListenOptionsDialog());
             }
         });
+    }
 
-        cardGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gameFlipAnimation.cancelAutoFlip(); // Hủy lật tự động nếu đang chờ
-                gameFlipAnimation.flipCard();
+    private void setupGameCard() {
+        cardGame.setOnClickListener(v -> {
+            gameFlipAnimation.cancelAutoFlip();
+            gameFlipAnimation.flipCard();
+
+            if (!gameFlipAnimation.isFront()) {
                 ImageView gifView = backGame.findViewById(R.id.Imv_game);
-                gifView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ShowGameOptionsDialog();
-                    }
-                });
-
+                gifView.setOnClickListener(view -> ShowGameOptionsDialog());
             }
         });
-
     }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        numbersFlipAnimation.cancelAutoFlip();
-        readingFlipAnimation.cancelAutoFlip();
-        shapesFlipAnimation.cancelAutoFlip();
-        vocabFlipAnimation.cancelAutoFlip();
-        analysisFlipAnimation.cancelAutoFlip();
-        settingsFlipAnimation.cancelAutoFlip();
-        animalsFlipAnimation.cancelAutoFlip();
-        mathsFlipAnimation.cancelAutoFlip();
-        listenFlipAnimation.cancelAutoFlip();
-        gameFlipAnimation.cancelAutoFlip();
-        // Hủy tất cả animation util khác...
-    }
-
 
     private void ShowGameOptionsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialogTheme);
@@ -388,34 +379,33 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
         }
 
-        // Xử lý click Music
-        ImageView btnMusic = dialogView.findViewById(R.id.Imv_puzzel);
+        // Set up puzzle game button
+        ImageView btnPuzzle = dialogView.findViewById(R.id.Imv_puzzel);
         Glide.with(MainActivity.this)
                 .asGif()
-                .load(R.drawable.puzzel_game) // Thay bằng tên file GIF của bạn
-                .into(btnMusic);
-        btnMusic.setOnClickListener(v -> {
+                .load(R.drawable.puzzel_game)
+                .into(btnPuzzle);
+
+        btnPuzzle.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, GameXepHinhActivity.class));
             dialog.dismiss();
         });
 
-        // Xử lý click Story
-        ImageView btnStory = dialogView.findViewById(R.id.Imv_card);
-//        Glide.with(MainActivity.this)
-//                .asGif()
-//                .load(R.drawable.memory_card_game) // Thay bằng tên file GIF của bạn
-//                .into(btnStory);
-        btnStory.setOnClickListener(v -> {
+        // Set up memory card game button
+        ImageView btnCard = dialogView.findViewById(R.id.Imv_card);
+        btnCard.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
             dialog.dismiss();
         });
 
-        ImageView btnGameDoanAnh = dialogView.findViewById(R.id.Imv_DoanAnh);
+        // Set up word guess game button
+        ImageView btnDoanAnh = dialogView.findViewById(R.id.Imv_DoanAnh);
         Glide.with(MainActivity.this)
                 .asGif()
-                .load(R.drawable.puzzel_game) // Thay bằng tên file GIF của bạn
-                .into(btnGameDoanAnh);
-        btnGameDoanAnh.setOnClickListener(v -> {
+                .load(R.drawable.puzzel_game)
+                .into(btnDoanAnh);
+
+        btnDoanAnh.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
             dialog.dismiss();
         });
@@ -435,23 +425,25 @@ public class MainActivity extends AppCompatActivity {
             dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
         }
 
-        // Xử lý click Music
+        // Set up music button
         ImageView btnMusic = dialogView.findViewById(R.id.Imv_music);
         Glide.with(MainActivity.this)
                 .asGif()
-                .load(R.drawable.story) // Thay bằng tên file GIF của bạn
+                .load(R.drawable.story)
                 .into(btnMusic);
+
         btnMusic.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, MusicActivity.class));
             dialog.dismiss();
         });
 
-        // Xử lý click Story
+        // Set up story button
         ImageView btnStory = dialogView.findViewById(R.id.Imv_story);
         Glide.with(MainActivity.this)
                 .asGif()
-                .load(R.drawable.story2) // Thay bằng tên file GIF của bạn
+                .load(R.drawable.story2)
                 .into(btnStory);
+
         btnStory.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, StoryActivity.class));
             dialog.dismiss();
@@ -460,4 +452,67 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+
+        // Xử lý các mục menu không có submenu bằng if-else thay cho switch-case
+        if (itemId == R.id.nav_home) {
+            // Đang ở trang chủ, có thể không cần chuyển trang
+        } else if (itemId == R.id.nav_number_learning) {
+            startActivity(new Intent(MainActivity.this, NumberLearnActivity.class));
+        } else if (itemId == R.id.nav_shape_learning) {
+            startActivity(new Intent(MainActivity.this, ShapesGameActivity.class));
+        } else if (itemId == R.id.nav_word_learning) {
+            startActivity(new Intent(MainActivity.this, LetterActivity.class));
+        } else if (itemId == R.id.nav_animal_learning) {
+            startActivity(new Intent(MainActivity.this, AnimalsActivity.class));
+        } else if (itemId == R.id.nav_math_learning) {
+            startActivity(new Intent(MainActivity.this, MathQuizActivity.class));
+        } else if (itemId == R.id.nav_music) {
+            startActivity(new Intent(MainActivity.this, MusicActivity.class));
+        } else if (itemId == R.id.nav_story) {
+            startActivity(new Intent(MainActivity.this, StoryActivity.class));
+        } else if (itemId == R.id.nav_puzzle_game) {
+            startActivity(new Intent(MainActivity.this, GameXepHinhActivity.class));
+        } else if (itemId == R.id.nav_card_flipping_game) {
+            startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
+        } else if (itemId == R.id.nav_word_guessing_game) {
+            startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
+        } else if (itemId == R.id.nav_profile) {
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+        }
+
+        // Đóng Drawer sau khi xử lý
+
+        return false;
+    }
+
+
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Cancel all flip animations
+        numbersFlipAnimation.cancelAutoFlip();
+        readingFlipAnimation.cancelAutoFlip();
+        shapesFlipAnimation.cancelAutoFlip();
+        vocabFlipAnimation.cancelAutoFlip();
+        analysisFlipAnimation.cancelAutoFlip();
+        settingsFlipAnimation.cancelAutoFlip();
+        animalsFlipAnimation.cancelAutoFlip();
+        mathsFlipAnimation.cancelAutoFlip();
+        listenFlipAnimation.cancelAutoFlip();
+        gameFlipAnimation.cancelAutoFlip();
+    }
 }

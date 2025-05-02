@@ -147,10 +147,22 @@
             android:id="@+id/btnCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="KIỂM TRA"
+            android:text="CHECK"
             android:textColor="@color/white"
             android:background="@color/transparent"
             android:textAllCaps="false"
             android:textSize="18sp" />
     </LinearLayout>
+    <!-- Interactive elements -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/gameCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_rawRes="@raw/congratulation_animation" />
 </RelativeLayout>

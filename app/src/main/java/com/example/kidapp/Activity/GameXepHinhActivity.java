@@ -70,7 +70,7 @@ public class GameXepHinhActivity extends AppCompatActivity {
                 seconds++;
                 int minutes = seconds / 60;
                 int secs = seconds % 60;
-                timerTextView.setText(String.format(Locale.getDefault(), "Thời gian: %02d:%02d", minutes, secs));
+                timerTextView.setText(String.format(Locale.getDefault(), "Timer: %02d:%02d", minutes, secs));
                 timerHandler.postDelayed(this, 1000);
             }
         };

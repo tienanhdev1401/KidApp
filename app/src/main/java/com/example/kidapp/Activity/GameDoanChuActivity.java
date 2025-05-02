@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.kidapp.R;
 import com.google.android.flexbox.FlexboxLayout;
 import java.util.ArrayList;
@@ -166,7 +167,9 @@ public class GameDoanChuActivity extends AppCompatActivity {
 
         if (userPhrase.equals(currentCorrectPhrase)) {
             showToast("Chính xác! Giỏi quá!");
-
+            LottieAnimationView animationView = findViewById(R.id.animationView);
+            animationView.setVisibility(View.VISIBLE);
+            animationView.playAnimation();
             // Chuyển sang màn tiếp theo sau 1 giây
             wordFrame.postDelayed(() -> {
                 currentLevel++;

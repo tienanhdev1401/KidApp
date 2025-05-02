@@ -40,7 +40,7 @@
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="3"
-        android:text="Trò Chơi Xếp Hình"
+        android:text="Puzzel Game"
         android:textColor="#FF4081"
         android:textSize="36sp"
         android:textStyle="bold"
@@ -184,7 +184,7 @@
                 android:layout_marginTop="6dp"
 
                 android:gravity="center"
-                android:text="Hình mẫu"
+                android:text="Sample Picture"
                 android:textColor="#9C27B0"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -205,7 +205,7 @@
             android:layout_width="140dp"
             android:layout_height="56dp"
             app:backgroundTint="@drawable/kid_friendly_button"
-            android:text="Chơi mới"
+            android:text="New Game"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
@@ -223,7 +223,7 @@
             android:layout_width="140dp"
             android:layout_height="56dp"
             android:backgroundTint="@drawable/kid_friendly_button_secondary"
-            android:text="Gợi ý"
+            android:text="Hint"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
@@ -242,5 +242,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonsLayout"
         app:layout_constraintVertical_bias="1.0" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
