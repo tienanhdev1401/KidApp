@@ -24,10 +24,13 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
+import com.example.kidapp.ViewModel.UserViewModel;
+import com.example.kidapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -99,31 +102,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("first", "Ada");
-        user.put("last", "Lovelace");
-        user.put("born", 1815);
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.getAllUsers().observe(this, users -> {
+            if (users != null && !users.isEmpty()) {
+                for (User user : users) {
+                    Log.d("USER", "User: " + user.getName()+" "+user.getEmail()+" "+user.getPassword());
+                }
+            } else {
+                Log.d("USER", "No users found.");
+            }
+        });
 
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-// Add a new document with a generated ID
-        db.collection("users")
-                .add(user)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                        Toast.makeText(MainActivity.this, "Ket noi thanh cong", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(MainActivity.this, "Ket noi that bai", Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void initViews() {
