@@ -1,13 +1,17 @@
 package com.example.kidapp.Activity;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -20,11 +24,18 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
+import com.example.kidapp.ViewModel.UserViewModel;
+import com.example.kidapp.models.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +100,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.getAllUsers().observe(this, users -> {
+            if (users != null && !users.isEmpty()) {
+                for (User user : users) {
+                    Log.d("USER", "User: " + user.getName()+" "+user.getEmail()+" "+user.getPassword());
+                }
+            } else {
+                Log.d("USER", "No users found.");
+            }
+        });
+
+
+
     }
 
     private void initViews() {
