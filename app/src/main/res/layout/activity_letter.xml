@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:background="#FFFFFF"
-    tools:context=".MainActivity">
+    tools:context=".Activity.MainActivity">
 
     <!-- Left Layout - Image and Letter Matching Area -->
     <LinearLayout

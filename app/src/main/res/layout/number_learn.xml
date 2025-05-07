@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/kids_background"
-    tools:context=".NumberLearnActivity">
+    tools:context=".Activity.NumberLearnActivity">
 
     <!-- Header Section with rounded background -->
     <androidx.cardview.widget.CardView
@@ -27,12 +27,12 @@
 
             <ImageButton
                 android:id="@+id/btn_back"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Back button"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_back" />
+                android:src="@drawable/ic_back" />
 
             <TextView
                 android:id="@+id/tvTitle"

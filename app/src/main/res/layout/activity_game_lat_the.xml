@@ -5,20 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFAF5"
-    tools:context=".GameLatTheActivity">
+    tools:context=".Activity.GameLatTheActivity">
 
     <!-- Header -->
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btn_Back"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/tvLevel"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Back button"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_arrow_back"
+        android:src="@drawable/ic_back"
         app:layout_constraintEnd_toStartOf="@+id/tvTitle"
         app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toStartOf="parent"
