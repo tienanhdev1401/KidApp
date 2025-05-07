@@ -2,9 +2,644 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StoryActivity">
+    android:id="@+id/main"
+    android:background="#E6F4F1">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Stories"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:fontFamily="@font/kids_font"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Main Content - ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Featured Stories Carousel -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="16dp">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <me.relex.circleindicator.CircleIndicator3
+                    android:id="@+id/indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/viewPager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:ci_drawable="@drawable/circle_indicator_selected"
+                    app:ci_drawable_unselected="@drawable/circle_indicator_unselected"
+                    app:ci_height="8dp"
+                    app:ci_width="8dp"
+                    app:ci_margin="4dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Categories Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Categories"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Categories Horizontal Scroll -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Category 1 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#4DB6AC">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/animals_icon"
+                                android:contentDescription="Animal Stories" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Animals"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 2 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#26A69A">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/fairy_tale_icon"
+                                android:contentDescription="Fairy Tales" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Fairy Tales"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 3 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#00897B">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ethics"
+                                android:contentDescription="Moral Stories" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Moral Stories"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 4 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#00796B">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/adventure"
+                                android:contentDescription="Adventure Stories" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Adventure"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Popular Stories Section Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Popular Stories"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="More"
+                    android:textColor="#009688"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Story List Items -->
+            <!-- Story 1 -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/story1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="90dp"
+                        android:layout_height="60dp"
+                        app:cardCornerRadius="8dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/story_tortoise_hare"
+                            android:contentDescription="Story thumbnail" />
+                    </androidx.cardview.widget.CardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="The Tortoise and the Hare"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5 min • Aesop's Fables"
+                            android:textColor="#AAAAAA"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/detail_music_play"
+                        android:tint="#009688"
+                        android:contentDescription="Play story" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Story 2 -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="90dp"
+                        android:layout_height="60dp"
+                        app:cardCornerRadius="8dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/the_lion_and_the_mouse"
+                            android:contentDescription="Story thumbnail" />
+                    </androidx.cardview.widget.CardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="The Lion and the Mouse"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4 min • Aesop's Fables"
+                            android:textColor="#AAAAAA"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/detail_music_play"
+                        android:tint="#009688"
+                        android:contentDescription="Play story" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Story 3 -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="90dp"
+                        android:layout_height="60dp"
+                        app:cardCornerRadius="8dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/the_ant_and_the_grasshopper"
+                            android:contentDescription="Story thumbnail" />
+                    </androidx.cardview.widget.CardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="The Ant and the Grasshopper"
+                            android:textColor="#000000"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6 min • Aesop's Fables"
+                            android:textColor="#AAAAAA"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/detail_music_play"
+                        android:tint="#009688"
+                        android:contentDescription="Play story" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- New Stories Section Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="New Stories"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="More"
+                    android:textColor="#009688"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- New Stories Grid (2 columns) -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2">
+
+                <!-- New Story 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:paddingTop="35dp"
+                            android:src="@drawable/cinderella"
+                            android:contentDescription="Cinderella" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Cinderella"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- New Story 2 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/story_jungle_book"
+                            android:contentDescription="The Jungle Book" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="The Jungle Book"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- New Story 3 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/pinocchio"
+                            android:contentDescription="Pinocchio" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Pinocchio"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- New Story 4 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/story_three_little_pigs"
+                            android:contentDescription="Three Little Pigs" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Three Little Pigs"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </GridLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Now Playing Story Bar -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#009688"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/notification_pause"
+                android:contentDescription="Pause" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="The Tortoise and the Hare"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2:14 / 5:00"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/up_arrow"
+                android:contentDescription="Expand player" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
