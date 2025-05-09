@@ -27,8 +27,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.kidapp.DB.FirebaseHelpers;
 import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
+import com.example.kidapp.ViewModel.MusicCategoryViewModel;
 import com.example.kidapp.ViewModel.UserViewModel;
 import com.example.kidapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -113,8 +115,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+//        FirebaseHelpers firebaseHelpers = new FirebaseHelpers();
+//        firebaseHelpers.createSampleMusicCategory();
 
 
+        MusicCategoryViewModel musicCategoryViewModel = new ViewModelProvider(this).get(MusicCategoryViewModel.class);
+        musicCategoryViewModel.getAllMusicCategories().observe(this, musicCategories -> {
+            if (musicCategories != null && !musicCategories.isEmpty()) {
+                for (com.example.kidapp.models.MusicCategory musicCategory : musicCategories) {
+                    Log.d(TAG, "Music Category: " + musicCategory.getCategoryName() + musicCategory.getCategoryId());
+                }
+                } else {
+                Log.d(TAG, "No music categories found.");
+            }
+        });
     }
 
     private void initViews() {
