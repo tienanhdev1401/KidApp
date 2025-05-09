@@ -60,6 +60,7 @@
         <activity android:name=".Activity.MathQuizActivity" />
         <activity android:name=".Activity.ProfileDetailActivity" />
         <activity android:name=".Activity.FavoriteActivity" />
+        <activity android:name=".Activity.LevelListActivity" />
 
         <service
             android:name=".Service.MusicService"

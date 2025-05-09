@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(btnDoanAnh);
 
         btnDoanAnh.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
+            startActivity(new Intent(MainActivity.this, LevelListActivity.class));
             dialog.dismiss();
         });
 
