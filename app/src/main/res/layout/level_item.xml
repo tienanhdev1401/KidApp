@@ -1,0 +1,54 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="72dp"
+    android:layout_height="80dp"
+    android:background="@drawable/bg_level_item_orange"
+    android:layout_margin="8dp">
+
+    <TextView
+        android:id="@+id/tvLevelNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:shadowColor="#80000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="4"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp">
+        <ImageView
+            android:id="@+id/star1"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_star_yellow"/>
+        <ImageView
+            android:id="@+id/star2"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_star_yellow"/>
+        <ImageView
+            android:id="@+id/star3"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_star_yellow"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivLock"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_lock"
+        android:layout_gravity="center"
+        android:layout_marginTop="-48dp"
+        android:visibility="gone"
+        android:alpha="0.7"/>
+</LinearLayout> 
