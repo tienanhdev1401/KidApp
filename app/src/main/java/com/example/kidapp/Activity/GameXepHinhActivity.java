@@ -1,10 +1,13 @@
 package com.example.kidapp.Activity;
 
+import static android.content.ContentValues.TAG;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +20,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.kidapp.R;
 
 import java.util.ArrayList;
@@ -28,10 +36,11 @@ public class GameXepHinhActivity extends AppCompatActivity {
 
     private static final int COLUMNS = 3;
     private static final int ROWS = 3;
-    private static final int EMPTY_TILE = ROWS * COLUMNS - 1; // The last tile (8) is empty
+    private static final int EMPTY_TILE = ROWS * COLUMNS - 1;
 
     private GridLayout puzzleGrid;
     private TextView timerTextView;
+    private TextView puzzleNameTextView;
     private ImageView previewImageView;
     private Button newGameButton, hintButton;
 
@@ -49,18 +58,37 @@ public class GameXepHinhActivity extends AppCompatActivity {
 
     private int emptyTileRow;
     private int emptyTileCol;
+    
+    private String puzzleId;
+    private String puzzleUrl;
+    private String puzzleName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_xep_hinh);
 
+        // Get puzzle info from intent
+        puzzleId = getIntent().getStringExtra("PUZZLE_ID");
+        puzzleUrl = getIntent().getStringExtra("PUZZLE_URL");
+        puzzleName = getIntent().getStringExtra("PUZZLE_NAME");
+        if ( puzzleUrl == null) {
+            puzzleId = "default";
+            puzzleUrl = "";
+        }
+
         // Initialize views
         puzzleGrid = findViewById(R.id.puzzleGrid);
         timerTextView = findViewById(R.id.timerTextView);
+        puzzleNameTextView = findViewById(R.id.puzzleNameTextView);
         previewImageView = findViewById(R.id.previewImageView);
         newGameButton = findViewById(R.id.newGameButton);
         hintButton = findViewById(R.id.hintButton);
+        
+        // Set puzzle name
+        if (puzzleName != null && !puzzleName.isEmpty()) {
+            puzzleNameTextView.setText(puzzleName);
+        }
 
         // Setup timer
         timerHandler = new Handler();
@@ -70,7 +98,7 @@ public class GameXepHinhActivity extends AppCompatActivity {
                 seconds++;
                 int minutes = seconds / 60;
                 int secs = seconds % 60;
-                timerTextView.setText(String.format(Locale.getDefault(), "Timer: %02d:%02d", minutes, secs));
+                timerTextView.setText(String.format(Locale.getDefault(), "Thời gian: %02d:%02d", minutes, secs));
                 timerHandler.postDelayed(this, 1000);
             }
         };
@@ -79,23 +107,52 @@ public class GameXepHinhActivity extends AppCompatActivity {
         newGameButton.setOnClickListener(v -> startNewGame());
         hintButton.setOnClickListener(v -> showHint());
 
-        // Initialize game - wait for layout to be drawn first
-        puzzleGrid.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                puzzleGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                initializePuzzle();
-                startNewGame();
-            }
-        });
-        ImageView bntBack = findViewById(R.id.btn_Back);
-        bntBack.setOnClickListener(v-> finish());
-
+        // Load image from URL or local resource
+        if (puzzleUrl != null && !puzzleUrl.isEmpty()) {
+            // Load from URL
+            loadImageFromUrl(puzzleUrl);
+        } else {
+            // Wait for layout to be drawn first for default image
+            puzzleGrid.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    puzzleGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    initializePuzzle();
+                    startNewGame();
+                }
+            });
+        }
+        
+        ImageView btnBack = findViewById(R.id.btn_Back);
+        btnBack.setOnClickListener(v-> finish());
+    }
+    
+    private void loadImageFromUrl(String imageUrl) {
+        Glide.with(this)
+            .asBitmap()
+            .load(imageUrl)
+            .apply(new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop())
+            .into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                    originalImage = resource;
+                    previewImageView.setImageBitmap(originalImage);
+                    
+                    // Initialize puzzle with the loaded image
+                    initializePuzzle();
+                    startNewGame();
+                }
+            });
     }
 
     private void initializePuzzle() {
-        // Load and setup the image
-        originalImage = BitmapFactory.decodeResource(getResources(), R.drawable.puzzle_image);
+        // Use default image if originalImage is still null
+        if (originalImage == null) {
+            originalImage = BitmapFactory.decodeResource(getResources(), R.drawable.puzzle_image);
+        }
+        
         previewImageView.setImageBitmap(originalImage);
 
         // Initialize arrays

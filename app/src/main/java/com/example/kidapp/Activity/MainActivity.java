@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(btnPuzzle);
 
         btnPuzzle.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, GameXepHinhActivity.class));
+            startActivity(new Intent(MainActivity.this, PuzzleSelectionActivity.class));
             dialog.dismiss();
         });
 
@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_story) {
             startActivity(new Intent(MainActivity.this, StoryActivity.class));
         } else if (itemId == R.id.nav_puzzle_game) {
-            startActivity(new Intent(MainActivity.this, GameXepHinhActivity.class));
+            startActivity(new Intent(MainActivity.this, PuzzleSelectionActivity.class));
         } else if (itemId == R.id.nav_card_flipping_game) {
             startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
         } else if (itemId == R.id.nav_word_guessing_game) {
@@ -511,8 +511,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Đóng Drawer sau khi xử lý
-
-        return false;
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 

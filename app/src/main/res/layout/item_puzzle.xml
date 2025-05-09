@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="220dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp"
+    android:foreground="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/puzzleImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="top"
+                android:background="@drawable/top_gradient" />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:src="@drawable/ic_puzzle_piece"
+                android:alpha="0.7" />
+
+            <ProgressBar
+                android:id="@+id/imageLoadingProgressBar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="#FF4081" />
+                
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bottom_gradient" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bottom_bg"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/puzzleNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kids_font"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="Ảnh Puzzle"
+                android:textColor="#673AB7"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/playButton"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/kids_font"
+                android:text="Chơi Ngay"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:drawableEnd="@drawable/ic_play"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center"
+                android:stateListAnimator="@drawable/button_state_list" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView> 

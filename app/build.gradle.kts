@@ -57,7 +57,7 @@ dependencies {
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation ("me.relex:circleindicator:2.1.6")
     implementation("com.squareup.okio:okio:3.6.0")
-    implementation ("com.airbnb.android:lottie:6.6.4")
+    implementation ("com.airbnb.android:lottie:6.1.0")
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-firestore:24.9.1")
