@@ -62,7 +62,8 @@
         <service
             android:name=".Service.MusicService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            tools:ignore="ForegroundServicePermission,Instantiatable"/>
     </application>
 
 </manifest>

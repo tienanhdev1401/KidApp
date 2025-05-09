@@ -7,42 +7,62 @@
     android:id="@+id/main"
     android:background="#FFFBEF">
 
-    <!-- Top Bar -->
-    <LinearLayout
-        android:id="@+id/topBar"
+    <!-- Top Bar with Fun Design -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/topBarCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="12dp"
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="#FFFCE1"
+        app:cardElevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/backButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_back"
-            android:contentDescription="Back" />
-
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Music"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:fontFamily="@font/kids_font"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_back"
+                android:padding="6dp"
+                android:contentDescription="Back" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Kids Music"
+                android:textColor="#FF6F00"
+                android:textSize="24sp"
+                android:fontFamily="@font/kids_font"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/searchButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/search"
+                android:padding="6dp"
+                android:contentDescription="Search" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <!-- Main Content - ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBar">
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@id/playerCard"
+        app:layout_constraintTop_toBottomOf="@id/topBarCard">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,34 +70,232 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Banner Carousel -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/viewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <me.relex.circleindicator.CircleIndicator3
+                        android:id="@+id/indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toBottomOf="@id/viewPager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:ci_drawable="@drawable/circle_indicator_selected"
+                        app:ci_drawable_unselected="@drawable/circle_indicator_unselected"
+                        app:ci_height="10dp"
+                        app:ci_width="10dp"
+                        app:ci_margin="5dp"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Categories Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Music Categories"
+                android:textColor="#FF6F00"
+                android:textSize="20sp"
+                android:fontFamily="@font/kids_font"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"/>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
                 android:layout_marginBottom="16dp">
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewPager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
-
-                <me.relex.circleindicator.CircleIndicator3
-                    android:id="@+id/indicator"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@id/viewPager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:ci_drawable="@drawable/circle_indicator_selected"
-                    app:ci_drawable_unselected="@drawable/circle_indicator_unselected"
-                    app:ci_height="8dp"
-                    app:ci_width="8dp"
-                    app:ci_margin="4dp"/>
+                    android:orientation="horizontal">
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <!-- Category 1 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardBackgroundColor="#FFECB3"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/lullaby"
+                                android:contentDescription="Lullabies" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Lullabies"
+                                android:textColor="#FF6F00"
+                                android:textSize="14sp"
+                                android:fontFamily="@font/kids_font"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 2 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardBackgroundColor="#FFCCBC"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/rose"
+                                android:contentDescription="Sing Along" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sing Along"
+                                android:textColor="#FF6F00"
+                                android:textSize="14sp"
+                                android:fontFamily="@font/kids_font"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 3 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardBackgroundColor="#DCEDC8"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/alphabet"
+                                android:contentDescription="Learning" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Learning"
+                                android:textColor="#FF6F00"
+                                android:textSize="14sp"
+                                android:fontFamily="@font/kids_font"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 4 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardBackgroundColor="#B3E5FC"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/animals_icon"
+                                android:contentDescription="Dance" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dance"
+                                android:textColor="#FF6F00"
+                                android:textSize="14sp"
+                                android:fontFamily="@font/kids_font"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category 5 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardBackgroundColor="#E1BEE7"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/story"
+                                android:contentDescription="Stories" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Stories"
+                                android:textColor="#FF6F00"
+                                android:textSize="14sp"
+                                android:fontFamily="@font/kids_font"
+                                android:textStyle="bold"
+                                android:layout_marginTop="8dp"/>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- Popular Section Header -->
             <LinearLayout
+                android:id="@+id/popular_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -88,255 +306,497 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Popular"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
+                    android:text="Popular Songs"
+                    android:textColor="#FF6F00"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/kids_font"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="More"
-                    android:textColor="#AAAAAA"
-                    android:textSize="14sp" />
+                    android:text="See All"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/kids_font"
+                    android:padding="8dp"
+                    android:background="@drawable/rounded_button"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Music List Items -->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/popular_music_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/popular_layout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="8dp"
+                android:clipToPadding="false"/>
+
+
             <!-- Item 1 -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/item1"
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/item1"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="12dp"-->
+<!--                app:cardCornerRadius="16dp"-->
+<!--                app:cardElevation="4dp"-->
+<!--                app:cardBackgroundColor="#FFFCE1">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:padding="12dp"-->
+<!--                    android:gravity="center_vertical">-->
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="56dp"-->
+<!--                        android:layout_height="56dp"-->
+<!--                        app:cardCornerRadius="12dp"-->
+<!--                        app:cardBackgroundColor="#FFCC00">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="32dp"-->
+<!--                            android:layout_height="32dp"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:src="@drawable/panda_icon"-->
+<!--                            android:contentDescription="Music icon" />-->
+<!--                    </androidx.cardview.widget.CardView>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_marginStart="16dp"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="In Meinem Herzen"-->
+<!--                            android:textColor="#000000"-->
+<!--                            android:textSize="18sp"-->
+<!--                            android:fontFamily="@font/kids_font"-->
+<!--                            android:textStyle="bold" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Francis, Husak"-->
+<!--                            android:textColor="#757575"-->
+<!--                            android:textSize="14sp" />-->
+<!--                    </LinearLayout>-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="36dp"-->
+<!--                        android:layout_height="36dp"-->
+<!--                        android:src="@drawable/love"-->
+<!--                        android:tint="#FF5252"-->
+<!--                        android:padding="4dp"-->
+<!--                        android:contentDescription="Favorite" />-->
+<!--                </LinearLayout>-->
+<!--            </androidx.cardview.widget.CardView>-->
+
+<!--            &lt;!&ndash; Item 2 &ndash;&gt;-->
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="12dp"-->
+<!--                app:cardCornerRadius="16dp"-->
+<!--                app:cardElevation="4dp"-->
+<!--                app:cardBackgroundColor="#FFFCE1">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:padding="12dp"-->
+<!--                    android:gravity="center_vertical">-->
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="56dp"-->
+<!--                        android:layout_height="56dp"-->
+<!--                        app:cardCornerRadius="12dp"-->
+<!--                        app:cardBackgroundColor="#8CDBFB">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="32dp"-->
+<!--                            android:layout_height="32dp"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:src="@drawable/elephant_icon"-->
+<!--                            android:contentDescription="Music icon" />-->
+<!--                    </androidx.cardview.widget.CardView>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_marginStart="16dp"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Under Southern Skies"-->
+<!--                            android:textColor="#000000"-->
+<!--                            android:textSize="18sp"-->
+<!--                            android:fontFamily="@font/kids_font"-->
+<!--                            android:textStyle="bold" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Adacen"-->
+<!--                            android:textColor="#757575"-->
+<!--                            android:textSize="14sp" />-->
+<!--                    </LinearLayout>-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="36dp"-->
+<!--                        android:layout_height="36dp"-->
+<!--                        android:src="@drawable/non_love"-->
+<!--                        android:padding="4dp"-->
+<!--                        android:contentDescription="Not favorite" />-->
+<!--                </LinearLayout>-->
+<!--            </androidx.cardview.widget.CardView>-->
+
+<!--            &lt;!&ndash; Item 3 &ndash;&gt;-->
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="12dp"-->
+<!--                app:cardCornerRadius="16dp"-->
+<!--                app:cardElevation="4dp"-->
+<!--                app:cardBackgroundColor="#FFFCE1">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:padding="12dp"-->
+<!--                    android:gravity="center_vertical">-->
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="56dp"-->
+<!--                        android:layout_height="56dp"-->
+<!--                        app:cardCornerRadius="12dp"-->
+<!--                        app:cardBackgroundColor="#AEDD94">-->
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="32dp"-->
+<!--                            android:layout_height="32dp"-->
+<!--                            android:layout_gravity="center"-->
+<!--                            android:src="@drawable/sheep_icon"-->
+<!--                            android:contentDescription="Music icon" />-->
+<!--                    </androidx.cardview.widget.CardView>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_marginStart="16dp"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Ein Lama in Yokoham"-->
+<!--                            android:textColor="#000000"-->
+<!--                            android:textSize="18sp"-->
+<!--                            android:fontFamily="@font/kids_font"-->
+<!--                            android:textStyle="bold" />-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Rosita Bissenbach"-->
+<!--                            android:textColor="#757575"-->
+<!--                            android:textSize="14sp" />-->
+<!--                    </LinearLayout>-->
+
+<!--                    <ImageView-->
+<!--                        android:layout_width="36dp"-->
+<!--                        android:layout_height="36dp"-->
+<!--                        android:src="@drawable/non_love"-->
+<!--                        android:padding="4dp"-->
+<!--                        android:contentDescription="Not favorite" />-->
+<!--                </LinearLayout>-->
+<!--            </androidx.cardview.widget.CardView>-->
+
+            <!-- Recommended For You Section -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
+                android:text="Just For You"
+                android:textColor="#FF6F00"
+                android:textSize="20sp"
+                android:fontFamily="@font/kids_font"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:gravity="center_vertical">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardBackgroundColor="#FFCC00">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/panda_icon"
-                            android:contentDescription="Music icon" />
-                    </androidx.cardview.widget.CardView>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="In Meinem Herzen"
-                            android:textColor="#000000"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Francis, Husak"
-                            android:textColor="#AAAAAA"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/love"
-                        android:tint="#FF9800"
-                        android:contentDescription="Favorite" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Item 2 -->
-            <androidx.cardview.widget.CardView
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
+                android:scrollbars="none"
+                android:layout_marginBottom="24dp">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:gravity="center_vertical">
+                    android:orientation="horizontal">
 
+                    <!-- Recommended Item 1 -->
                     <androidx.cardview.widget.CardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardBackgroundColor="#FFCC00">
+                        android:layout_width="150dp"
+                        android:layout_height="180dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/elephant_icon"
-                            android:contentDescription="Music icon" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/abc_song"
+                                android:backgroundTint="@color/transparent"
+                                android:contentDescription="Song thumbnail" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:gravity="center_vertical"
+                                android:padding="8dp"
+                                android:background="#FFFCE1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ABC Song"
+                                    android:textColor="#000000"
+                                    android:textSize="16sp"
+                                    android:fontFamily="@font/kids_font"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Learning"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Under Southern Skies"
-                            android:textColor="#000000"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Adacen"
-                            android:textColor="#AAAAAA"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/non_love"
-                        android:contentDescription="Not favorite" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Item 3 -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:gravity="center_vertical">
-
+                    <!-- Recommended Item 2 -->
                     <androidx.cardview.widget.CardView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardBackgroundColor="#FFCC00">
+                        android:layout_width="150dp"
+                        android:layout_height="180dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/sheep_icon"
-                            android:contentDescription="Music icon" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/twinkle_star"
+                                android:contentDescription="Song thumbnail" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:gravity="center_vertical"
+                                android:padding="8dp"
+                                android:background="#FFFCE1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Twinkle Star"
+                                    android:textColor="#000000"
+                                    android:textSize="16sp"
+                                    android:fontFamily="@font/kids_font"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Lullabies"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:orientation="vertical">
+                    <!-- Recommended Item 3 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="150dp"
+                        android:layout_height="180dp"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ein Lama in Yokoham"
-                            android:textColor="#000000"
-                            android:textSize="16sp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Rosita Bissenbach"
-                            android:textColor="#AAAAAA"
-                            android:textSize="14sp" />
-                    </LinearLayout>
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="120dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/wheels_on_bus"
+                                android:contentDescription="Song thumbnail" />
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/non_love"
-                        android:contentDescription="Not favorite" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:gravity="center_vertical"
+                                android:padding="8dp"
+                                android:background="#FFFCE1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Wheels on Bus"
+                                    android:textColor="#000000"
+                                    android:textSize="16sp"
+                                    android:fontFamily="@font/kids_font"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Sing Along"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-
-
+            </HorizontalScrollView>
         </LinearLayout>
     </ScrollView>
 
-    <!-- Now Playing Bar -->
+    <!-- Enhanced Now Playing Bar -->
     <androidx.cardview.widget.CardView
+        android:id="@+id/playerCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="24dp"
         app:cardBackgroundColor="#FFCC00"
-        app:cardElevation="4dp"
+        app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:gravity="center_vertical">
+            android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/notification_pause"
-                android:contentDescription="Pause" />
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/songProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:progress="35"
+                android:progressTint="#FFFFFF" />
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
 
-                <TextView
+                <ImageView
+                    android:id="@+id/playPauseButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/notification_pause"
+                    android:padding="8dp"
+                    android:contentDescription="Pause" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/songTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="In Meinem Herzen"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/kids_font"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/artistName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Francis, Husak"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="In Meinem Herzen"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Francis, Husak"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    <ImageView
+                        android:id="@+id/previousButton"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/rewind_button"
+                        android:tint="@color/white"
+                        android:padding="6dp"
+                        android:contentDescription="Previous" />
+
+                    <ImageView
+                        android:id="@+id/nextButton"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/next_button"
+                        android:tint="@color/white"
+                        android:padding="6dp"
+                        android:contentDescription="Next" />
+
+                    <ImageView
+                        android:id="@+id/expandButton"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/up_arrow"
+                        android:padding="6dp"
+                        android:contentDescription="Expand player" />
+                </LinearLayout>
             </LinearLayout>
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/up_arrow"
-                android:contentDescription="Expand player" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
