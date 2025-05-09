@@ -34,6 +34,7 @@ import com.example.kidapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -69,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageButton menuButton;
     private NavigationView navigationView;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mAuth = FirebaseAuth.getInstance();
 
         // Tạo toggle button cho navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -508,6 +513,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
         } else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+        }
+        else if (itemId == R.id.nav_logout) {
+            mAuth.signOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
 
         // Đóng Drawer sau khi xử lý
