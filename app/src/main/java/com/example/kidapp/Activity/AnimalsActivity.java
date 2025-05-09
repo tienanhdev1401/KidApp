@@ -1,5 +1,6 @@
 package com.example.kidapp.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -11,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.kidapp.Adapter.AnimalPagerAdapter;
 import com.example.kidapp.R;
 import com.example.kidapp.models.Animal;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ public class AnimalsActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
     private List<Animal> animalsList;
+    private int currentAnimalPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +48,13 @@ public class AnimalsActivity extends AppCompatActivity {
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                currentAnimalPosition = position;
                 updateIndicators(position);
             }
         });
 
         // Thiết lập trang đầu tiên
         updateIndicators(0);
-
 
         // Nút quay lại
         ImageView backButton = findViewById(R.id.btn_back);
@@ -61,6 +64,22 @@ public class AnimalsActivity extends AppCompatActivity {
                 finish();
             }
         });
+        
+        // AR Button
+        FloatingActionButton arButton = findViewById(R.id.btn_ar);
+        arButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openArActivity();
+            }
+        });
+    }
+    
+    private void openArActivity() {
+        Intent intent = new Intent(this, ArAnimalsActivity.class);
+        // Pass the current animal name to AR activity
+        intent.putExtra("ANIMAL_NAME", animalsList.get(currentAnimalPosition).getName().toLowerCase());
+        startActivity(intent);
     }
 
     private void updateIndicators(int selectedPosition) {
