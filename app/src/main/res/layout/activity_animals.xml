@@ -62,6 +62,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/instruction_text" />
 
+    <!-- AR Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_ar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="AR View"
+        android:src="@drawable/ic_ar"
+        app:backgroundTint="#4CAF50"
+        app:layout_constraintBottom_toTopOf="@id/indicator_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="#FFFFFF" />
+
     <!-- Icon Indicators -->
     <LinearLayout
         android:id="@+id/indicator_layout"
