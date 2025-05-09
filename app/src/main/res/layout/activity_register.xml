@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -16,45 +17,46 @@
         android:src="@drawable/kidszoo"
         android:layout_marginBottom="10dp"/>
 
-    <TextView
+    <EditText
+        android:id="@+id/usernameInput"
         android:layout_width="320dp"
         android:layout_height="60dp"
         android:background="@drawable/rounded_textview"
-        android:text="Username"
+        android:hint="Email"
         android:textSize="18sp"
         android:textColor="#888888"
         android:textStyle="bold"
         android:paddingLeft="20dp"
+        android:inputType="textEmailAddress"
         android:gravity="center_vertical"/>
 
-    <TextView
-        android:layout_marginTop="50px"
+    <EditText
+        android:id="@+id/passwordInput"
+        android:layout_marginTop="15dp"
         android:layout_width="320dp"
         android:layout_height="60dp"
         android:background="@drawable/rounded_textview"
-        android:text="Password"
+        android:hint="Password"
         android:textSize="18sp"
         android:textColor="#888888"
         android:textStyle="bold"
         android:paddingLeft="20dp"
+        android:inputType="textPassword"
         android:gravity="center_vertical"/>
 
-    <!-- Forgot Password Link -->
-
-    <!-- Login Button -->
-
-    <!-- Divider -->
-    <TextView
+    <EditText
+        android:id="@+id/repeatPasswordInput"
         android:layout_width="320dp"
         android:layout_height="60dp"
-        android:layout_marginTop="50px"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/rounded_textview"
         android:gravity="center_vertical"
-        android:layout_marginBottom="16dp"
         android:paddingLeft="20dp"
-        android:text="Password"
+        android:hint="Repeat Password"
         android:textColor="#888888"
         android:textSize="18sp"
+        android:inputType="textPassword"
         android:textStyle="bold" />
 
     <Button

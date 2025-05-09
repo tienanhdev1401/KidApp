@@ -66,6 +66,7 @@
         <activity android:name=".Activity.ShapesGameActivity" />
         <activity android:name=".Activity.LetterActivity" />
         <activity android:name=".Activity.LoginActivity" />
+        <activity android:name=".Activity.RegisterActivity" />
         <activity android:name=".Activity.GameLatTheActivity" />
         <activity android:name=".Activity.GameXepHinhActivity" />
         <activity android:name=".Activity.GameDoanChuActivity" />

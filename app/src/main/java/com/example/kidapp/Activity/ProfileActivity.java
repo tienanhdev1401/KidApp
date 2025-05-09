@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.kidapp.Adapter.SkillAdapter;
 import com.example.kidapp.R;
@@ -27,7 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         // Nút quay lại
-        ImageButton backButton = findViewById(R.id.back_button);
+        ImageView backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
 
         // Nút cài đặt
