@@ -24,6 +24,10 @@ public class MusicCategoryViewModel extends AndroidViewModel {
     public LiveData<List<MusicCategory>> getAllMusicCategories() {
         return musicCategoryRepository.getAllMusicCategories();
     }
+
+    public LiveData<List<Music>> getMusicByCategoryName(String categoryName) {
+        return musicCategoryRepository.getMusicByCategoryName(categoryName);
+    }
 }
 
 

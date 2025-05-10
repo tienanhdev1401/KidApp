@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
@@ -23,72 +22,114 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.kidapp.Adapter.ImageSliderAdapter;
 import com.example.kidapp.Adapter.MusicAdapter;
 import com.example.kidapp.R;
 import com.example.kidapp.Service.MusicService;
+import com.example.kidapp.ViewModel.MusicCategoryViewModel;
 import com.example.kidapp.ViewModel.MusicViewModel;
 import com.example.kidapp.models.Music;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import me.relex.circleindicator.CircleIndicator3;
+public class CategorySongsActivity extends AppCompatActivity {
 
-public class MusicActivity extends AppCompatActivity {
-
-    private MusicAdapter musicAdapter;
-    private List<Music> musicList = new ArrayList<>();
-
-    private MusicViewModel musicViewModel;
-    private CardView playerCard;
-    private ImageView playPauseButton, previousButton, nextButton, expandButton;
-    private TextView songTitle, artistName;
+    private ImageView backBtn, playPauseBtn, nextBtn, previousBtn, expandBtn;
+    private String categoryName;
+    private TextView categoryTitle, songTitle, artistName;
     private MusicService musicService;
+    private List<Music> musicList = new ArrayList<>();
+    private MusicAdapter musicAdapter;
     private ServiceConnection serviceConnection;
-    private ImageView btnBack;
+    private MusicViewModel musicViewModel;
+    private MusicCategoryViewModel musicCategoryViewModel;
+    private CardView playerCard;
+    private RecyclerView recyclerViewMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_music);
-        setupImageSlider();
-        setView();
-
-        musicViewModel = new ViewModelProvider(this).get(MusicViewModel.class);
-        btnBack.setOnClickListener(v -> finish());
-        loadMusicFromDB();
-        loadPopularMusics();
-
+        setContentView(R.layout.activity_category_songs);
+        setUI();
+        loadMusicsFromDb();
+        setBtnControl();
         Intent serviceIntent = new Intent(this, MusicService.class);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
 
-        // Xử lý sự kiện nút
-        setupPlayerControls();
+    private void  loadMusicsFromDb() {
+        musicCategoryViewModel.getMusicByCategoryName(categoryName).observe(this, musics -> {
+            if (musics != null && !musics.isEmpty()) {
+                // Only take up to 3 items
+                musicList.clear();
+                musicList.addAll(musics);
+                musicAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void setUI() {
+        backBtn = findViewById(R.id.categoryBackButton);
+        playPauseBtn = findViewById(R.id.categoryPlayPauseButton);
+        nextBtn = findViewById(R.id.categoryNextButton);
+        previousBtn = findViewById(R.id.categoryPreviousButton);
+        expandBtn = findViewById(R.id.categoryExpandButton);
+        categoryTitle = findViewById(R.id.categoryTitleText);
+        songTitle = findViewById(R.id.categorySongTitle);
+        artistName = findViewById(R.id.categoryArtistName);
+        playerCard = findViewById(R.id.categoryPlayerCard);
+        recyclerViewMusic = findViewById(R.id.categoryRecyclerView);
+        musicViewModel = new ViewModelProvider(this).get(MusicViewModel.class);
+        musicCategoryViewModel = new ViewModelProvider(this).get(MusicCategoryViewModel.class);
+
+        categoryName = getIntent().getStringExtra("categoryName");
+        categoryTitle.setText(categoryName);
+
+        LinearLayoutManager newItemsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewMusic.setLayoutManager(newItemsLayoutManager);
+        musicAdapter = new MusicAdapter(this, musicList,this);
+        recyclerViewMusic.setAdapter(musicAdapter);
+        recyclerViewMusic.setHasFixedSize(true);
+
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+                musicService = binder.getService();
+
+                // Đăng ký listener trực tiếp từ service
+                musicService.setUpdateListener(new MusicService.MusicUpdateListener() {
+                    @Override
+                    public void onMusicUpdate() {
+                        updatePlayerUI();
+                    }
+                });
+
+                updatePlayerUI();
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                musicService = null;
+            }
+        };
+    }
+
+    public void setBtnControl() {
+        backBtn.setOnClickListener(v -> {
+            finish();
+        });
 
         musicAdapter.setOnItemClickListener((position, music) -> {
-            Log.d("MusicActivity", "Playlist sent: " + musicList.size());
-            Intent intent = new Intent(MusicActivity.this, MusicDetailActivity.class);
+            Intent intent = new Intent(this, MusicDetailActivity.class);
             intent.putParcelableArrayListExtra("playlist", new ArrayList<>(musicList));
             intent.putExtra("musicPosition", position);
             intent.putExtra("music", music);
             startActivity(intent);
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
-
-    private void setupPlayerControls() {
-        // Play/Pause
-        playPauseButton.setOnClickListener(v -> {
+        playPauseBtn.setOnClickListener(v -> {
             if (musicService != null) {
                 if (musicService.isPlaying()) {
                     musicService.pauseMusic();
@@ -101,21 +142,21 @@ public class MusicActivity extends AppCompatActivity {
         });
 
         // Previous
-        previousButton.setOnClickListener(v -> {
+        previousBtn.setOnClickListener(v -> {
             if(musicService != null) {
                 musicService.playPrevious();
             }
         });
 
         // Next
-        nextButton.setOnClickListener(v -> {
+        nextBtn.setOnClickListener(v -> {
             if(musicService != null) {
                 musicService.playNext();
             }
         });
 
         // Mở màn hình chi tiết
-        expandButton.setOnClickListener(v -> {
+        expandBtn.setOnClickListener(v -> {
             if (musicService != null) {
                 // Lấy thông tin mới nhất từ Service
                 List<Music> currentPlaylist = musicService.getPlaylist();
@@ -132,7 +173,7 @@ public class MusicActivity extends AppCompatActivity {
                 for (int i = 0; i < currentPlaylist.size(); i++) {
                     Music music = currentPlaylist.get(i);
                     if (music.getMusicUrl() != null && currentMusic.getMusicUrl() != null &&
-                        music.getMusicUrl().equals(currentMusic.getMusicUrl())) {
+                            music.getMusicUrl().equals(currentMusic.getMusicUrl())) {
                         currentPosition = i;
                         break;
                     }
@@ -144,7 +185,7 @@ public class MusicActivity extends AppCompatActivity {
                     currentPosition = musicService.getCurrentPosition();
                 }
 
-                Intent intent = new Intent(MusicActivity.this, MusicDetailActivity.class);
+                Intent intent = new Intent(this, MusicDetailActivity.class);
                 intent.putParcelableArrayListExtra("playlist", new ArrayList<>(currentPlaylist));
                 intent.putExtra("musicPosition", currentPosition);
                 intent.putExtra("music", currentMusic);
@@ -152,29 +193,6 @@ public class MusicActivity extends AppCompatActivity {
                 overridePendingTransition(R.animator.slide_up, 0);
             }
         });
-
-        CardView lullbabyCv = findViewById(R.id.lullaby_cv);
-        CardView singAlongCv = findViewById(R.id.singAlong_cv);
-        CardView learningCv = findViewById(R.id.learning_cv);
-
-        lullbabyCv.setOnClickListener(v -> {
-            Intent intent = new Intent(MusicActivity.this, CategorySongsActivity.class);
-            intent.putExtra("categoryName", "Lullabies");
-            startActivity(intent);
-        });
-
-        singAlongCv.setOnClickListener(v -> {
-            Intent intent = new Intent(MusicActivity.this, CategorySongsActivity.class);
-            intent.putExtra("categoryName", "Sing Along");
-            startActivity(intent);
-        });
-
-        learningCv.setOnClickListener(v -> {
-            Intent intent = new Intent(MusicActivity.this, CategorySongsActivity.class);
-            intent.putExtra("categoryName", "Learning");
-            startActivity(intent);
-        });
-
     }
 
     private void updatePlayerUI() {
@@ -186,7 +204,7 @@ public class MusicActivity extends AppCompatActivity {
                     artistName.setText(currentMusic.getAuthor());
 
                     // Cập nhật nút play/pause
-                    playPauseButton.setImageResource(
+                    playPauseBtn.setImageResource(
                             musicService.isPlaying()
                                     ? R.drawable.notification_pause
                                     : R.drawable.detail_music_play
@@ -226,7 +244,7 @@ public class MusicActivity extends AppCompatActivity {
             // Cập nhật thêm trạng thái phát
             if (musicService != null) {
                 boolean isPlaying = musicService.isPlaying();
-                playPauseButton.setImageResource(
+                playPauseBtn.setImageResource(
                         isPlaying
                                 ? R.drawable.notification_pause
                                 : R.drawable.detail_music_play
@@ -258,103 +276,5 @@ public class MusicActivity extends AppCompatActivity {
         unbindService(serviceConnection);
     }
 
-    private void setView() {
-        // Ánh xạ view
-        playerCard = findViewById(R.id.playerCard);
-        playPauseButton = findViewById(R.id.playPauseButton);
-        previousButton = findViewById(R.id.previousButton);
-        nextButton = findViewById(R.id.nextButton);
-        expandButton = findViewById(R.id.expandButton);
-        songTitle = findViewById(R.id.songTitle);
-        artistName = findViewById(R.id.artistName);
-        btnBack = findViewById(R.id.backButton);
 
-        serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-                musicService = binder.getService();
-
-                // Đăng ký listener trực tiếp từ service
-                musicService.setUpdateListener(new MusicService.MusicUpdateListener() {
-                    @Override
-                    public void onMusicUpdate() {
-                        updatePlayerUI();
-                    }
-                });
-
-                updatePlayerUI();
-            }
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                musicService = null;
-            }
-        };
-    }
-
-    private void loadMusicFromDB() {
-        // Observe and limit to 3 music items
-        musicViewModel.getAllMusics().observe(this, musics -> {
-            if (musics != null && !musics.isEmpty()) {
-                // Only take up to 3 items
-                List<Music> limitedMusics = musics.size() > 3 ? musics.subList(0, 3) : musics;
-                musicList.clear();
-                musicList.addAll(limitedMusics);
-                musicAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-
-    private void loadPopularMusics() {
-        // Khởi tạo danh sách bài hát
-        RecyclerView recyclerViewNewItems = findViewById(R.id.popular_music_view);
-        LinearLayoutManager newItemsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerViewNewItems.setLayoutManager(newItemsLayoutManager);
-        musicAdapter = new MusicAdapter(this, musicList,this);
-        recyclerViewNewItems.setAdapter(musicAdapter);
-        recyclerViewNewItems.setHasFixedSize(true);
-
-
-    }
-
-    private void setupImageSlider() {
-        // Khởi tạo danh sách ảnh
-        List<Integer> sliderImages = Arrays.asList(
-                R.drawable.music_background,
-                R.drawable.music_background2,
-                R.drawable.music_background3
-        );
-
-        // Ánh xạ ViewPager2 và Indicator
-        ViewPager2 viewPager = findViewById(R.id.viewPager);
-        CircleIndicator3 indicator = findViewById(R.id.indicator);
-
-        // Thiết lập Adapter
-        ImageSliderAdapter adapter = new ImageSliderAdapter(this, sliderImages);
-        viewPager.setAdapter(adapter);
-
-        // Liên kết Indicator với ViewPager
-        indicator.setViewPager(viewPager);
-
-
-        // Thêm hiệu ứng chuyển trang
-        viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
-            @Override
-            public void transformPage(@NonNull View page, float position) {
-                page.setAlpha(0.5f);
-                page.setScaleY(0.9f);
-
-                if (position < -1 || position > 1) {
-                    page.setAlpha(0f);
-                } else {
-                    page.setAlpha(1 - Math.abs(position));
-                    page.setScaleY(Math.max(0.9f, 1 - Math.abs(position)));
-                }
-
-            }
-
-
-        });
-    }
 }

@@ -39,8 +39,32 @@ public class MusicCategoryRepository {
 
     }
 
+    public LiveData<List<Music>> getMusicByCategoryName(String categoryName) {
+       // String id;
+        MutableLiveData<List<Music>> liveData = new MutableLiveData<>();
+        db.collection("musicCategory")
+                .whereEqualTo("categoryName", categoryName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        String id = queryDocumentSnapshots.getDocuments().get(0).getId();
+                        Log.d(TAG, "getMusicByCategoryName in repository: " + id);
+                        db.collection("musics")
+                                .whereEqualTo("categoryId", id)
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots1 -> {
+                                    if (!queryDocumentSnapshots1.isEmpty()) {
+                                        List<Music> music = queryDocumentSnapshots1.toObjects(Music.class);
+                                        liveData.setValue(music);
+                                        } else {
+                                        liveData.setValue(null); // If no users found
+                                    }
+                                })
+                                .addOnFailureListener(e -> liveData.setValue(null));
+                                }
 
-
-
+                 });
+        return liveData;
+    }
 
 }
