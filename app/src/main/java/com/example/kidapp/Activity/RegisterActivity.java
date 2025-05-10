@@ -28,7 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private EditText usernameInput, passwordInput, repeatPasswordInput;
+    private EditText usernameInput, displayNameInput, passwordInput, repeatPasswordInput;
     private Button registerButton;
     private TextView signInLink;
 
@@ -51,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Initialize UI elements
         usernameInput = findViewById(R.id.usernameInput);
+        displayNameInput = findViewById(R.id.displayNameInput);  // Added username field
         passwordInput = findViewById(R.id.passwordInput);
         repeatPasswordInput = findViewById(R.id.repeatPasswordInput);
         registerButton = findViewById(R.id.btnLogin); // Using the same ID from your layout
@@ -60,13 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = usernameInput.getText().toString().trim();
+                String email = usernameInput.getText().toString().trim();
+                String username = displayNameInput.getText().toString().trim();  // Get the username
                 String password = passwordInput.getText().toString().trim();
                 String repeatPassword = repeatPasswordInput.getText().toString().trim();
 
-                if (validateForm(username, password, repeatPassword)) {
-                    // Assuming username is email for Firebase Auth
-                    registerUser(username, password);
+                if (validateForm(email, username, password, repeatPassword)) {
+                    // Register with email and password for Firebase Auth
+                    registerUser(email, username, password);
                 }
             }
         });
@@ -83,14 +85,21 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private boolean validateForm(String username, String password, String repeatPassword) {
+    private boolean validateForm(String email, String username, String password, String repeatPassword) {
         boolean valid = true;
 
-        if (TextUtils.isEmpty(username)) {
+        if (TextUtils.isEmpty(email)) {
             usernameInput.setError("Required.");
             valid = false;
         } else {
             usernameInput.setError(null);
+        }
+
+        if (TextUtils.isEmpty(username)) {
+            displayNameInput.setError("Username is required.");
+            valid = false;
+        } else {
+            displayNameInput.setError(null);
         }
 
         if (TextUtils.isEmpty(password)) {
@@ -113,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
         return valid;
     }
 
-    private void registerUser(String email, String password) {
+    private void registerUser(String email, String username, String password) {
         // Show progress indicator if needed
 
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -123,8 +132,8 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.d("RegisterActivity", "createUserWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
 
-                        // Save additional user info to Firestore
-                        saveUserToFirestore(user, email);
+                        // Save additional user info to Firestore including username
+                        saveUserToFirestore(user, email, username);
 
                         // Navigate to Login screen
                         Toast.makeText(RegisterActivity.this, "Registration Successful",
@@ -142,11 +151,12 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserToFirestore(FirebaseUser user, String email) {
+    private void saveUserToFirestore(FirebaseUser user, String email, String username) {
         if (user != null) {
-            // Create user data map
+            // Create user data map with additional username field
             Map<String, Object> userData = new HashMap<>();
             userData.put("email", email);
+            userData.put("username", username);  // Store the username
             userData.put("createdAt", System.currentTimeMillis());
 
             // Add a new document with the user's UID
