@@ -1,17 +1,12 @@
 package com.example.kidapp.Activity;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -31,14 +26,7 @@ import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
 import com.example.kidapp.ViewModel.UserViewModel;
 import com.example.kidapp.models.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -420,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up memory card game button
         ImageView btnCard = dialogView.findViewById(R.id.Imv_card);
         btnCard.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
+            startActivity(new Intent(MainActivity.this, FlipCardLevelListActivity.class));
             dialog.dismiss();
         });
 
@@ -432,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(btnDoanAnh);
 
         btnDoanAnh.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, LevelListActivity.class));
+            startActivity(new Intent(MainActivity.this, GuessWordLevelListActivity.class));
             dialog.dismiss();
         });
 

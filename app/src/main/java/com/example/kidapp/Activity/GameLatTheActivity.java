@@ -13,6 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kidapp.R;
+import com.example.kidapp.models.FlipCard;
+import com.example.kidapp.models.FlipCardLevel;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,22 +40,21 @@ public class GameLatTheActivity extends AppCompatActivity {
     private boolean isProcessing = false;
     private boolean gameActive = false;
 
-    // Game data
-    private final String[] cardTexts = {"Không","Một", "Hai", "Ba", "Bốn", "Năm"};
-    private final int[] cardImages = {
-            R.drawable.number0,
-            R.drawable.number1,
-            R.drawable.number2,
-            R.drawable.number3,
-            R.drawable.number4,
-            R.drawable.number5
-
-    };
+    // Game data from level
+    private FlipCardLevel currentLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_lat_the);
+
+        // Get the level data from intent
+        currentLevel = (FlipCardLevel) getIntent().getSerializableExtra("level");
+        if (currentLevel == null || currentLevel.getCards() == null || currentLevel.getCards().isEmpty()) {
+            Toast.makeText(this, "Level data is missing", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         // Initialize UI elements
         tvScore = findViewById(R.id.tvScore);
@@ -65,6 +67,8 @@ public class GameLatTheActivity extends AppCompatActivity {
 
         // Initialize the game
         initializeGame();
+
+        // Back button
         ImageView btnBack = findViewById(R.id.btn_Back);
         btnBack.setOnClickListener(v -> finish());
     }
@@ -93,12 +97,14 @@ public class GameLatTheActivity extends AppCompatActivity {
 
     private List<CardItem> createCardItems() {
         List<CardItem> items = new ArrayList<>();
+        List<FlipCard> flipCards = currentLevel.getCards();
 
-        // Create pairs of card items (6 pairs = 12 cards)
-        for (int i = 0; i < 6; i++) {
+        // Create pairs of card items
+        for (int i = 0; i < flipCards.size(); i++) {
+            FlipCard flipCard = flipCards.get(i);
             // Create two identical cards for each pair
-            CardItem card1 = new CardItem(cardImages[i], cardTexts[i], i);
-            CardItem card2 = new CardItem(cardImages[i], cardTexts[i], i);
+            CardItem card1 = new CardItem(flipCard.getCardImageUrl(), flipCard.getCardText(), i);
+            CardItem card2 = new CardItem(flipCard.getCardImageUrl(), flipCard.getCardText(), i);
 
             items.add(card1);
             items.add(card2);
@@ -112,6 +118,10 @@ public class GameLatTheActivity extends AppCompatActivity {
         gridCards.removeAllViews();
         cardViews = new ArrayList<>();
 
+        // Calculate number of columns based on card count
+        int columns = (int) Math.ceil(Math.sqrt(cardItems.size()));
+        gridCards.setColumnCount(columns);
+
         // Create card views for each card item
         for (int i = 0; i < cardItems.size(); i++) {
             CardView cardView = new CardView(this);
@@ -124,8 +134,8 @@ public class GameLatTheActivity extends AppCompatActivity {
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = 0;
             params.height = 0;
-            params.columnSpec = GridLayout.spec(i % 3, 1f);
-            params.rowSpec = GridLayout.spec(i / 3, 1f);
+            params.columnSpec = GridLayout.spec(i % columns, 1f);
+            params.rowSpec = GridLayout.spec(i / columns, 1f);
             params.setMargins(8, 8, 8, 8);
 
             cardView.setLayoutParams(params);
@@ -302,18 +312,18 @@ public class GameLatTheActivity extends AppCompatActivity {
 
     // Inner class for card data
     private static class CardItem {
-        private final int imageResource;
+        private final String imageUrl;
         private final String text;
         private final int value;
 
-        public CardItem(int imageResource, String text, int value) {
-            this.imageResource = imageResource;
+        public CardItem(String imageUrl, String text, int value) {
+            this.imageUrl = imageUrl;
             this.text = text;
             this.value = value;
         }
 
-        public int getImageResource() {
-            return imageResource;
+        public String getImageUrl() {
+            return imageUrl;
         }
 
         public String getText() {
@@ -326,13 +336,14 @@ public class GameLatTheActivity extends AppCompatActivity {
     }
 
     // Custom CardView class to represent each card
-    private static class CardView extends androidx.cardview.widget.CardView {
+    private class CardView extends androidx.cardview.widget.CardView {
         private CardItem cardItem;
         private boolean isFlipped = false;
         private boolean isMatched = false;
 
         private View frontView;
         private View backView;
+        private ImageView ivCardImage;
 
         public CardView(GameLatTheActivity context) {
             super(context);
@@ -346,6 +357,7 @@ public class GameLatTheActivity extends AppCompatActivity {
             // Get front and back views
             frontView = cardLayout.findViewById(R.id.cardFront);
             backView = cardLayout.findViewById(R.id.cardBack);
+            ivCardImage = frontView.findViewById(R.id.ivCardImage);
 
             // Initially show back (hidden) view
             frontView.setVisibility(View.GONE);
@@ -362,7 +374,13 @@ public class GameLatTheActivity extends AppCompatActivity {
 
             // Set front view content
             ((TextView) frontView.findViewById(R.id.tvCardText)).setText(item.getText());
-            frontView.findViewById(R.id.ivCardImage).setBackgroundResource(item.getImageResource());
+
+            // Load image from URL using Picasso
+            Picasso.get()
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.no_image)
+                    .error(R.drawable.no_image)
+                    .into(ivCardImage);
         }
 
         public void flip() {

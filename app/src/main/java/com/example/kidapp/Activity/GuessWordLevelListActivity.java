@@ -6,15 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.kidapp.Adapter.GuessWordLevelAdapter;
 import com.example.kidapp.R;
 import com.example.kidapp.ViewModel.WordGuessLevelViewModel;
 import com.example.kidapp.models.WordGuessLevel;
 import com.example.kidapp.models.WordGuessStage;
 
-public class LevelListActivity extends AppCompatActivity implements LevelAdapter.OnLevelClickListener {
+public class GuessWordLevelListActivity extends AppCompatActivity implements GuessWordLevelAdapter.OnLevelClickListener {
 
     private WordGuessLevelViewModel viewModel;
-    private LevelAdapter adapter;
+    private GuessWordLevelAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,17 +25,17 @@ public class LevelListActivity extends AppCompatActivity implements LevelAdapter
 
         RecyclerView recyclerView = findViewById(R.id.recyclerViewLevels);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new LevelAdapter(this);
+        adapter = new GuessWordLevelAdapter(this);
         recyclerView.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(WordGuessLevelViewModel.class);
         viewModel.getAllLevels().observe(this, levels -> {
             if (levels != null) {
                 for (WordGuessLevel level : levels) {
-                    android.util.Log.d("LevelListActivity", "Level: id=" + level.getId() + ", name=" + level.getName() + ", title=" + level.getTitle());
+                    android.util.Log.d("GuessWordLevelListActivity", "Level: id=" + level.getId() + ", name=" + level.getName() + ", title=" + level.getTitle());
                     if (level.getStages() != null) {
                         for (WordGuessStage stage : level.getStages()) {
-                            android.util.Log.d("LevelListActivity", "   Stage: id=" + stage.getId() + ", answer=" + stage.getAnswer() + ", imageUrl=" + stage.getImageUrl() + ", suggestion=" + stage.getSuggestion());
+                            android.util.Log.d("GuessWordLevelListActivity", "   Stage: id=" + stage.getId() + ", answer=" + stage.getAnswer() + ", imageUrl=" + stage.getImageUrl() + ", suggestion=" + stage.getSuggestion());
                         }
                     }
                 }

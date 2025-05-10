@@ -1,4 +1,4 @@
-package com.example.kidapp.Activity;
+package com.example.kidapp.Adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,7 @@ import com.example.kidapp.models.WordGuessLevel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.LevelViewHolder> {
+public class GuessWordLevelAdapter extends RecyclerView.Adapter<GuessWordLevelAdapter.LevelViewHolder> {
 
 
 
@@ -23,7 +23,7 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.LevelViewHol
     private List<WordGuessLevel> levels = new ArrayList<>();
     private final OnLevelClickListener listener;
 
-    public LevelAdapter(OnLevelClickListener listener) {
+    public GuessWordLevelAdapter(OnLevelClickListener listener) {
         this.listener = listener;
     }
 

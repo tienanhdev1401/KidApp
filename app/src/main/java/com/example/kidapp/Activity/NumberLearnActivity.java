@@ -25,6 +25,8 @@ import com.example.kidapp.ViewModel.NumberViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class NumberLearnActivity extends AppCompatActivity {
@@ -65,6 +67,10 @@ public class NumberLearnActivity extends AppCompatActivity {
             if (numbers != null && !numbers.isEmpty()) {
                 numberList.clear();
                 numberList.addAll(numbers);
+
+                // Sắp xếp lại theo số nguyên
+                numberList.sort((n1, n2) -> n1.getId() - n2.getId());
+
                 // Chia thành các trang 10 số
                 pagedNumbers.clear();
                 for (int i = 0; i < numberList.size(); i += 10) {
@@ -82,6 +88,7 @@ public class NumberLearnActivity extends AppCompatActivity {
 
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
                 float diffX = e2.getX() - e1.getX();
                 if (Math.abs(diffX) > Math.abs(e2.getY() - e1.getY())) {
                     if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
