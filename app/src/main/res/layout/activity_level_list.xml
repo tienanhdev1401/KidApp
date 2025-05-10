@@ -1,0 +1,108 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_blue_to_green"
+    android:gravity="center">
+
+    <!-- Header giống hình mẫu -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp">
+
+        <!-- Tiêu đề bằng ảnh -->
+
+        <ImageButton
+            android:id="@+id/btnPrevPage"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/bg_circle_btn"
+            android:contentDescription="Trước"
+            android:src="@drawable/ic_arrow_left_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/ivLevelSelect"
+            android:layout_width="213dp"
+            android:layout_height="48dp"
+            android:src="@drawable/select_level"
+            app:layout_constraintBottom_toTopOf="@id/tvStarCount"
+            app:layout_constraintEnd_toStartOf="@id/btnNextPage"
+
+            app:layout_constraintStart_toEndOf="@id/btnPrevPage"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btnNextPage"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="25dp"
+            android:background="@drawable/bg_circle_btn"
+            android:contentDescription="Sau"
+            android:src="@drawable/ic_arrow_right_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <LinearLayout
+            android:id="@+id/tvStarCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/ivLevelSelect"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_star_yellow"/>
+            <TextView
+                android:id="@+id/tvStar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24/45"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#FFF"
+                android:layout_marginStart="8dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RecyclerView chiếm phần còn lại màn hình -->
+
+    <!-- Nút giỏ hàng tròn đỏ ở dưới cùng -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewLevels"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="12dp">
+        <ImageButton
+            android:id="@+id/btnCart"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_circle_btn_red"
+            android:src="@drawable/ic_cart_white"
+            android:contentDescription="Giỏ hàng"/>
+    </LinearLayout>
+</LinearLayout>

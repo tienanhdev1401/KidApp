@@ -136,138 +136,18 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="160dp"
             android:background="@drawable/grid_background"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- First Row (0-4) -->
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvNumbers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:orientation="horizontal">
-
-
-
-                <ImageButton
-                    android:id="@+id/btnNum1"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number1" />
-
-                <ImageButton
-                    android:id="@+id/btnNum2"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number2" />
-
-                <ImageButton
-                    android:id="@+id/btnNum3"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number3" />
-
-                <ImageButton
-                    android:id="@+id/btnNum4"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number4" />
-                <ImageButton
-                    android:id="@+id/btnNum5"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number5" />
-            </LinearLayout>
-
-            <!-- Second Row (5-9) -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-
-
-                <ImageButton
-                    android:id="@+id/btnNum6"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number6" />
-
-                <ImageButton
-                    android:id="@+id/btnNum7"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number7" />
-
-                <ImageButton
-                    android:id="@+id/btnNum8"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number8" />
-
-                <ImageButton
-                    android:id="@+id/btnNum9"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number9" />
-                <ImageButton
-                    android:id="@+id/btnNum10"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_margin="4dp"
-                    android:background="@drawable/button_background"
-                    android:elevation="4dp"
-                    android:padding="8dp"
-                    android:scaleType="fitCenter"
-                    app:srcCompat="@drawable/number10" />
-            </LinearLayout>
+                android:overScrollMode="never"
+                android:scrollbars="none" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

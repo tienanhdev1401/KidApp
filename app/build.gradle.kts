@@ -65,6 +65,15 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-auth")
     implementation ("io.github.sceneview:arsceneview:0.10.0")
+    implementation ("com.android.volley:volley:1.2.1")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("org.json:json:20211205")
+    // Glide để tải ảnh từ URL
+    implementation("com.github.bumptech.glide:glide:4.13.2")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.13.2")
+    implementation ("com.airbnb.android:lottie:6.0.0'")
+    implementation ("com.squareup.picasso:picasso:2.8")
+
 
 
 

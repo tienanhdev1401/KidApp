@@ -4,34 +4,45 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.kidapp.Model.Number;
 import com.example.kidapp.R;
+import com.example.kidapp.ViewModel.NumberViewModel;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class NumberLearnActivity extends AppCompatActivity {
 
     private ImageView ivMainNumber;
     private TextView tvEquation;
-    private ImageButton[] numberButtons = new ImageButton[10];
+    private RecyclerView rvNumbers;
+    private NumberAdapter numberAdapter;
+    private int currentPage = 0;
+    private List<List<Number>> pagedNumbers = new ArrayList<>();
     private MediaPlayer mediaPlayer;
-    private int currentNumber = 1; // Default starting number
-
-    // Array of number names - add "TEN" to the array
-    private final String[] numberNames = {"ZERO", "ONE", "TWO", "THREE", "FOUR",
-            "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"};
-
-    // Array of sound resource IDs - adjust ordering to match index
-    private final int[] numberSounds = {
-            R.raw.sound_one, R.raw.sound_one, R.raw.sound_two, R.raw.sound_three,
-            R.raw.sound_four, R.raw.sound_five, R.raw.sound_six,
-            R.raw.sound_seven, R.raw.sound_eight, R.raw.sound_nine, R.raw.sound_ten
-    };
+    private int currentIndex = 0;
+    private NumberViewModel numberViewModel;
+    private List<Number> numberList = new ArrayList<>();
+    private ImageView btnPrev, btnNext;
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,129 +52,127 @@ public class NumberLearnActivity extends AppCompatActivity {
         // Initialize views
         ivMainNumber = findViewById(R.id.ivMainNumber);
         tvEquation = findViewById(R.id.tvEquation);
+        rvNumbers = findViewById(R.id.rvNumbers);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false);
+        rvNumbers.setLayoutManager(layoutManager);
 
         // Set up the back button
         ImageView btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
 
-        // Initialize number buttons
-        initializeNumberButtons();
+        // Lấy dữ liệu từ Firebase qua ViewModel
+        numberViewModel = new ViewModelProvider(this).get(NumberViewModel.class);
+        numberViewModel.getAllNumbers().observe(this, numbers -> {
+            if (numbers != null && !numbers.isEmpty()) {
+                numberList.clear();
+                numberList.addAll(numbers);
 
-        // Set the initial number
-        updateMainNumber(currentNumber);
+                // Sắp xếp lại theo số nguyên
+                numberList.sort((n1, n2) -> n1.getId() - n2.getId());
+
+                // Chia thành các trang 10 số
+                pagedNumbers.clear();
+                for (int i = 0; i < numberList.size(); i += 10) {
+                    int end = Math.min(i + 10, numberList.size());
+                    pagedNumbers.add(new ArrayList<>(numberList.subList(i, end)));
+                }
+                // Hiển thị trang đầu tiên
+                showPage(0);
+            }
+        });
+
+        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            private static final int SWIPE_THRESHOLD = 100;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                if (Math.abs(diffX) > Math.abs(e2.getY() - e1.getY())) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            // Vuốt sang phải: trang trước
+                            if (currentPage > 0) showPage(currentPage - 1);
+                        } else {
+                            // Vuốt sang trái: trang sau
+                            if (currentPage < pagedNumbers.size() - 1) showPage(currentPage + 1);
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        rvNumbers.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
-    private void initializeNumberButtons() {
-        // Initialize button IDs
-        int[] buttonIds = {
-                R.id.btnNum1, R.id.btnNum2, R.id.btnNum3, R.id.btnNum4,
-                R.id.btnNum5, R.id.btnNum6, R.id.btnNum7, R.id.btnNum8, R.id.btnNum9, R.id.btnNum10
-        };
-
-        // Set up each button
-        for (int i = 0; i < 10; i++) {
-            final int number = i+1;
-            numberButtons[i] = findViewById(buttonIds[i]);
-
-            // Add animations for button press
-            numberButtons[i].setOnClickListener(v -> {
-                // Animate the button
-                animateButtonPress(v);
-
-                // Update the main display
-                updateMainNumber(number);
-
-                // Play sound
-                playNumberSound(number);
-            });
-        }
+    private void showPage(int page) {
+        if (page < 0 || page >= pagedNumbers.size()) return;
+        currentPage = page;
+        numberAdapter = new NumberAdapter(pagedNumbers.get(page), number -> {
+            // Khi click vào số, cập nhật main number
+            updateMainNumber(numberList.indexOf(number));
+        });
+        rvNumbers.setAdapter(numberAdapter);
     }
 
-    private void animateButtonPress(View view) {
-        // Scale down
-        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.8f);
-        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.8f);
-        scaleDownX.setDuration(100);
-        scaleDownY.setDuration(100);
+    private void updateMainNumber(int index) {
+        if (numberList == null || numberList.isEmpty() || index < 0 || index >= numberList.size()) return;
+        currentIndex = index;
+        Number number = numberList.get(index);
 
-        // Scale up
-        ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(view, "scaleX", 0.8f, 1f);
-        ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(view, "scaleY", 0.8f, 1f);
-        scaleUpX.setDuration(100);
-        scaleUpY.setDuration(100);
-
-        // Play animations in sequence
-        AnimatorSet scaleDown = new AnimatorSet();
-        scaleDown.play(scaleDownX).with(scaleDownY);
-
-        AnimatorSet scaleUp = new AnimatorSet();
-        scaleUp.play(scaleUpX).with(scaleUpY);
-
-        AnimatorSet set = new AnimatorSet();
-        set.play(scaleDown).before(scaleUp);
-        set.start();
-    }
-
-    private void updateMainNumber(int number) {
-        currentNumber = number;
-
-        // Get the resource ID for the number image
-        int resourceId = getResources().getIdentifier(
-                "number" + number,
-                "drawable",
-                getPackageName()
-        );
+        // Load ảnh từ URL (dùng Glide)
+        Glide.with(this).load(number.getImageUrl()).into(ivMainNumber);
 
         // Set up animations for the main number image
         ivMainNumber.setAlpha(0f);
         ivMainNumber.setScaleX(0.5f);
         ivMainNumber.setScaleY(0.5f);
 
-        // Set the new image
-        ivMainNumber.setImageResource(resourceId);
-
         // Animate the main number with bounce effect
         AnimatorSet animatorSet = new AnimatorSet();
-
         ObjectAnimator alpha = ObjectAnimator.ofFloat(ivMainNumber, "alpha", 0f, 1f);
         alpha.setDuration(500);
-
         ObjectAnimator scaleX = ObjectAnimator.ofFloat(ivMainNumber, "scaleX", 0.5f, 1.1f, 1f);
         scaleX.setDuration(800);
         scaleX.setInterpolator(new BounceInterpolator());
-
         ObjectAnimator scaleY = ObjectAnimator.ofFloat(ivMainNumber, "scaleY", 0.5f, 1.1f, 1f);
         scaleY.setDuration(800);
         scaleY.setInterpolator(new BounceInterpolator());
-
         animatorSet.playTogether(alpha, scaleX, scaleY);
         animatorSet.start();
 
-        // Update the equation text - make sure we don't go out of bounds
-        String equationText = "( " + number + " = " + numberNames[number] + " )";
+        // Hiển thị tên số
+        String equationText = "( " + number.getId() + " = " + number.getName() + " )";
         tvEquation.setText(equationText);
 
         // Animate the equation text
         ObjectAnimator equationAnim = ObjectAnimator.ofFloat(tvEquation, "alpha", 0f, 1f);
         equationAnim.setDuration(500);
         equationAnim.start();
+
+        // Phát âm thanh
+        playNumberSound(number.getSoundUrl());
     }
 
-    private void playNumberSound(int number) {
-        // Release any previously playing sound
+    private void playNumberSound(String soundUrl) {
         if (mediaPlayer != null) {
             mediaPlayer.release();
         }
-
-        // Play the sound for the current number
-        mediaPlayer = MediaPlayer.create(this, numberSounds[number]);
-        mediaPlayer.start();
-
-        // Release when done
-        mediaPlayer.setOnCompletionListener(mp -> {
-            mp.release();
-            mediaPlayer = null;
-        });
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(soundUrl);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(mp -> {
+                mp.release();
+                mediaPlayer = null;
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
