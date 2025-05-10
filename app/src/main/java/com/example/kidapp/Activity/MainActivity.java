@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 for (com.example.kidapp.models.MusicCategory musicCategory : musicCategories) {
                     Log.d("music category", "Music Category: " + musicCategory.getCategoryName() + musicCategory.getCategoryId());
                 }
-                } else {
+            } else {
                 Log.d("Không có âm nhạc", "No music categories found.");
             }
         });

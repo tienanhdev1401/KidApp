@@ -63,7 +63,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-firestore:24.9.1")
-    implementation("com.google.firebase:firebase-auth")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1")) // Sử dụng phiên bản mới nhất của Firebase BoM
+    implementation("com.google.firebase:firebase-auth") // Dependency cho Firebase Authentication
     implementation ("io.github.sceneview:arsceneview:0.10.0")
     implementation ("com.android.volley:volley:1.2.1")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
