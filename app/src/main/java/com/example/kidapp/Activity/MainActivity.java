@@ -30,8 +30,11 @@ import com.example.kidapp.ViewModel.UserViewModel;
 import com.example.kidapp.models.User;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.kidapp.ViewModel.LoginViewModel;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private ImageButton menuButton;
     private NavigationView navigationView;
-
+    private LoginViewModel loginViewModel;
     private FirebaseAuth mAuth;
 
     @Override
@@ -80,6 +83,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
+        // Initialize ViewModel
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+
+
+        // Check login status
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            mAuth.signOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+        }
 
         // Tạo toggle button cho navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -523,8 +537,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         }
         else if (itemId == R.id.nav_logout) {
-            mAuth.signOut();
+            loginViewModel.logout();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
         }
 
         // Đóng Drawer sau khi xử lý
