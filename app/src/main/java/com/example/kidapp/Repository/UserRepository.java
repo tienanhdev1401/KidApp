@@ -32,4 +32,25 @@ public class UserRepository {
                 .addOnFailureListener(e -> liveData.setValue(null));
         return liveData;
     }
+
+    // Thêm phương thức getUserByEmail
+    public LiveData<User> getUserByEmail(String email) {
+        MutableLiveData<User> liveData = new MutableLiveData<>();
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        User user = queryDocumentSnapshots.getDocuments()
+                                .get(0)
+                                .toObject(User.class);
+                        liveData.setValue(user);
+                    } else {
+                        liveData.setValue(null); // Không tìm thấy
+                    }
+                })
+                .addOnFailureListener(e -> liveData.setValue(null));
+        return liveData;
+    }
+
 }

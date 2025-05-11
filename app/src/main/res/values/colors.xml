@@ -12,5 +12,6 @@
     <color name="quiz_title_color">#1976D2</color>
     <color name="quiz_question_color">#0D47A1</color>
     <color name="transparent">#00000000</color>
+    <color name="colorPrimary">#42A5F5</color>
 
 </resources>

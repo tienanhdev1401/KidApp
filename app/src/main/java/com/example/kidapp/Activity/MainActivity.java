@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View frontMaths, backMaths;
     private View frontListen, backListen;
     private View frontGame, backGame;
+    private TextView usernametext;
 
     private ImageView profileButton;
     private FlipAnimationUtil numbersFlipAnimation;
@@ -94,6 +96,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
+
+        // Lấy NavigationView và header của nó
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0); // Lấy header đầu tiên
+
+        // Tham chiếu đến TextView trong nav_header.xml
+        usernametext = headerView.findViewById(R.id.user_name);
+
+        //hiển thị tên
+        UserViewModel userViewModel1 = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel1.getUserByEmail(currentUser.getEmail()).observe(this, user -> {
+            if (user != null) {
+                Log.d("USER_PROFILE", "User found: " + user.getUsername()
+                        + " | Email: " + user.getEmail());
+                // Cập nhật UI với thông tin người dùng
+                usernametext.setText("Chào Mừng, " +user.getUsername()); // Hoặc các view khác
+            } else {
+                Log.d("USER_PROFILE", "No user found with email: " + currentUser.getEmail());
+            }
+        });
 
         // Tạo toggle button cho navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
