@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userViewModel.getAllUsers().observe(this, users -> {
             if (users != null && !users.isEmpty()) {
                 for (User user : users) {
-                    Log.d("USER", "User: " + user.getName()+" "+user.getEmail()+" "+user.getPassword());
+                    Log.d("USER", "User: " + user.getUsername()+" "+user.getEmail()+" "+user.getPassword());
                 }
             } else {
                 Log.d("USER", "No users found.");

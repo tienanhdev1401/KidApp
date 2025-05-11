@@ -30,14 +30,14 @@ public class ProfileActivity extends AppCompatActivity {
         // Nút quay lại
         ImageView backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
-
+/*
         // Nút cài đặt
         ImageButton settingsButton = findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProfileDetailActivity.class);
             startActivity(intent);
         });
-
+*/
         // Khởi tạo RecyclerView cho Vocabulary Skills
         vocabularyRecyclerView = findViewById(R.id.vocabulary_recycler);
         vocabularyRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));

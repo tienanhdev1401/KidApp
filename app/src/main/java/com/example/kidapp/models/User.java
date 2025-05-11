@@ -3,16 +3,16 @@ package com.example.kidapp.models;
 public class User {
     private String email;
     private String password;
-    private String Name;
+    private String username;
 
     // Default constructor for Firebase
     public User() {
     }
 
-    public User(String email, String password, String Name) {
+    public User(String email, String password, String username) {
         this.email = email;
         this.password = password;
-        this.Name = Name;
+        this.username = username;
     }
 
     // Getters and setters
@@ -32,12 +32,12 @@ public class User {
         this.password = password;
     }
 
-    public String getName() {
-        return Name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String Name) {
-        this.Name = Name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
 
