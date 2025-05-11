@@ -1,4 +1,4 @@
-package com.example.musicai.features.aistory.adapter;
+package com.example.kidapp.Adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.musicai.R;
-import com.example.musicai.features.aistory.model.ImageItem;
+
+import com.example.kidapp.R;
+import com.example.kidapp.models.ImageItem;
 
 import java.util.ArrayList;
 import java.util.HashSet;

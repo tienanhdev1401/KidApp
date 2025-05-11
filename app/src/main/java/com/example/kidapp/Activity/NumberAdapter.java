@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.kidapp.Model.Number;
+import com.example.kidapp.models.Number;
 import com.example.kidapp.R;
 
 import java.util.List;

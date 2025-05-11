@@ -1,4 +1,4 @@
-package com.example.musicai.features.aistory.adapter;
+package com.example.kidapp.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.musicai.R;
-import com.example.musicai.features.aistory.model.StoryModel;
+import com.example.kidapp.R;
+import com.example.kidapp.models.StoryModel;
 
 import java.util.ArrayList;
 

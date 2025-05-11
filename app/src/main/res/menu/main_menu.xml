@@ -89,6 +89,11 @@
                     android:icon="@drawable/listen"
                     tools:ignore="HardcodedText" />
 
+                <item
+                    android:id="@+id/nav_story_history"
+                    android:title="Truyện AI"
+                    android:icon="@drawable/book_story"
+                    tools:ignore="HardcodedText" />
 
             </menu>
 

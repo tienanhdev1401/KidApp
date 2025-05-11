@@ -1,4 +1,4 @@
-package com.example.musicai.features.aistory;
+package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.musicai.R;
-import com.example.musicai.features.aistory.adapter.ScenesPagerAdapter;
-import com.example.musicai.features.aistory.model.StoryModel;
+import com.example.kidapp.R;
+import com.example.kidapp.Adapter.ScenesPagerAdapter;
+import com.example.kidapp.models.StoryModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Locale;

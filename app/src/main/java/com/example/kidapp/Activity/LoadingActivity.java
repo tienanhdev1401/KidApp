@@ -1,4 +1,4 @@
-package com.example.musicai.features.aistory;
+package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.example.musicai.R;
-import com.example.musicai.features.aistory.model.StoryModel;
-import com.example.musicai.features.aistory.service.GeminiService;
+import com.example.kidapp.R;
+import com.example.kidapp.models.StoryModel;
+import com.example.kidapp.Service.GeminiService;
 
 import java.util.ArrayList;
 

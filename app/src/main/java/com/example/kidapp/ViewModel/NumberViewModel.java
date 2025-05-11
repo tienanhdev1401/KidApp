@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.kidapp.Repository.NumberRepository;
-import com.example.kidapp.Model.Number;
+import com.example.kidapp.models.Number;
 
 import java.util.List;
 

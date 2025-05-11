@@ -1,10 +1,9 @@
-package com.example.musicai.features.aistory.model;
+package com.example.kidapp.models;
 
-import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.PropertyName;
+import com.google.firebase.firestore.Exclude;
 
 public class StoryElement {
-    @DocumentId
     private String id;
     
     @PropertyName("name")
@@ -26,10 +25,12 @@ public class StoryElement {
         this.type = type.name();
     }
 
+    @Exclude
     public String getId() {
         return id;
     }
 
+    @Exclude
     public void setId(String id) {
         this.id = id;
     }
@@ -64,12 +65,14 @@ public class StoryElement {
         this.type = type;
     }
 
+    @Exclude
     public ElementType getElementType() {
-        return ElementType.valueOf(type);
+        return type != null ? ElementType.valueOf(type) : null;
     }
 
+    @Exclude
     public void setElementType(ElementType type) {
-        this.type = type.name();
+        this.type = type != null ? type.name() : null;
     }
 
     public enum ElementType {

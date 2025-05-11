@@ -1,8 +1,8 @@
-package com.example.musicai.features.aistory.Repository;
+package com.example.kidapp.Repository;
 
 import android.util.Log;
 
-import com.example.musicai.features.aistory.model.StoryElement;
+import com.example.kidapp.models.StoryElement;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -54,12 +54,18 @@ public class StoryElementRepository {
                         Log.d(TAG, "Query criteria - type: " + type.name());
                         
                         for (var doc : snapshot.getDocuments()) {
-                            Log.d(TAG, "Document data: " + doc.getData());
-                            StoryElement element = doc.toObject(StoryElement.class);
-                            if (element != null) {
+                            try {
+                                Log.d(TAG, "Document ID: " + doc.getId() + ", data: " + doc.getData());
+                                StoryElement element = new StoryElement();
                                 element.setId(doc.getId());
+                                element.setName(doc.getString("name"));
+                                element.setImageUrl(doc.getString("imageUrl"));
+                                element.setType(doc.getString("type"));
+                                
                                 elements.add(element);
                                 Log.d(TAG, "Loaded element: " + element.getName() + ", type: " + element.getType());
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error converting document: " + e.getMessage());
                             }
                         }
                         

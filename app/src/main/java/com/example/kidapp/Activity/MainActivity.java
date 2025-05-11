@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals;
+    private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals, cardStory;
     private View frontNumbers, backNumbers;
     private View frontReading, backReading;
     private View frontShapes, backShapes;
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View frontMaths, backMaths;
     private View frontListen, backListen;
     private View frontGame, backGame;
+    private View frontStory, backStory;
     private TextView usernametext;
 
     private ImageView profileButton;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FlipAnimationUtil mathsFlipAnimation;
     private FlipAnimationUtil listenFlipAnimation;
     private FlipAnimationUtil gameFlipAnimation;
+    private FlipAnimationUtil storyFlipAnimation;
     private DrawerLayout drawer;
     private ImageButton menuButton;
     private NavigationView navigationView;
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
+            return;
         }
 
         // Lấy NavigationView và header của nó
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 usernametext.setText("Chào Mừng, " +user.getUsername()); // Hoặc các view khác
             } else {
                 Log.d("USER_PROFILE", "No user found with email: " + currentUser.getEmail());
+                usernametext.setText("Chào Mừng!");
             }
         });
 
@@ -178,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardMaths = findViewById(R.id.cardMaths);
         cardListen = findViewById(R.id.cardListen);
         cardGame = findViewById(R.id.cardGame);
+        cardStory = findViewById(R.id.cardStory);
 
         // Initialize front and back views
         inflateFrontBackViews();
@@ -227,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         frontGame = getLayoutInflater().inflate(R.layout.card_front_game, null);
         backGame = getLayoutInflater().inflate(R.layout.card_back_game, null);
 
+        // Story Card
+        frontStory = getLayoutInflater().inflate(R.layout.card_front_story, null);
+        backStory = getLayoutInflater().inflate(R.layout.card_back_story, null);
+
         // Add views to CardViews
         cardNumbers.removeAllViews();
         cardNumbers.addView(frontNumbers);
@@ -267,10 +276,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardGame.removeAllViews();
         cardGame.addView(frontGame);
         cardGame.addView(backGame);
+
+        cardStory.removeAllViews();
+        cardStory.addView(frontStory);
+        cardStory.addView(backStory);
     }
 
     private void setupAnimations() {
-        // Initialize flip animations for all cards
         numbersFlipAnimation = new FlipAnimationUtil(this, frontNumbers, backNumbers);
         readingFlipAnimation = new FlipAnimationUtil(this, frontReading, backReading);
         shapesFlipAnimation = new FlipAnimationUtil(this, frontShapes, backShapes);
@@ -281,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mathsFlipAnimation = new FlipAnimationUtil(this, frontMaths, backMaths);
         listenFlipAnimation = new FlipAnimationUtil(this, frontListen, backListen);
         gameFlipAnimation = new FlipAnimationUtil(this, frontGame, backGame);
+        storyFlipAnimation = new FlipAnimationUtil(this, frontStory, backStory);
     }
 
     private void setupCardFlips() {
@@ -295,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupMathsCard();
         setupListenCard();
         setupGameCard();
+        setupStoryCard();
 
         // Set up profile button click
         profileButton = findViewById(R.id.profileButton);
@@ -442,6 +456,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void setupStoryCard() {
+        cardStory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, StoryHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     private void ShowGameOptionsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialogTheme);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_games_options, null);
@@ -557,8 +581,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
         } else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-        }
-        else if (itemId == R.id.nav_logout) {
+        } else if (itemId == R.id.nav_story_history) {
+            startActivity(new Intent(MainActivity.this, StoryHistoryActivity.class));
+        } else if (itemId == R.id.nav_logout) {
             loginViewModel.logout();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
@@ -594,5 +619,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mathsFlipAnimation.cancelAutoFlip();
         listenFlipAnimation.cancelAutoFlip();
         gameFlipAnimation.cancelAutoFlip();
+        storyFlipAnimation.cancelAutoFlip();
     }
 }

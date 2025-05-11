@@ -1,4 +1,4 @@
-package com.example.musicai.features.aistory.model
+package com.example.kidapp.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -1,12 +1,12 @@
-package com.example.musicai.features.aistory.ViewModel;
+package com.example.kidapp.ViewModel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.musicai.features.aistory.Repository.StoryElementRepository;
-import com.example.musicai.features.aistory.model.StoryElement;
+import com.example.kidapp.Repository.StoryElementRepository;
+import com.example.kidapp.models.StoryElement;
 
 import java.util.List;
 

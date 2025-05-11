@@ -1,45 +1,85 @@
-package com.example.musicai;
+package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.musicai.features.aistory.AIStoryCreatorActivity;
+import com.example.kidapp.R;
+import com.example.kidapp.Service.GeminiService;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
 
 public class StoryHistoryActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerView;
+    private TextView emptyView;
+    private FloatingActionButton fabCreateStory;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_history_story);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        setContentView(R.layout.activity_story_history);
+
+        // Khởi tạo các thành phần UI
+        initializeUI();
+
+        // Thiết lập toolbar
+        setupToolbar();
+
+        // Thiết lập RecyclerView
+        setupRecyclerView();
+
+        // Thiết lập nút tạo truyện mới
+        setupCreateButton();
+    }
+
+    private void initializeUI() {
+        recyclerView = findViewById(R.id.recyclerViewStories);
+        emptyView = findViewById(R.id.emptyView);
+        fabCreateStory = findViewById(R.id.fabCreateStory);
+        toolbar = findViewById(R.id.toolbar);
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Truyện AI");
+        }
+    }
+
+    private void setupRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        
+        // Hiện tại chưa có adapter và dữ liệu, hiển thị emptyView
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+    }
+
+    private void setupCreateButton() {
+        fabCreateStory.setOnClickListener(v -> {
+            // Mở AIStoryCreatorActivity khi nhấn nút tạo truyện mới
+            Intent intent = new Intent(StoryHistoryActivity.this, AIStoryCreatorActivity.class);
+            startActivity(intent);
         });
-        
-        // Cài đặt RecyclerView cho danh sách tính năng
-        setupFeaturesList();
-        
-        // Thiết lập Floating Action Button để mở màn hình tạo truyện AI
-        findViewById(R.id.fabAIStory).setOnClickListener(v -> startAIStoryCreator());
     }
-    
-    private void setupFeaturesList() {
-        RecyclerView featuresRecyclerView = findViewById(R.id.featuresRecyclerView);
-        // Cài đặt adapter cho danh sách tính năng (sẽ triển khai sau)
-        // featuresRecyclerView.setAdapter(new FeaturesAdapter(getFeaturesList()));
-    }
-    
-    public void startAIStoryCreator() {
-        Intent intent = new Intent(this, AIStoryCreatorActivity.class);
-        startActivity(intent);
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
