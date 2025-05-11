@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-//        FirebaseHelpers firebaseHelpers = new FirebaseHelpers();
-//        firebaseHelpers.createSampleMusicCategory();
+        FirebaseHelpers firebaseHelpers = new FirebaseHelpers();
+        firebaseHelpers.createSampleMusicCategory();
 
 
         MusicCategoryViewModel musicCategoryViewModel = new ViewModelProvider(this).get(MusicCategoryViewModel.class);

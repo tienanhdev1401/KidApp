@@ -33,7 +33,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/kids_font"
             android:gravity="center"
-            android:text="Con kiến và con châu chấu"
+            android:text="The Ant and the Grasshopper"
             android:textColor="#0D47A1"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -176,17 +176,17 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nội dung" />
+                    android:text="Content" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bài học" />
+                    android:text="Moral" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Câu hỏi" />
+                    android:text="Question" />
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.viewpager2.widget.ViewPager2
@@ -294,7 +294,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/kids_font"
-                        android:text="Cùng kiểm tra nào!"
+                        android:text="let's check!"
                         android:textColor="#1E88E5"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -352,13 +352,12 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="16dp"
-                        android:background="@drawable/rounded_button_bg"
-                        android:backgroundTint="#1E88E5"
+                        android:backgroundTint="#FFFA8D"
                         android:fontFamily="@font/kids_font"
                         android:padding="12dp"
-                        android:text="Kiểm tra"
+                        android:text="Check"
                         android:textAllCaps="false"
-                        android:textColor="@color/white"
+                        android:textColor="#FA812F"
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

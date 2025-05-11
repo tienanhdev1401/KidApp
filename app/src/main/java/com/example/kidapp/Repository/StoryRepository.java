@@ -9,80 +9,61 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.kidapp.models.Music;
-import com.example.kidapp.models.User;
+import com.example.kidapp.models.Story;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MusicRepository {
+public class StoryRepository {
     private final FirebaseFirestore db;
 
-    public MusicRepository(Application application) {
+    public StoryRepository(Application application) {
         db = FirebaseFirestore.getInstance();
-
     }
 
-    public LiveData<List<Music>> getAllMusics() {
-        MutableLiveData<List<Music>> liveData = new MutableLiveData<>();
-        db.collection("musics")
+    public LiveData<List<Story>> getAllStories() {
+        MutableLiveData<List<Story>> liveData = new MutableLiveData<>();
+        db.collection("stories")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
-                        List<Music> musicList = queryDocumentSnapshots.toObjects(Music.class);
-                        liveData.setValue(musicList);
+                        List<Story> stories = queryDocumentSnapshots.toObjects(Story.class);
+                        liveData.setValue(stories);
                     } else {
                         liveData.setValue(null); // If no users found
-                    }
-                })
+                }
+                    })
                 .addOnFailureListener(e -> liveData.setValue(null));
-        return liveData;
+        return  liveData;
     }
 
-    public LiveData<Music> getMusicById (String id) {
-        MutableLiveData<Music> liveData = new MutableLiveData<>();
+    public LiveData<Story> getStoryById(String id) {
+        MutableLiveData<Story> liveData = new MutableLiveData<>();
 
-        db.collection("musics")
+        db.collection("stories")
                 .document(id)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    Music music = documentSnapshot.toObject(Music.class);
-                    liveData.setValue(music);
+                    Story story = documentSnapshot.toObject(Story.class);
+                    liveData.setValue(story);
                 })
                 .addOnFailureListener(e -> liveData.setValue(null));
         return liveData;
-
     }
 
-    public LiveData<List<Music>> getMusicByType (String type) {
-        MutableLiveData<List<Music>> liveData = new MutableLiveData<>();
-        db.collection("musics")
-                .whereEqualTo("type", type)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<Music> musics = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : querySnapshot) {
-                        musics.add(doc.toObject(Music.class));
-                    }
-                    liveData.setValue(musics);
-                })
-                .addOnFailureListener(e -> liveData.setValue(new ArrayList<>()));
-        return liveData;
-
-    }
-
-    public LiveData<String> insertMusic(Music music) {
+    public LiveData<String> insertStory(Story story) {
         MutableLiveData<String> result = new MutableLiveData<>();
-        db.collection("musics")
-                .add(music)
+        db.collection("stories")
+                .add(story)
                 .addOnSuccessListener(documentReference -> {
                     String generatedId = documentReference.getId();  // Lấy ID được tạo từ Firestore
-                    music.setMusicId(generatedId);  // Cập nhật ID vào đối tượng Product
+                    story.setStoryId(generatedId);  // Cập nhật ID vào đối tượng Product
                     // Set the generated document ID as the result.
                     result.setValue(generatedId);
-                      db.collection("musics").document(generatedId)
-                            .set(music)
+                    db.collection("stories").document(generatedId)
+                            .set(story)
                             .addOnSuccessListener(aVoid -> Log.d(TAG, "Product created and ID updated successfully"))
                             .addOnFailureListener(e -> Log.e(TAG, "Error updating product ID", e));
                 })
@@ -93,21 +74,20 @@ public class MusicRepository {
         return result;
     }
 
-    public LiveData<List<Music>> getMusicByCategoryId(String categoryId) {
-        MutableLiveData<List<Music>> liveData = new MutableLiveData<>();
-        db.collection("musics")
+    public LiveData<List<Story>> getStoryByCategoryId(String categoryId) {
+        MutableLiveData<List<Story>> liveData = new MutableLiveData<>();
+        db.collection("stories")
                 .whereEqualTo("categoryId", categoryId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    List<Music> musics = new ArrayList<>();
+                    List<Story> stories = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : querySnapshot) {
-                        musics.add(doc.toObject(Music.class));
+                        stories.add(doc.toObject(Story.class));
                     }
-                    liveData.setValue(musics);
+                    liveData.setValue(stories);
                 })
                 .addOnFailureListener(e -> liveData.setValue(new ArrayList<>()));
         return liveData;
     }
-
 
 }
