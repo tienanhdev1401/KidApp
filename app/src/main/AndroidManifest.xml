@@ -91,6 +91,11 @@
             android:enabled="true"
             android:exported="false"
             tools:ignore="ForegroundServicePermission,Instantiatable" />
+        <service
+            android:name=".Service.StoryService"
+            android:enabled="true"
+            android:exported="false"
+            tools:ignore="ForegroundServicePermission,Instantiatable" />
     </application>
 
 </manifest>

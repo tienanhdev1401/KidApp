@@ -24,6 +24,7 @@ public class StoryRepository {
     }
 
     public LiveData<List<Story>> getAllStories() {
+
         MutableLiveData<List<Story>> liveData = new MutableLiveData<>();
         db.collection("stories")
                 .get()
@@ -36,6 +37,7 @@ public class StoryRepository {
                 }
                     })
                 .addOnFailureListener(e -> liveData.setValue(null));
+
         return  liveData;
     }
 
