@@ -19,7 +19,7 @@ import com.example.kidapp.databinding.ActivityAiStoryCreatorBinding;
 import com.example.kidapp.ViewModel.StoryElementViewModel;
 import com.example.kidapp.Adapter.StoryElementAdapter;
 import com.example.kidapp.models.StoryElement;
-import com.example.kidapp.models.StoryModel;
+import com.example.kidapp.models.StoryByAiModel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,7 +3,7 @@ package com.example.kidapp.Service
 import android.content.Context
 import android.util.Log
 import com.example.kidapp.BuildConfig
-import com.example.kidapp.models.StoryModel
+import com.example.kidapp.models.StoryByAiModel
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
@@ -65,12 +65,12 @@ class GeminiService(private val context: Context) {
     }
 
     interface StoryCallback {
-        fun onSuccess(story: StoryModel)
+        fun onSuccess(story: StoryByAiModel)
         fun onError(throwable: Throwable)
     }
 
     // Updated to support multiple characters and items
-    suspend fun generateStory(characters: List<String>, setting: String, items: List<String>): Result<StoryModel> {
+    suspend fun generateStory(characters: List<String>, setting: String, items: List<String>): Result<StoryByAiModel> {
         // Reset character descriptions for new story
         storyCharacterDescriptions = mutableMapOf()
 
@@ -106,7 +106,7 @@ class GeminiService(private val context: Context) {
                         val content = parts[1]
 
                         // Tạo đối tượng StoryModel
-                        val storyModel = StoryModel(
+                        val storyModel = StoryByAiModel(
                             title,
                             content,
                             "", // Không cần imageUrl chính nữa vì sẽ có ảnh cho từng cảnh
@@ -128,14 +128,14 @@ class GeminiService(private val context: Context) {
                         val scenes = parseScenes(content)
                         for (sceneContent in scenes) {
                             val imageUrl = generateImageForScene(sceneContent, characters, setting)
-                            val scene = StoryModel.SceneModel(sceneContent, imageUrl)
+                            val scene = StoryByAiModel.SceneModel(sceneContent, imageUrl)
                             storyModel.addScene(scene)
                         }
 
                         // Nếu không có cảnh nào, tạo một cảnh mặc định với toàn bộ nội dung
                         if (storyModel.scenes.isEmpty()) {
                             val defaultImageUrl = generateImageForScene(content, characters, setting)
-                            val defaultScene = StoryModel.SceneModel(content, defaultImageUrl)
+                            val defaultScene = StoryByAiModel.SceneModel(content, defaultImageUrl)
                             storyModel.addScene(defaultScene)
                         }
 
@@ -173,7 +173,7 @@ class GeminiService(private val context: Context) {
     }
 
     // Backward compatibility method for single character and item
-    suspend fun generateStory(character: String, setting: String, item: String): Result<StoryModel> {
+    suspend fun generateStory(character: String, setting: String, item: String): Result<StoryByAiModel> {
         return generateStory(listOf(character), setting, listOf(item))
     }
 

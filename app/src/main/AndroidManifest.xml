@@ -89,6 +89,9 @@
             android:name=".Activity.StoryHistoryActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.StoryCreationActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.AIStoryCreatorActivity"
             android:exported="false" />
         <activity

@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class StoryModel(
+data class StoryByAiModel(
     var title: String = "",
     var content: String = "",
     var imageUrl: String = "",

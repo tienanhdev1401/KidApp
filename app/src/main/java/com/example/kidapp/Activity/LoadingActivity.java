@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.kidapp.R;
-import com.example.kidapp.models.StoryModel;
+import com.example.kidapp.models.StoryByAiModel;
 import com.example.kidapp.Service.GeminiService;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class LoadingActivity extends AppCompatActivity {
         
         geminiService.generateStoryAsync(characters, setting, items, new GeminiService.StoryCallback() {
             @Override
-            public void onSuccess(StoryModel story) {
+            public void onSuccess(StoryByAiModel story) {
                 // Move to story reader screen
                 Intent intent = new Intent(LoadingActivity.this, StoryReaderActivity.class);
                 intent.putExtra("story", story);
