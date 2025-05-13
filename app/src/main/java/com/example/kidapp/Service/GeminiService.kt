@@ -17,7 +17,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -35,13 +34,6 @@ class GeminiService(private val context: Context) {
     // fal.ai API configuration
     private val FAL_API_URL = "https://fal.run/fal-ai/flux/dev"
     private val FAL_API_KEY = BuildConfig.FAL_AI_API_KEY
-
-    // Thư mục lưu ảnh
-    private val imageDir by lazy {
-        File(context.filesDir, "story_images").apply {
-            if (!exists()) mkdirs()
-        }
-    }
 
     private var storyCharacterDescriptions: Map<String, String> = mutableMapOf()
     private var storyStylePrompt: String = ""
@@ -371,12 +363,7 @@ class GeminiService(private val context: Context) {
                         val imagesArray = jsonResponse.getJSONArray("images")
                         if (imagesArray.length() > 0) {
                             val imageObject = imagesArray.getJSONObject(0)
-                            val imageUrl = imageObject.getString("url")
-                            if (imageUrl.isNotEmpty()) {
-                                return@use downloadAndSaveImage(imageUrl)
-                            } else {
-                                throw IOException("Empty image URL in response")
-                            }
+                            return@use imageObject.getString("url")
                         } else {
                             throw IOException("No images in response")
                         }
@@ -417,7 +404,7 @@ class GeminiService(private val context: Context) {
                                 val imageObject = imagesArray.getJSONObject(0)
                                 val imageUrl = imageObject.getString("url")
                                 if (imageUrl.isNotEmpty()) {
-                                    return@withContext downloadAndSaveImage(imageUrl)
+                                    return@withContext imageUrl
                                 } else {
                                     throw IOException("Empty image URL in completed result")
                                 }
@@ -436,29 +423,6 @@ class GeminiService(private val context: Context) {
             }
         }
         throw IOException("Timeout waiting for image generation")
-    }
-
-    private suspend fun downloadAndSaveImage(imageUrl: String): String = withContext(Dispatchers.IO) {
-        val imageRequest = Request.Builder()
-            .url(imageUrl)
-            .build()
-
-        client.newCall(imageRequest).execute().use { imageResponse ->
-            if (!imageResponse.isSuccessful) {
-                throw IOException("Failed to download image")
-            }
-
-            val fileName = "scene_${System.currentTimeMillis()}.jpg"
-            val imageFile = File(imageDir, fileName)
-
-            imageResponse.body?.let { responseBody ->
-                imageFile.outputStream().use { fileOut ->
-                    responseBody.byteStream().copyTo(fileOut)
-                }
-            }
-
-            "file://${imageFile.absolutePath}"
-        }
     }
 
     private fun buildImagePrompt(sceneContent: String, characters: List<String>, setting: String): String {
@@ -529,18 +493,9 @@ class GeminiService(private val context: Context) {
         """.trimIndent()
     }
 
-    // Hàm dọn dẹp ảnh cũ
+    // Hàm dọn dẹp ảnh cũ - không còn cần thiết vì sử dụng URL trực tiếp
     fun cleanupOldImages() {
-        try {
-            // Xóa các ảnh cũ hơn 24 giờ
-            val twentyFourHoursAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
-            imageDir.listFiles()?.forEach { file ->
-                if (file.lastModified() < twentyFourHoursAgo) {
-                    file.delete()
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error cleaning up old images: ${e.message}")
-        }
+        // Không cần thiết nữa vì đang sử dụng URL trực tiếp từ fal.ai
+        Log.d(TAG, "Image cleanup not needed - using direct URLs")
     }
 }
