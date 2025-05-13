@@ -23,6 +23,7 @@ public class FlipCardLevelAdapter extends RecyclerView.Adapter<FlipCardLevelAdap
 
     private List<FlipCardLevel> levelList=new ArrayList<>();
     private final OnLevelClickListener listener;
+    private int levelReached = 0;
 
     public FlipCardLevelAdapter(OnLevelClickListener listener) {
         this.listener = listener;
@@ -30,6 +31,11 @@ public class FlipCardLevelAdapter extends RecyclerView.Adapter<FlipCardLevelAdap
 
     public void setLevelList(List<FlipCardLevel> levelList) {
         this.levelList = levelList;
+        notifyDataSetChanged();
+    }
+
+    public void setLevelReached(int levelReached) {
+        this.levelReached = levelReached;
         notifyDataSetChanged();
     }
 
@@ -45,7 +51,20 @@ public class FlipCardLevelAdapter extends RecyclerView.Adapter<FlipCardLevelAdap
         FlipCardLevel level = levelList.get(position);
         holder.tvLevel.setText(String.valueOf(level.getId()));
         holder.tvTopic.setText(level.getTopic());
-        holder.itemView.setOnClickListener(v -> listener.onLevelClick(level));
+
+        int levelNumber = level.getId();
+
+        if (levelNumber > levelReached + 1) {
+            holder.itemView.setAlpha(0.5f);
+            holder.itemView.setEnabled(false);
+            holder.itemView.setOnClickListener(null);
+        } else {
+            holder.itemView.setAlpha(1f);
+            holder.itemView.setEnabled(true);
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onLevelClick(level);
+            });
+        }
     }
 
     @Override

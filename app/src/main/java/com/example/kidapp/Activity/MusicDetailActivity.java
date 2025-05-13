@@ -32,6 +32,11 @@ import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
 import com.example.kidapp.Service.MusicService;
 import com.example.kidapp.models.Music;
+import com.example.kidapp.Repository.AuthRepository;
+import com.example.kidapp.ViewModel.UserViewModel;
+import com.example.kidapp.models.User;
+
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +62,11 @@ public class MusicDetailActivity extends AppCompatActivity {
     private int musicPosition;
     TextView songTitle, artistName;
 
+    // Thêm biến lưu thời điểm bắt đầu nghe
+    private long startListeningTime = 0;
 
+    private User user;
+    private UserViewModel userViewModel;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -73,6 +82,11 @@ public class MusicDetailActivity extends AppCompatActivity {
             updatePlayPauseButton(true);
             rotationAnimator.start();
             updateUI();
+
+            if (musicService != null && musicService.isPlaying()) {
+                startListeningTime = System.currentTimeMillis();
+                Log.d("MusicDetailActivity", "Gán startListeningTime khi Service kết nối và nhạc đang phát: " + startListeningTime);
+            }
         }
 
         @Override
@@ -299,6 +313,10 @@ public class MusicDetailActivity extends AppCompatActivity {
             playIntent.setAction(MusicService.ACTION_PLAY);
             playIntent.putExtra("musicUrl", music.getMusicUrl());
             startService(playIntent);
+
+            // Gán lại startListeningTime nếu nhạc sẽ tự động phát
+            startListeningTime = System.currentTimeMillis();
+            Log.d("MusicDetailActivity", "Gán startListeningTime khi auto play trong onCreate: " + startListeningTime);
         }
 
         setUpUI();
@@ -308,6 +326,23 @@ public class MusicDetailActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        AuthRepository authRepository = AuthRepository.getInstance();
+        authRepository.getUserLiveData().observe(this, userObj -> {
+            if (userObj != null) {
+                
+                // Lấy user từ AuthRepository
+                // Nếu cần thông tin chi tiết hơn, lấy từ Firestore qua UserViewModel
+                userViewModel.getUserByEmail(userObj.getEmail()).observe(this, userFromDb -> {
+                    if (userFromDb != null) {
+                        user = userFromDb;
+                    } else {
+                        user = userObj; // fallback nếu chưa có trên Firestore
+                    }
+                });
+            }
         });
     }
 
@@ -354,6 +389,8 @@ public class MusicDetailActivity extends AppCompatActivity {
                 handleRotationAnimation(shouldPlay);
 
                 if (shouldPlay) {
+                    startListeningTime = System.currentTimeMillis();
+                    Log.d("MusicDetailActivity", "Gán startListeningTime khi play/resume: " + startListeningTime);
                     // Nếu đang pause thì tiếp tục, nếu không thì play bài mới
                     if (music != null && music.getMusicUrl() != null) {
                         // Thay vì luôn gọi ACTION_PLAY, gọi resumeMusic nếu URL giống nhau
@@ -371,6 +408,19 @@ public class MusicDetailActivity extends AppCompatActivity {
                     }
                 } else {
                     sendActionToService(MusicService.ACTION_PAUSE);
+                    if (startListeningTime > 0) {
+                        long listenedMillis = System.currentTimeMillis() - startListeningTime;
+                        int listenedSeconds = (int) (listenedMillis / 1000);
+                        Log.d("MusicDetailActivity", "Tính listenedSeconds khi pause: " + listenedSeconds);
+                        // Lấy tổng thời gian nghe hiện tại của user (giả sử đã có biến user và userViewModel)
+                        if (user != null && userViewModel != null) {
+                            int newTotal = user.getTotalListeningTime() + listenedSeconds;
+                            userViewModel.updateListeningTime(user.getEmail(), newTotal);
+                            user.setTotalListeningTime(newTotal); // cập nhật local
+                        }
+                        startListeningTime = 0;
+                        Log.d("MusicDetailActivity", "Reset startListeningTime về 0 khi pause");
+                    }
                 }
             }
         });
@@ -540,6 +590,22 @@ public class MusicDetailActivity extends AppCompatActivity {
             unregisterReceiver(playStatusReceiver);
             unregisterReceiver(errorReceiver);
             unregisterReceiver(trackChangedReceiver);
+
+            Log.d("MusicDetailActivity", "startListeningTime khi onPause: " + startListeningTime);
+
+            // Chỉ tính thời gian nghe nếu startListeningTime > 0
+            if (startListeningTime > 0 && user != null && userViewModel != null) {
+                long listenedMillis = System.currentTimeMillis() - startListeningTime;
+                int listenedSeconds = (int) (listenedMillis / 1000);
+                Log.d("MusicDetailActivity", "Tính listenedSeconds khi onPause: " + listenedSeconds);
+                Log.d("MusicDetailActivity", "user: " + user.getEmail());
+                int newTotal = user.getTotalListeningTime() + listenedSeconds;
+                userViewModel.updateListeningTime(user.getEmail(), newTotal);
+                Log.d("MusicDetailActivity", "newTotal: " + newTotal);
+                user.setTotalListeningTime(newTotal);
+                startListeningTime = 0;
+                Log.d("MusicDetailActivity", "Reset startListeningTime về 0 khi onPause");
+            }
         } catch (IllegalArgumentException e) {
             Log.e("MusicDetailActivity", "Receiver not registered: " + e.getMessage());
         }
@@ -553,6 +619,7 @@ public class MusicDetailActivity extends AppCompatActivity {
         }
 
         handler.removeCallbacks(updateSeekBar); // Dừng cập nhật SeekBar khi Activity ẩn
+
     }
 
     @Override

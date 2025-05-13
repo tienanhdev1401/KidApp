@@ -28,6 +28,7 @@ import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
 import com.example.kidapp.ViewModel.MusicCategoryViewModel;
 import com.example.kidapp.ViewModel.UserViewModel;
+import com.example.kidapp.models.Achievement;
 import com.example.kidapp.models.User;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -167,6 +168,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 Log.d("Không có âm nhạc", "No music categories found.");
             }
+        });
+
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Achievement achievement = new Achievement(
+            "audio_10min",
+            "Người nghe chăm chỉ",
+            "Nghe đủ 10 phút audio",
+            "https://static.vecteezy.com/system/resources/previews/050/489/412/non_2x/golden-medal-with-red-ribbon-representing-first-place-achievement-vector.jpg",
+            10,    // minListeningTime
+            null,  // minStoriesRead
+            null   // minGameLevel
+        );
+
+        // Lưu với id tự động
+//        db.collection("achievement")
+//        .add(achievement)
+//        .addOnSuccessListener(documentReference -> {
+//            // Thành công
+//        })
+//        .addOnFailureListener(e -> {
+//            // Thất bại
+//        });
+
+        // Hoặc lưu với id cụ thể (nên dùng để dễ truy vấn)
+        db.collection("achievement")
+        .document(achievement.getId())
+        .set(achievement)
+        .addOnSuccessListener(aVoid -> {
+            // Thành công
+        })
+        .addOnFailureListener(e -> {
+            // Thất bại
         });
     }
 

@@ -2,10 +2,12 @@ package com.example.kidapp.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +17,11 @@ import android.widget.Toast;
 import com.example.kidapp.R;
 import com.example.kidapp.models.FlipCard;
 import com.example.kidapp.models.FlipCardLevel;
+import com.example.kidapp.ViewModel.UserViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -42,6 +49,9 @@ public class GameLatTheActivity extends AppCompatActivity {
 
     // Game data from level
     private FlipCardLevel currentLevel;
+
+    private UserViewModel userViewModel;
+    private String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +81,13 @@ public class GameLatTheActivity extends AppCompatActivity {
         // Back button
         ImageView btnBack = findViewById(R.id.btn_Back);
         btnBack.setOnClickListener(v -> finish());
+
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userEmail = currentUser.getEmail();
+        }
     }
 
     private void initializeGame() {
@@ -248,8 +265,76 @@ public class GameLatTheActivity extends AppCompatActivity {
                 timer.cancel();
             }
 
+            // Cập nhật tiến trình game cho user
+            Log.d("GameLatTheActivity", "Cập nhật tiến trình game cho user: " + userEmail);
+            Log.d("GameLatTheActivity", "Current level ID: " + currentLevel.getId());
+            if (userEmail != null && currentLevel != null) {
+                userViewModel.updateGameProgress(
+                    userEmail,
+                    "flipcard",
+                    currentLevel.getId(),
+                    score
+                );
+            }
+
             // Show congratulations message
             Toast.makeText(this, "Chúc mừng! Bạn đã hoàn thành trò chơi!", Toast.LENGTH_LONG).show();
+
+            // Cập nhật achievements nếu đủ điều kiện
+            if (userEmail != null) {
+                userViewModel.getUserByEmail(userEmail).observe(this, user -> {
+                    if (user != null) {
+                        final int soManHoanThanh;
+                        if (user.getGameProgress() != null && user.getGameProgress().containsKey("flipcard")) {
+                            soManHoanThanh = user.getGameProgress().get("flipcard").getLevelReached();
+                        } else {
+                            soManHoanThanh = 0;
+                        }
+                        final List<String> achievements;
+                        if (user.getAchievements() == null) {
+                            achievements = new ArrayList<>();
+                        } else {
+                            achievements = user.getAchievements();
+                        }
+
+
+                        Log.d("GameLatTheActivity", "Achievements: " + achievements);
+                        Log.d("GameLatTheActivity", "So man hoan thanh: " + soManHoanThanh);
+
+
+
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        db.collection("achievement")
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    final boolean[] changed = {false};
+                                    final List<String> newAchievements = new ArrayList<>();
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String id = document.getString("id");
+                                            String name = document.getString("name");
+                                            Long minLevelLong = document.getLong("minGameLevel");
+                                            if (minLevelLong != null && id != null && id.startsWith("flipcard")) {
+                                                int minLevel = minLevelLong.intValue();
+                                                if (soManHoanThanh >= minLevel && !achievements.contains(id)) {
+                                                    achievements.add(id);
+                                                    Log.d("GameLatTheActivity", "Achievements Id: " + id);
+                                                    newAchievements.add(name != null ? name : id);
+                                                    changed[0] = true;
+                                                }
+                                            }
+                                        }
+                                        if (changed[0]) {
+                                            userViewModel.updateAchievements(userEmail, achievements);
+                                            for (String achv : newAchievements) {
+                                                Toast.makeText(this, "Bạn vừa nhận được thành tựu: " + achv, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }
+                                });
+                    }
+                });
+            }
         }
     }
 
