@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,13 +154,36 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void saveUserToFirestore(FirebaseUser user, String email, String username) {
         if (user != null) {
-            // Create user data map with additional username field
             Map<String, Object> userData = new HashMap<>();
             userData.put("email", email);
-            userData.put("username", username);  // Store the username
+            userData.put("username", username);
             userData.put("createdAt", System.currentTimeMillis());
+            userData.put("achievements", new ArrayList<>()); // achievements rỗng
+            userData.put("storyIds", new ArrayList<>()); // storyIds rỗng
+            userData.put("totalListeningTime", 0); // tổng thời gian nghe mặc định 0
 
-            // Add a new document with the user's UID
+            // Tạo gameProgress mặc định
+            Map<String, Object> gameProgress = new HashMap<>();
+
+            // flipcard
+            Map<String, Object> flipcard = new HashMap<>();
+            flipcard.put("levelReached", 0);
+            flipcard.put("scores", new HashMap<String, Object>());
+            gameProgress.put("flipcard", flipcard);
+
+            // wordguess
+            Map<String, Object> wordguess = new HashMap<>();
+            wordguess.put("levelReached", 0);
+            wordguess.put("scores", new HashMap<String, Object>());
+            gameProgress.put("wordguess", wordguess);
+
+            // puzzle (không có levelReached)
+            Map<String, Object> puzzle = new HashMap<>();
+            puzzle.put("scores", new HashMap<String, Object>());
+            gameProgress.put("puzzle", puzzle);
+
+            userData.put("gameProgress", gameProgress);
+
             db.collection("users").document(user.getUid())
                     .set(userData)
                     .addOnSuccessListener(aVoid -> Log.d("RegisterActivity", "User data saved to Firestore"))

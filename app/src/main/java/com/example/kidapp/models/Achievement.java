@@ -1,4 +1,5 @@
 package com.example.kidapp.models;
+
 public class Achievement {
     private String id;
     private String name;
@@ -21,7 +22,6 @@ public class Achievement {
         this.minGameLevel = minGameLevel;
     }
 
-    // Getter và Setter
     public String getId() {
         return id;
     }

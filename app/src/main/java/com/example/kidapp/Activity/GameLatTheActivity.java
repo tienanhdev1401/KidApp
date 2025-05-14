@@ -316,7 +316,7 @@ public class GameLatTheActivity extends AppCompatActivity {
                                             Long minLevelLong = document.getLong("minGameLevel");
                                             if (minLevelLong != null && id != null && id.startsWith("flipcard")) {
                                                 int minLevel = minLevelLong.intValue();
-                                                if (soManHoanThanh >= minLevel && !achievements.contains(id)) {
+                                                if (soManHoanThanh+1 >= minLevel && !achievements.contains(id)) {
                                                     achievements.add(id);
                                                     Log.d("GameLatTheActivity", "Achievements Id: " + id);
                                                     newAchievements.add(name != null ? name : id);
