@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvPageNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:padding="8dp"
+            android:text="Trang 1"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:id="@+id/pageImageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+
+            <ImageView
+                android:id="@+id/ivPageImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_placeholder" />
+
+            <LinearLayout
+                android:id="@+id/pageCharactersContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="bottom|center_horizontal"
+                android:orientation="horizontal"
+                android:paddingBottom="20dp" />
+
+            <LinearLayout
+                android:id="@+id/pageItemsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:orientation="horizontal" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvPageContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:padding="12dp"
+            android:text="Nội dung trang"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvPageElements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F5F5F5"
+            android:padding="8dp"
+            android:text="Bối cảnh: Rừng\nNhân vật: Cáo, Thỏ\nVật phẩm: Quả táo"
+            android:textColor="#555555"
+            android:textSize="12sp"
+            android:visibility="visible" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView> 

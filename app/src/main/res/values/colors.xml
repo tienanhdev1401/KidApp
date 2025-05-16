@@ -23,5 +23,8 @@
     <color name="character_category">#A5D6A7</color>
     <color name="setting_category">#90CAF9</color>
     <color name="item_category">#FFCC80</color>
+    <color name="light_background">#F9F9F9</color>
+    <color name="gray">#757575</color>
+    <color name="secondary">#FF6D00</color>
 
 </resources>
