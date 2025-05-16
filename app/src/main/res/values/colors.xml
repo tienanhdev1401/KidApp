@@ -27,4 +27,13 @@
     <color name="gray">#757575</color>
     <color name="secondary">#FF6D00</color>
 
+    <!-- Math Quiz Colors -->
+    <color name="option1_color">#4CAF50</color>
+    <color name="option2_color">#FF9800</color>
+    <color name="option3_color">#03A9F4</color>
+    <color name="option4_color">#E91E63</color>
+    <color name="correct_answer">#8BC34A</color>
+    <color name="addition_color">#FF5722</color>
+    <color name="subtraction_color">#9C27B0</color>
+
 </resources>
