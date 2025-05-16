@@ -17,7 +17,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 class GeminiService(private val context: Context) {
@@ -37,6 +40,15 @@ class GeminiService(private val context: Context) {
 
     private var storyCharacterDescriptions: Map<String, String> = mutableMapOf()
     private var storyStylePrompt: String = ""
+
+    private val cloudinaryService = CloudinaryService(context)
+    private val uploadsDir: File by lazy {
+        File(context.filesDir, "uploads").apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    }
 
     init {
         // Create generationConfig using the factory function
@@ -295,7 +307,6 @@ class GeminiService(private val context: Context) {
     }
 
     private suspend fun generateImageForScene(sceneContent: String, characters: List<String>, setting: String): String {
-        // Sử dụng nội dung tiếng Anh để tạo prompt cho việc tạo ảnh
         val imagePrompt = """
             Create a children's story illustration:
             Characters: ${characters.joinToString(", ")}
@@ -306,10 +317,45 @@ class GeminiService(private val context: Context) {
 
         return try {
             val imageDescription = getImageDescriptionFromGemini(imagePrompt)
-            generateImageWithFalAi(imageDescription)
+            val falImageUrl = generateImageWithFalAi(imageDescription)
+            
+            // Tải ảnh về thư mục tạm
+            val imageFile = downloadImage(falImageUrl)
+            
+            // Upload lên Cloudinary
+            val cloudinaryUrl = cloudinaryService.uploadImage(imageFile)
+            
+            // Xóa file tạm sau khi upload
+            imageFile.delete()
+            
+            cloudinaryUrl
         } catch (e: Exception) {
             Log.e(TAG, "Error generating image for scene: ${e.message}")
             "https://picsum.photos/600/400?random=${System.currentTimeMillis()}"
+        }
+    }
+
+    private suspend fun downloadImage(imageUrl: String): File = withContext(Dispatchers.IO) {
+        val fileName = "image_${System.currentTimeMillis()}.jpg"
+        val outputFile = File(uploadsDir, fileName)
+        
+        try {
+            val connection = URL(imageUrl).openConnection()
+            connection.connect()
+            
+            val inputStream = connection.getInputStream()
+            val outputStream = FileOutputStream(outputFile)
+            
+            inputStream.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+            
+            outputFile
+        } catch (e: Exception) {
+            Log.e(TAG, "Error downloading image: ${e.message}")
+            throw e
         }
     }
 

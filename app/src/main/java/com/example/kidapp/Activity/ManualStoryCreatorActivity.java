@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -39,6 +40,7 @@ import com.example.kidapp.Adapter.ManualStoryPageAdapter;
 import com.example.kidapp.Adapter.StoryElementAdapter;
 import com.example.kidapp.BuildConfig;
 import com.example.kidapp.R;
+import com.example.kidapp.Service.CloudinaryService;
 import com.example.kidapp.ViewModel.ManualStoryViewModel;
 import com.example.kidapp.ViewModel.StoryElementViewModel;
 import com.example.kidapp.models.ManualStory;
@@ -57,6 +59,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ManualStoryCreatorActivity extends AppCompatActivity implements ManualStoryPageAdapter.OnPageClickListener {
 
@@ -114,6 +118,9 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
                 }
             });
 
+    private CloudinaryService cloudinaryService;
+    private ExecutorService executorService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,6 +177,10 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
         // Làm mới dữ liệu từ repository
         Log.d("ManualStory", "Gọi refreshData trong onCreate");
         storyElementViewModel.refreshData();
+
+        // Khởi tạo CloudinaryService và ExecutorService
+        cloudinaryService = new CloudinaryService(this);
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     private void setupStoryElementObservers() {
@@ -354,7 +365,6 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
                 currentPhotoUri = FileProvider.getUriForFile(this,
                         BuildConfig.APPLICATION_ID + ".provider",
                         photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri);
                 takePictureLauncher.launch(takePictureIntent);
             }
         }
@@ -384,38 +394,53 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
                 adapter.updatePageImageLocally(selectedPagePosition, imageUri);
             }
             
-            // Thay vì upload lên Firebase, sử dụng đường dẫn local
-            String localImagePath = "file://" + imageFile.getAbsolutePath();
-            
-            if (isEditingCover) {
-                story.setCoverImageUrl(localImagePath);
-                isEditingCover = false;
-            } else if (selectedPagePosition != -1) {
-                ManualStory.Page page = story.getPages().get(selectedPagePosition);
-                
-                // Trường hợp đặc biệt: nếu trang đã có bối cảnh và nhân vật, 
-                // cần cảnh báo người dùng rằng ảnh từ bối cảnh và nhân vật có thể thay thế ảnh này
-                if (page.getSetting() != null) {
-                    new AlertDialog.Builder(this)
-                        .setTitle("Cảnh báo")
-                        .setMessage("Trang này đã có bối cảnh [" + page.getSetting().getName() + "]. Ảnh của trang sẽ được tự động tạo dựa trên bối cảnh. Bạn có muốn thay thế bằng ảnh thủ công này không?")
-                        .setPositiveButton("Đúng vậy, thay thế", (dialog, which) -> {
-                            page.setImageUrl(localImagePath);
-                            viewModel.updatePage(selectedPagePosition, page);
-                            adapter.notifyItemChanged(selectedPagePosition);
-                            Toast.makeText(this, "Đã thay thế ảnh tự động bằng ảnh thủ công", Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Không, giữ ảnh bối cảnh", null)
-                        .show();
-                } else {
-                    page.setImageUrl(localImagePath);
-                    viewModel.updatePage(selectedPagePosition, page);
-                    adapter.notifyItemChanged(selectedPagePosition);
-                    Toast.makeText(this, "Đã cập nhật ảnh trang", Toast.LENGTH_SHORT).show();
+            // Upload ảnh lên Cloudinary trong background
+            executorService.execute(() -> {
+                try {
+                    String cloudinaryUrl = cloudinaryService.uploadImage(imageFile);
+                    
+                    // Sau khi upload thành công, cập nhật UI trên main thread
+                    runOnUiThread(() -> {
+                        if (isEditingCover) {
+                            story.setCoverImageUrl(cloudinaryUrl);
+                            isEditingCover = false;
+                        } else if (selectedPagePosition != -1) {
+                            ManualStory.Page page = story.getPages().get(selectedPagePosition);
+                            
+                            // Trường hợp đặc biệt: nếu trang đã có bối cảnh và nhân vật
+                            if (page.getSetting() != null) {
+                                new AlertDialog.Builder(ManualStoryCreatorActivity.this)
+                                    .setTitle("Cảnh báo")
+                                    .setMessage("Trang này đã có bối cảnh [" + page.getSetting().getName() + "]. Ảnh của trang sẽ được tự động tạo dựa trên bối cảnh. Bạn có muốn thay thế bằng ảnh thủ công này không?")
+                                    .setPositiveButton("Đúng vậy, thay thế", (dialog, which) -> {
+                                        page.setImageUrl(cloudinaryUrl);
+                                        viewModel.updatePage(selectedPagePosition, page);
+                                        adapter.notifyItemChanged(selectedPagePosition);
+                                        Toast.makeText(ManualStoryCreatorActivity.this, "Đã thay thế ảnh tự động bằng ảnh thủ công", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .setNegativeButton("Không, giữ ảnh bối cảnh", null)
+                                    .show();
+                            } else {
+                                page.setImageUrl(cloudinaryUrl);
+                                viewModel.updatePage(selectedPagePosition, page);
+                                adapter.notifyItemChanged(selectedPagePosition);
+                                Toast.makeText(ManualStoryCreatorActivity.this, "Đã cập nhật ảnh trang", Toast.LENGTH_SHORT).show();
+                            }
+                            
+                            selectedPagePosition = -1;
+                        }
+                    });
+                } catch (Exception e) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ManualStoryCreatorActivity.this, 
+                            "Lỗi upload ảnh: " + e.getMessage(), 
+                            Toast.LENGTH_SHORT).show();
+                    });
+                } finally {
+                    // Xóa file tạm sau khi upload
+                    imageFile.delete();
                 }
-                
-                selectedPagePosition = -1;
-            }
+            });
         } catch (Exception e) {
             Toast.makeText(this, "Lỗi xử lý ảnh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -1408,7 +1433,7 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
                         // Tạo ImageView cho mỗi vật phẩm
                         ImageView itemImage = new ImageView(this);
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                100, 100); // Kích thước cố định cho vật phẩm
+                                140, 140); // Kích thước cố định cho vật phẩm
                         params.setMargins(8, 0, 8, 0); // Margin giữa các vật phẩm
                         itemImage.setLayoutParams(params);
                         itemImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -1478,5 +1503,13 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
         });
         
         builder.create().show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
     }
 } 

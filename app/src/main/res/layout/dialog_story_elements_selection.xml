@@ -51,13 +51,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCharacters"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="160dp"
         android:clipToPadding="false"
+        android:orientation="horizontal"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        tools:listitem="@layout/item_story_element"
         tools:itemCount="3"
-        android:orientation="horizontal" />
+        tools:listitem="@layout/item_story_element" />
 
     <!-- Bối cảnh -->
     <LinearLayout
@@ -87,13 +87,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSettings"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="160dp"
         android:clipToPadding="false"
+        android:orientation="horizontal"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        tools:listitem="@layout/item_story_element"
         tools:itemCount="3"
-        android:orientation="horizontal" />
+        tools:listitem="@layout/item_story_element" />
 
     <!-- Vật phẩm -->
     <LinearLayout
@@ -131,13 +131,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvItems"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="115dp"
         android:clipToPadding="false"
+        android:orientation="horizontal"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        tools:listitem="@layout/item_story_element"
         tools:itemCount="3"
-        android:orientation="horizontal" />
+        tools:listitem="@layout/item_story_element" />
 
     <Button
         android:id="@+id/btnDone"
