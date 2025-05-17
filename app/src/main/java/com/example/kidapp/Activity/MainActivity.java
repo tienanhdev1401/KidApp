@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals, cardStory;
+    private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals, cardStory, cardPvp;
     private View frontNumbers, backNumbers;
     private View frontReading, backReading;
     private View frontShapes, backShapes;
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View frontListen, backListen;
     private View frontGame, backGame;
     private View frontStory, backStory;
+    private View frontPvp, backPvp;
     private TextView usernametext;
 
     private ImageView profileButton;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FlipAnimationUtil listenFlipAnimation;
     private FlipAnimationUtil gameFlipAnimation;
     private FlipAnimationUtil storyFlipAnimation;
+    private FlipAnimationUtil pvpFlipAnimation;
     private DrawerLayout drawer;
     private ImageButton menuButton;
     private NavigationView navigationView;
@@ -183,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardListen = findViewById(R.id.cardListen);
         cardGame = findViewById(R.id.cardGame);
         cardStory = findViewById(R.id.cardStory);
+        cardPvp = findViewById(R.id.cardPvp);
 
         // Initialize front and back views
         inflateFrontBackViews();
@@ -236,6 +239,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         frontStory = getLayoutInflater().inflate(R.layout.card_front_story, null);
         backStory = getLayoutInflater().inflate(R.layout.card_back_story, null);
 
+        // PVP Card
+        frontPvp = getLayoutInflater().inflate(R.layout.card_front_pvp, null);
+        backPvp = getLayoutInflater().inflate(R.layout.card_back_pvp, null);
+
         // Add views to CardViews
         cardNumbers.removeAllViews();
         cardNumbers.addView(frontNumbers);
@@ -280,6 +287,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardStory.removeAllViews();
         cardStory.addView(frontStory);
         cardStory.addView(backStory);
+
+        cardPvp.removeAllViews();
+        cardPvp.addView(frontPvp);
+        cardPvp.addView(backPvp);
     }
 
     private void setupAnimations() {
@@ -294,6 +305,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listenFlipAnimation = new FlipAnimationUtil(this, frontListen, backListen);
         gameFlipAnimation = new FlipAnimationUtil(this, frontGame, backGame);
         storyFlipAnimation = new FlipAnimationUtil(this, frontStory, backStory);
+        pvpFlipAnimation = new FlipAnimationUtil(this, frontPvp, backPvp);
     }
 
     private void setupCardFlips() {
@@ -309,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupListenCard();
         setupGameCard();
         setupStoryCard();
+        setupPvpCard();
 
         // Set up profile button click
         profileButton = findViewById(R.id.profileButton);
@@ -466,49 +479,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void setupPvpCard() {
+        cardPvp.setOnClickListener(v -> {
+            pvpFlipAnimation.cancelAutoFlip();
+            pvpFlipAnimation.flipCard();
+
+            if (!pvpFlipAnimation.isFront()) {
+                ImageView gifView = backPvp.findViewById(R.id.Imv_pvp);
+                gifView.setOnClickListener(view -> {
+                    Intent intent = new Intent(MainActivity.this, PvpLobbyActivity.class);
+                    startActivity(intent);
+                });
+            }
+        });
+    }
+
     private void ShowGameOptionsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialogTheme);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_games_options, null);
-        builder.setView(dialogView);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn trò chơi");
+
+        String[] options = {"Xếp hình", "Trò chơi đoán chữ", "Trò chơi lật thẻ", "Làm toán", "Trò chơi đối kháng (PVP)"};
+        builder.setItems(options, (dialog, which) -> {
+            switch (which) {
+                case 0:
+            startActivity(new Intent(MainActivity.this, PuzzleSelectionActivity.class));
+                    break;
+                case 1:
+                    startActivity(new Intent(MainActivity.this, GuessWordLevelListActivity.class));
+                    break;
+                case 2:
+            startActivity(new Intent(MainActivity.this, FlipCardLevelListActivity.class));
+                    break;
+                case 3:
+                    startActivity(new Intent(MainActivity.this, MathQuizActivity.class));
+                    break;
+                case 4:
+                    // Khởi động tính năng PVP
+                    startActivity(new Intent(MainActivity.this, PvpLobbyActivity.class));
+                    break;
+            }
+        });
 
         AlertDialog dialog = builder.create();
-
-        // Custom animation
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
-        }
-
-        // Set up puzzle game button
-        ImageView btnPuzzle = dialogView.findViewById(R.id.Imv_puzzel);
-        Glide.with(MainActivity.this)
-                .asGif()
-                .load(R.drawable.puzzel_game)
-                .into(btnPuzzle);
-
-        btnPuzzle.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, PuzzleSelectionActivity.class));
-            dialog.dismiss();
-        });
-
-        // Set up memory card game button
-        ImageView btnCard = dialogView.findViewById(R.id.Imv_card);
-        btnCard.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, FlipCardLevelListActivity.class));
-            dialog.dismiss();
-        });
-
-        // Set up word guess game button
-        ImageView btnDoanAnh = dialogView.findViewById(R.id.Imv_DoanAnh);
-        Glide.with(MainActivity.this)
-                .asGif()
-                .load(R.drawable.puzzel_game)
-                .into(btnDoanAnh);
-
-        btnDoanAnh.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, GuessWordLevelListActivity.class));
-            dialog.dismiss();
-        });
-
         dialog.show();
     }
 
@@ -620,5 +632,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listenFlipAnimation.cancelAutoFlip();
         gameFlipAnimation.cancelAutoFlip();
         storyFlipAnimation.cancelAutoFlip();
+        pvpFlipAnimation.cancelAutoFlip();
     }
 }
