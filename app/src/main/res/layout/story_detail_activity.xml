@@ -120,12 +120,32 @@
                         android:visibility="gone">
 
                         <ImageButton
-                            android:id="@+id/btnPlayPause"
+                            android:id="@+id/btnPreviousVideo"
                             android:layout_width="36dp"
                             android:layout_height="36dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Previous"
+                            android:src="@drawable/rewind_button"
+                            android:tint="@color/white" />
+
+                        <ImageButton
+                            android:id="@+id/btnPlayPause"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginStart="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Play/Pause"
                             android:src="@drawable/detail_music_pause" />
+
+                        <ImageButton
+                            android:id="@+id/btnNextVideo"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginStart="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Next"
+                            android:src="@drawable/next_button"
+                            android:tint="@color/white" />
 
                         <SeekBar
                             android:id="@+id/seekBar"
@@ -154,7 +174,7 @@
                             android:layout_marginStart="8dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:contentDescription="Toàn màn hình"
-                            android:src="@drawable/ic_fullscreen" />
+                            android:src="@drawable/fullscreen" />
                     </LinearLayout>
                 </FrameLayout>
             </androidx.cardview.widget.CardView>
@@ -367,55 +387,55 @@
     </androidx.core.widget.NestedScrollView>
 
     <!-- Footer navigation buttons -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/navigationLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/footer_background"
-        android:backgroundTint="#1E88E5"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/navigationLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@drawable/footer_background"-->
+<!--        android:backgroundTint="#1E88E5"-->
+<!--        android:padding="16dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent">-->
 
-        <ImageButton
-            android:id="@+id/btnPrevious"
-            android:layout_width="65dp"
-            android:layout_height="60dp"
-            android:background="@drawable/navigation_button_bg"
-            android:backgroundTint="#29B6F6"
-            android:contentDescription="Câu chuyện trước"
-            android:src="@drawable/rewind_button"
-            android:tint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/btnPrevious"-->
+<!--            android:layout_width="65dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:background="@drawable/navigation_button_bg"-->
+<!--            android:backgroundTint="#29B6F6"-->
+<!--            android:contentDescription="Câu chuyện trước"-->
+<!--            android:src="@drawable/rewind_button"-->
+<!--            android:tint="@color/white"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <ImageButton
-            android:id="@+id/btnAudio"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@drawable/audio_button_bg"
-            android:backgroundTint="#29B6F6"
-            android:contentDescription="Phát âm thanh"
-            android:src="@drawable/detail_music_play"
-            android:tint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnNext"
-            app:layout_constraintStart_toEndOf="@+id/btnPrevious"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <ImageButton-->
+<!--            android:id="@+id/btnAudio"-->
+<!--            android:layout_width="70dp"-->
+<!--            android:layout_height="70dp"-->
+<!--            android:background="@drawable/audio_button_bg"-->
+<!--            android:backgroundTint="#29B6F6"-->
+<!--            android:contentDescription="Phát âm thanh"-->
+<!--            android:src="@drawable/detail_music_play"-->
+<!--            android:tint="@color/white"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/btnNext"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/btnPrevious"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="65dp"
-            android:layout_height="60dp"
-            android:background="@drawable/navigation_button_bg"
-            android:backgroundTint="#29B6F6"
-            android:contentDescription="Câu chuyện tiếp"
-            android:src="@drawable/next_button"
-            android:tint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        <ImageButton-->
+<!--            android:id="@+id/btnNext"-->
+<!--            android:layout_width="65dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:background="@drawable/navigation_button_bg"-->
+<!--            android:backgroundTint="#29B6F6"-->
+<!--            android:contentDescription="Câu chuyện tiếp"-->
+<!--            android:src="@drawable/next_button"-->
+<!--            android:tint="@color/white"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     <!-- Interactive elements -->
     <com.airbnb.lottie.LottieAnimationView

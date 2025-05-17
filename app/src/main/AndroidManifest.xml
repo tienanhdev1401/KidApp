@@ -30,6 +30,7 @@
         android:roundIcon="@drawable/image_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.KidApp"
+        android:hardwareAccelerated="true"
         tools:targetApi="31">
         <activity
             android:name=".Activity.CategorySongsActivity"
@@ -44,7 +45,11 @@
 
         <activity
             android:name=".Activity.StoryDetailActivity"
-            android:exported="false" />
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize"
+            android:screenOrientation="unspecified"
+            android:hardwareAccelerated="true"
+            android:theme="@style/FullscreenTheme"
+            tools:ignore="DiscouragedApi" />
         <activity
             android:name=".Activity.StoryActivity"
             android:exported="false" />
@@ -86,6 +91,12 @@
             android:exported="false" />
         <activity android:name=".Activity.GuessWordLevelListActivity" />
         <activity android:name=".Activity.FlipCardLevelListActivity" />
+        <activity
+            android:name=".Activity.FullscreenVideoActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize"
+            android:screenOrientation="landscape"
+            android:theme="@style/FullscreenTheme"
+            android:exported="false" />
         <service
             android:name=".Service.MusicService"
             android:enabled="true"

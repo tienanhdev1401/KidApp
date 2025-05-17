@@ -6,16 +6,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,6 +32,8 @@ import android.widget.VideoView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -36,6 +45,8 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
+import androidx.annotation.Nullable;
+
 public class StoryDetailActivity extends AppCompatActivity implements StoryService.StoryUpdateListener {
 
     private ArrayList<Story> playlist;
@@ -44,7 +55,7 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
     private boolean isPlaying = false;
     private int totalDuration = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private ImageButton btnPlayVideo, btnPlayPause, btnFullscreen, btnBookmark, btnPrevious, btnNext, btnPLayAudio;
+    private ImageButton btnPlayVideo, btnPlayPause, btnFullscreen, btnBookmark, btnNextVideo, btnPreviousVideo, btnPLayAudio;
     private ImageView thumbnailImageView, btnBack;
     private SeekBar seekBar;
     private VideoView videoView;
@@ -61,6 +72,11 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
     private boolean isServiceBound = false;
     private Intent serviceIntent;
 
+    private boolean isFullscreen = false;
+    private ConstraintLayout headerLayout, navigationLayout;
+    private NestedScrollView scrollView;
+    private CardView videoPlayerCard;
+    private ViewGroup.LayoutParams originalVideoParams;
     // Broadcast receiver to update UI based on service state
     private BroadcastReceiver storyReceiver = new BroadcastReceiver() {
         @Override
@@ -117,6 +133,15 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         }
     };
 
+    // Thêm thuộc tính mới để quản lý việc hiển thị controls
+    private boolean isControlsVisible = true;
+    private final long AUTO_HIDE_DELAY_MILLIS = 5000; // 5 giây
+    private Runnable hideControlsRunnable;
+    private View.OnClickListener showControlsListener;
+
+    // Constants
+    private static final int REQUEST_CODE_FULLSCREEN = 1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +153,7 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         story = getIntent().getParcelableExtra("story");
 
         setupViews();
+        setupControlsHandling();
         registerBroadcastReceivers();
         updateUI();
         setBtnControl();
@@ -135,7 +161,6 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
 
         // Thiết lập animation cho câu trả lời
         animationView = findViewById(R.id.animationView);
-        btnSubmitAnswer.setOnClickListener(v -> checkAnswer());
     }
     
     private void startAndBindService() {
@@ -208,33 +233,27 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
                 Toast.makeText(this, "Đã thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show()
         );
 
-        btnPrevious.setOnClickListener(v -> {
-            if (isServiceBound && storyService != null) {
-                storyService.playPrevious();
-            }
-        });
-
-        btnNext.setOnClickListener(v -> {
-            if (isServiceBound && storyService != null) {
-                storyService.playNext();
-            }
-        });
-
         btnSubmitAnswer.setOnClickListener(v -> checkAnswer());
 
-        btnFullscreen.setOnClickListener(v ->
-                Toast.makeText(this, "Đang chuyển sang chế độ toàn màn hình", Toast.LENGTH_SHORT).show()
-        );
+        btnFullscreen.setOnClickListener(v -> toggleFullscreen());
 
-        btnPlayVideo.setOnClickListener(v -> {
-            if (isServiceBound && storyService != null) {
-                thumbnailImageView.setVisibility(View.GONE);
-                btnPlayVideo.setVisibility(View.GONE);
-                videoControlsLayout.setVisibility(View.VISIBLE);
-                videoView.setVisibility(View.VISIBLE);
-                storyService.playCurrentStory();
-            }
-        });
+        btnPlayVideo.setOnClickListener(v -> startPlayingVideo());
+
+        if (btnPreviousVideo != null) {
+            btnPreviousVideo.setOnClickListener(v -> {
+                if (isServiceBound && storyService != null) {
+                    storyService.playPrevious();
+                }
+            });
+        }
+
+        if (btnNextVideo != null) {
+            btnNextVideo.setOnClickListener(v -> {
+                if (isServiceBound && storyService != null) {
+                    storyService.playNext();
+                }
+            });
+        }
 
         btnPlayPause.setOnClickListener(v -> {
             if (isServiceBound && storyService != null) {
@@ -246,15 +265,6 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
             }
         });
 
-        btnPLayAudio.setOnClickListener(v -> {
-            if (isServiceBound && storyService != null) {
-                if (storyService.isPlaying()) {
-                    storyService.pauseVideo();
-                } else {
-                    storyService.resumeVideo();
-                }
-            }
-        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -272,11 +282,203 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         });
     }
 
+    private void setupControlsHandling() {
+        // Khởi tạo Runnable để ẩn controls sau một khoảng thời gian
+        hideControlsRunnable = () -> {
+            if (isServiceBound && storyService != null && storyService.isPlaying()) {
+                hideControls();
+            }
+        };
+        // Thiết lập click listener cho VideoView để hiển thị controls
+        showControlsListener = v -> {
+            if (isControlsVisible) {
+                hideControls();
+            } else {
+                showControls();
+                // Đặt lịch ẩn controls sau khoảng thời gian
+                scheduleHideControls();
+            }
+        };
+        // Gán click listener cho video player container
+        videoView.setOnClickListener(showControlsListener);
+        videoPlayerCard.setOnClickListener(showControlsListener);
+    }
+    
+    private void scheduleHideControls() {
+        // Hủy lệnh ẩn trước đó nếu có
+        handler.removeCallbacks(hideControlsRunnable);
+        // Đặt lịch ẩn controls sau khoảng thời gian
+        handler.postDelayed(hideControlsRunnable, AUTO_HIDE_DELAY_MILLIS);
+    }
+    
+    private void showControls() {
+        videoControlsLayout.setVisibility(View.VISIBLE);
+        isControlsVisible = true;
+    }
+    
+    private void hideControls() {
+        if (isServiceBound && storyService != null && storyService.isPlaying()) {
+            videoControlsLayout.setVisibility(View.GONE);
+            isControlsVisible = false;
+        }
+    }
+
+    private void toggleFullscreen() {
+        // Chuyển đến FullscreenVideoActivity thay vì thay đổi layout hiện tại
+        if (isServiceBound && storyService != null) {
+            Story currentStory = storyService.getCurrentStory();
+            if (currentStory != null) {
+                // Tạm dừng phát video hiện tại
+                boolean isPlaying = storyService.isPlaying();
+                int currentPosition = storyService.getCurrentVideoPosition();
+                
+                if (isPlaying) {
+                    storyService.pauseVideo();
+                }
+                
+                // Chuyển sang activity fullscreen
+                Intent intent = new Intent(this, FullscreenVideoActivity.class);
+                intent.putExtra("videoUrl", currentStory.getStoryVideoUrl());
+                intent.putExtra("currentPosition", currentPosition);
+                intent.putExtra("isPlaying", isPlaying);
+                intent.putParcelableArrayListExtra("playlist", playlist);
+                intent.putExtra("storyPosition", storyService.getCurrentPosition());
+                
+                startActivityForResult(intent, REQUEST_CODE_FULLSCREEN);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == REQUEST_CODE_FULLSCREEN && resultCode == RESULT_OK && data != null) {
+            // Nhận kết quả từ FullscreenVideoActivity
+            int currentPosition = data.getIntExtra("currentPosition", 0);
+            boolean isPlaying = data.getBooleanExtra("isPlaying", false);
+            int storyPosition = data.getIntExtra("storyPosition", 0);
+            
+            // Cập nhật trạng thái trong StoryService
+            if (isServiceBound && storyService != null) {
+                // Nếu vị trí story đã thay đổi, cập nhật story mới
+                if (storyPosition != storyService.getCurrentPosition()) {
+                    storyService.setPlaylist(playlist, storyPosition);
+                    storyService.playCurrentStory();
+                    if (!isPlaying) {
+                        storyService.pauseVideo();
+                    }
+                } else {
+                    // Tiếp tục phát từ vị trí đã dừng
+                    storyService.seekTo(currentPosition);
+                    if (isPlaying) {
+                        storyService.resumeVideo();
+                    } else {
+                        storyService.pauseVideo();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+            // Nếu đang phát video, dừng phát trước khi thoát
+        if (isServiceBound && storyService != null && storyService.isPlaying()) {
+            storyService.pauseVideo();
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d("FULLSCREEN", "Configuration changed to: " + 
+              (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape" : "portrait"));
+
+        // Xử lý thay đổi orientation khi ở chế độ fullscreen
+        if (isFullscreen) {
+            // Hủy các callback đang chờ
+            handler.removeCallbacks(hideControlsRunnable);
+            
+            // Lưu trạng thái video trước khi thay đổi layout
+            final boolean wasPlaying;
+            final int currentPosition;
+            
+            if (isServiceBound && storyService != null) {
+                wasPlaying = storyService.isPlaying();
+                currentPosition = storyService.getCurrentVideoPosition();
+                // Tạm dừng video trong khi điều chỉnh layout
+                if (wasPlaying) {
+                    storyService.pauseVideo();
+                }
+            } else {
+                wasPlaying = false;
+                currentPosition = 0;
+            }
+            
+            // Các tác vụ cụ thể cho từng hướng màn hình
+            try {
+                if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    // Landscape mode
+                    videoPlayerCard.setLayoutParams(new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                    ));
+                    
+                    if (videoPlayerCard instanceof CardView) {
+                        ((CardView) videoPlayerCard).setRadius(0);
+                    }
+                    
+                    // Ẩn tất cả UI khác
+                    headerLayout.setVisibility(View.GONE);
+                    // navigationLayout đã bị ẩn/comment trong layout
+                    scrollView.setVisibility(View.GONE);
+                } else {
+                    // Portrait mode - nếu vẫn đang ở chế độ fullscreen
+                    // Gọi exitFullscreen sẽ tốt hơn ở đây
+                    if (isFullscreen) {
+                        //exitFullscreen();
+                        isFullscreen = false;
+                        return;
+                    }
+                }
+                
+                // Đảm bảo VideoView visible
+                videoView.setVisibility(View.VISIBLE);
+                showControls(); // Hiện controls khi thay đổi orientation
+                
+                // Cập nhật lại surface holder và tiếp tục phát
+                videoView.invalidate();
+                handler.postDelayed(() -> {
+                    if (isServiceBound && storyService != null) {
+                        try {
+                            storyService.setDisplay(videoView.getHolder());
+                            storyService.updateVideoSize();
+                            
+                            // Tiếp tục phát từ vị trí trước đó nếu đang phát
+                            if (wasPlaying) {
+                                Log.d("FULLSCREEN", "Resuming video after config change, position: " + currentPosition);
+                                storyService.seekTo(currentPosition);
+                                storyService.resumeVideo();
+                                
+                                // Lên lịch ẩn controls sau khi tiếp tục phát
+                                scheduleHideControls();
+                            }
+                        } catch (Exception e) {
+                            Log.e("FULLSCREEN", "Error updating display: " + e.getMessage());
+                        }
+                    }
+                }, 500);
+            } catch (Exception e) {
+                Log.e("FULLSCREEN", "Error in configuration change: " + e.getMessage());
+            }
+        }
+    }
     private void setupViews() {
         storyTitle = findViewById(R.id.tvStoryTitle);
         btnPlayVideo = findViewById(R.id.btnPlayVideo);
         btnPlayPause = findViewById(R.id.btnPlayPause);
-        btnPLayAudio = findViewById(R.id.btnAudio);
         btnFullscreen = findViewById(R.id.btnFullscreen);
         videoView = findViewById(R.id.videoView);
         seekBar = findViewById(R.id.seekBar);
@@ -290,8 +492,6 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         quizCard = findViewById(R.id.quizCard);
         btnBack = findViewById(R.id.btnBack);
         btnBookmark = findViewById(R.id.btnBookmark);
-        btnPrevious = findViewById(R.id.btnPrevious);
-        btnNext = findViewById(R.id.btnNext);
         btnSubmitAnswer = findViewById(R.id.btnSubmitAnswer);
         rbOption1 = findViewById(R.id.rbOption1);
         rbOption2 = findViewById(R.id.rbOption2);
@@ -300,15 +500,14 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         moralContent = findViewById(R.id.tvMoralContent);
         quizContent = findViewById(R.id.tvQuizQuestion);
         animationView = findViewById(R.id.animationView);
+        btnPreviousVideo = findViewById(R.id.btnPreviousVideo);
+         btnNextVideo = findViewById(R.id.btnNextVideo);
         storyContentCard.setVisibility(View.VISIBLE);
         moralCard.setVisibility(View.GONE);
         quizCard.setVisibility(View.GONE);
-        
-        // Thay vì ẩn VideoView, ta sẽ cấu hình nó để kết nối với MediaPlayer của Service
-        videoView.setOnPreparedListener(null); // Xóa các listener mặc định
-        videoView.setOnCompletionListener(null);
-        videoView.setOnErrorListener(null);
-        
+        scrollView = findViewById(R.id.scrollView);
+
+        // Cấu hình VideoView để kết nối với MediaPlayer của Service
         videoView.getHolder().addCallback(new android.view.SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(android.view.SurfaceHolder holder) {
@@ -319,24 +518,40 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
 
             @Override
             public void surfaceChanged(android.view.SurfaceHolder holder, int format, int width, int height) {
-                // Nothing to do
+                if (isServiceBound && storyService != null) {
+                    storyService.setDisplay(holder);
+                }
             }
 
             @Override
             public void surfaceDestroyed(android.view.SurfaceHolder holder) {
-                // Nothing to do
+                if (isServiceBound && storyService != null) {
+                    storyService.setDisplay(null);
+                }
             }
         });
+        
+        headerLayout = findViewById(R.id.headerLayout);
+     //   navigationLayout = findViewById(R.id.navigationLayout);
+        videoPlayerCard = findViewById(R.id.videoPlayerCard);
+        
+        // Lưu LayoutParams gốc của videoPlayerCard để khôi phục sau khi thoát fullscreen
+        originalVideoParams = new ViewGroup.LayoutParams(
+                videoPlayerCard.getLayoutParams().width,
+                videoPlayerCard.getLayoutParams().height
+        );
+        
+        videoView.setVisibility(View.VISIBLE);
+        videoControlsLayout.setVisibility(View.VISIBLE);
     }
     
     private void updatePlayPauseButton(boolean isPlaying) {
         this.isPlaying = isPlaying;
         if (isPlaying) {
             btnPlayPause.setImageResource(R.drawable.detail_music_pause);
-            btnPLayAudio.setImageResource(R.drawable.detail_music_pause);
         } else {
             btnPlayPause.setImageResource(R.drawable.detail_music_play);
-            btnPLayAudio.setImageResource(R.drawable.detail_music_play);
+
         }
     }
 
@@ -379,6 +594,12 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
             seekBar.setMax(duration);
             seekBar.setProgress(currentPosition);
             tvDuration.setText(formatTime(currentPosition) + " / " + formatTime(duration));
+            
+            // Ẩn controls nếu đang phát video và đã hiển thị quá lâu
+            if (storyService != null && storyService.isPlaying() && isControlsVisible) {
+                // Đảm bảo controls sẽ tự động ẩn khi video đang phát
+                scheduleHideControls();
+            }
         });
     }
 
@@ -396,5 +617,23 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
             isServiceBound = false;
         }
         unregisterReceiver(storyReceiver);
+    }
+
+    // Cập nhật phương thức này để xử lý việc hiển thị nút khi bắt đầu phát video
+    private void startPlayingVideo() {
+        if (isServiceBound && storyService != null) {
+            thumbnailImageView.setVisibility(View.GONE);
+            btnPlayVideo.setVisibility(View.GONE);
+            videoView.setVisibility(View.VISIBLE);
+            
+            // Hiển thị controls ban đầu
+            showControls();
+            
+            // Bắt đầu phát video
+            storyService.playCurrentStory();
+            
+            // Lên lịch ẩn nút sau khi phát
+            scheduleHideControls();
+        }
     }
 }

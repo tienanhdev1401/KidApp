@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
@@ -29,6 +31,7 @@ public class StoryService extends Service {
     public static final String ACTION_NEXT = "NEXT";
     public static final String ACTION_PREVIOUS = "PREVIOUS";
     private static final String TAG = "StoryService";
+    private SurfaceHolder holder;
 
     private String currentVideoUrl;
     private List<Story> playlist;
@@ -128,12 +131,14 @@ public class StoryService extends Service {
         try {
             // Check if URL is valid
             if (videoUrl == null || videoUrl.isEmpty()) {
+                Log.e(TAG, "Video URL is empty or null");
                 return;
             }
 
             // Check if we're already playing this URL (nếu đã pause thì tiếp tục phát từ vị trí đã dừng)
             if (mediaPlayer != null && currentVideoUrl != null && currentVideoUrl.equals(videoUrl)) {
                 if (!mediaPlayer.isPlaying()) {
+                    Log.d(TAG, "Resuming existing media player");
                     mediaPlayer.start();
                     sendPlayStatusBroadcast(true);
                     startUpdatingProgress();
@@ -142,7 +147,13 @@ public class StoryService extends Service {
             }
 
             // Otherwise, create a new MediaPlayer or reset the existing one
+            int currentPosition = 0;
+            boolean wasPlaying = false;
             if (mediaPlayer != null) {
+                if (mediaPlayer.isPlaying()) {
+                    wasPlaying = true;
+                    currentPosition = mediaPlayer.getCurrentPosition();
+                }
                 mediaPlayer.reset();
             } else {
                 mediaPlayer = new MediaPlayer();
@@ -153,14 +164,27 @@ public class StoryService extends Service {
                 mediaPlayer.setDisplay(videoSurface);
             }
 
-            currentVideoUrl = videoUrl;
-
             // Set the data source to the video URL
             mediaPlayer.setDataSource(videoUrl);
+            
+            // Cài đặt các thuộc tính trước khi prepare
+            mediaPlayer.setAudioStreamType(android.media.AudioManager.STREAM_MUSIC);
+            if (videoSurface != null) {
+                mediaPlayer.setScreenOnWhilePlaying(true);
+            }
+            
+            // Prepare asynchronously
             mediaPlayer.prepareAsync();
 
             mediaPlayer.setOnPreparedListener(mp -> {
                 Log.d(TAG, "Media player prepared successfully");
+                
+                // Kết nối lại với SurfaceHolder một lần nữa nếu có
+                if (videoSurface != null) {
+                    mp.setDisplay(videoSurface);
+                    updateVideoSize();
+                }
+                
                 mp.start();
                 sendPlayStatusBroadcast(true);
                 startUpdatingProgress();
@@ -200,6 +224,30 @@ public class StoryService extends Service {
             } else {
                 sendErrorBroadcast("Không tìm thấy video cho truyện này.");
             }
+        }
+    }
+
+
+    public void playVideo(VideoView videoView) {
+        Story currentStory = playlist.get(currentPosition);
+        String videoUrl = currentStory.getStoryVideoUrl(); // Đảm bảo videoUrl hợp lệ (https hoặc res/raw)
+
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            Uri uri = Uri.parse(videoUrl);
+
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(videoView);
+
+            videoView.setMediaController(mediaController);
+            videoView.setVideoURI(uri);
+            videoView.setOnPreparedListener(mp -> {
+                videoView.start();
+            });
+
+            videoView.setOnErrorListener((mp, what, extra) -> {
+                Toast.makeText(this, "Không thể phát video", Toast.LENGTH_SHORT).show();
+                return true;
+            });
         }
     }
 
@@ -368,11 +416,31 @@ public class StoryService extends Service {
 
     public void setDisplay(SurfaceHolder holder) {
         this.videoSurface = holder;
-        if (mediaPlayer != null && videoSurface != null) {
-            mediaPlayer.setDisplay(videoSurface);
+        this.holder = holder; // Lưu holder để sử dụng trong updateVideoSize
+        if (mediaPlayer != null && holder != null) {
+            mediaPlayer.setDisplay(holder);
+            try {
+                // Cập nhật kích thước video nếu đang phát
+                if (mediaPlayer.isPlaying()) {
+                    updateVideoSize();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error setting display: " + e.getMessage());
+            }
         }
     }
-
+    public void updateVideoSize() {
+        if (mediaPlayer != null && holder != null) {
+            try {
+                mediaPlayer.setDisplay(holder);
+                // Sử dụng SCALE_TO_FIT để hiển thị video tốt nhất
+                mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+                Log.d(TAG, "Video size updated");
+            } catch (Exception e) {
+                Log.e(TAG, "Error updating video size: " + e.getMessage());
+            }
+        }
+    }
     public void attachToVideoView(VideoView videoView) {
         if (videoView != null) {
             videoView.setVisibility(android.view.View.VISIBLE);

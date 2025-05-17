@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -212,37 +211,40 @@ public class StoryActivity extends AppCompatActivity {
         
         // Expand button để mở màn hình chi tiết
         expandButton.setOnClickListener(v -> {
-            if (isServiceBound && storyService != null) {
-                try {
-                    // Lấy thông tin mới nhất từ Service
-                    List<Story> currentPlaylist = storyService.getPlaylist();
-                    Story currentStory = storyService.getCurrentStory();
+            if (storyService != null && isServiceBound) {
+                // Lấy thông tin mới nhất từ Service
+                List<Story> currentPlaylist = storyService.getPlaylist();
+                Story currentMusic = storyService.getCurrentStory();
 
-                    // Kiểm tra dữ liệu hợp lệ
-                    if (currentPlaylist == null || currentPlaylist.isEmpty() || currentStory == null) {
-                        Log.e("StoryActivity", "Không thể mở player chi tiết: playlist rỗng hoặc story null");
-                        return;
-                    }
-
-                    // Tìm vị trí chính xác của story hiện tại trong playlist
-                    int currentPosition = storyService.getCurrentPosition();
-                    
-                    // Đảm bảo position hợp lệ
-                    if (currentPosition < 0 || currentPosition >= currentPlaylist.size()) {
-                        currentPosition = 0;
-                    }
-
-                    Intent intent = new Intent(StoryActivity.this, StoryDetailActivity.class);
-                    intent.putParcelableArrayListExtra("playlist", new ArrayList<>(currentPlaylist));
-                    intent.putExtra("storyPosition", currentPosition);
-                    intent.putExtra("story", currentStory);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Log.e("StoryActivity", "Lỗi khi mở StoryDetailActivity: " + e.getMessage());
-                    Toast.makeText(this, "Không thể mở chi tiết truyện", Toast.LENGTH_SHORT).show();
+                // Kiểm tra dữ liệu hợp lệ
+                if (currentPlaylist == null || currentMusic == null) {
+                    Log.e("StoryActivity", "Không thể mở player chi tiết: playlist hoặc music null");
+                    return;
                 }
-            } else {
-                Toast.makeText(this, "Không có truyện đang phát", Toast.LENGTH_SHORT).show();
+
+                // Tìm vị trí chính xác của bài hát hiện tại trong playlist
+                int currentPosition = -1;
+                for (int i = 0; i < currentPlaylist.size(); i++) {
+                    Story story = currentPlaylist.get(i);
+                    if (story.getStoryVideoUrl() != null && currentMusic.getStoryVideoUrl() != null &&
+                            story.getStoryVideoUrl().equals(currentMusic.getStoryVideoUrl())) {
+                        currentPosition = i;
+                        break;
+                    }
+                }
+
+                if (currentPosition == -1) {
+                    Log.e("MusicActivity", "Không tìm thấy vị trí bài hát trong playlist");
+                    // Fallback: Sử dụng currentPosition từ service
+                    currentPosition = storyService.getCurrentPosition();
+                }
+
+                Intent intent = new Intent(StoryActivity.this, StoryDetailActivity.class);
+                intent.putParcelableArrayListExtra("playlist", new ArrayList<>(currentPlaylist));
+                intent.putExtra("storyPosition", currentPosition);
+                intent.putExtra("story", currentMusic);
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_up, 0);
             }
         });
     }
