@@ -105,4 +105,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
+    
+
+    //cloudinary
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
 }
