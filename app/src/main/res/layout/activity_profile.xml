@@ -19,6 +19,17 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"/>
 
+    <ImageView
+        android:id="@+id/setting_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/setting"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"/>
+
     <TextView
         android:id="@+id/profile_title"
         android:layout_width="wrap_content"

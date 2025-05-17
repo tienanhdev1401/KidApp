@@ -528,7 +528,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set up memory card game button
         ImageView btnCard = dialogView.findViewById(R.id.Imv_card);
         btnCard.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, FlipCardLevelListActivity.class));
+            startActivity(new Intent(MainActivity.this, FlipCardLevelSelectionActivity.class));
             dialog.dismiss();
         });
 
@@ -611,9 +611,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_puzzle_game) {
             startActivity(new Intent(MainActivity.this, PuzzleSelectionActivity.class));
         } else if (itemId == R.id.nav_card_flipping_game) {
-            startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
+            startActivity(new Intent(MainActivity.this, FlipCardLevelSelectionActivity.class));
         } else if (itemId == R.id.nav_word_guessing_game) {
-            startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
+            startActivity(new Intent(MainActivity.this, GuessWordLevelListActivity.class));
         } else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         } else if (itemId == R.id.nav_story_history) {

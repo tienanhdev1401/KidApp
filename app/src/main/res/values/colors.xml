@@ -24,4 +24,7 @@
     <color name="setting_category">#90CAF9</color>
     <color name="item_category">#FFCC80</color>
 
+    <color name="primaryColor">#FF6B6B</color> <!-- Màu hồng dễ thương -->
+    <color name="primaryDarkColor">#DC5050</color> <!-- Màu đậm hơn khi nhấn -->
+
 </resources>

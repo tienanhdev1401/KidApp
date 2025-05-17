@@ -97,6 +97,7 @@
         <activity
             android:name=".Activity.LoadingActivity"
             android:exported="false" />
+        <activity android:name=".Activity.FlipCardLevelSelectionActivity" android:exported="false" />
         <service
             android:name=".Service.MusicService"
             android:enabled="true"

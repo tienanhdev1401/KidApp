@@ -39,6 +39,12 @@ public class ProfileActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
 
+        ImageView settingButton = findViewById(R.id.setting_button);
+        settingButton.setOnClickListener(v -> {
+            // Chuyển sang trang chi tiết sản phẩm
+            startActivity(new android.content.Intent(ProfileActivity.this, ProfileDetailActivity.class));
+        });
+
         dayViews[0] = findViewById(R.id.day_sun);
         dayViews[1] = findViewById(R.id.day_mon);
         dayViews[2] = findViewById(R.id.day_tue);

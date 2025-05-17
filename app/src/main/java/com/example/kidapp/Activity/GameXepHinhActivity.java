@@ -26,6 +26,11 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.kidapp.R;
+import com.example.kidapp.ViewModel.UserViewModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,6 +67,9 @@ public class GameXepHinhActivity extends AppCompatActivity {
     private String puzzleId;
     private String puzzleUrl;
     private String puzzleName;
+
+    private UserViewModel userViewModel;
+    private String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +133,13 @@ public class GameXepHinhActivity extends AppCompatActivity {
         
         ImageView btnBack = findViewById(R.id.btn_Back);
         btnBack.setOnClickListener(v-> finish());
+
+        userViewModel = new androidx.lifecycle.ViewModelProvider(this).get(UserViewModel.class);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userEmail = currentUser.getEmail();
+        }
     }
     
     private void loadImageFromUrl(String imageUrl) {
@@ -355,8 +370,57 @@ public class GameXepHinhActivity extends AppCompatActivity {
         timerHandler.removeCallbacks(timerRunnable);
         isGameStarted = false;
 
+        // Tính điểm
+        int score = Math.max(0, 1000 - seconds);
+        // Lưu điểm vào scores (key là số lần chơi, value là điểm)
+        if (userEmail != null) {
+            userViewModel.addPuzzleScore(userEmail, score);
+        }
+        // Kiểm tra achievement dựa vào số lần chơi thành công
+        if (userEmail != null) {
+            userViewModel.getUserByEmail(userEmail).observe(this, user -> {
+                if (user != null) {
+                    final int[] soLanChoi = {0};
+                    if (user.getGameProgress() != null && user.getGameProgress().get("puzzle") != null) {
+                        com.example.kidapp.models.GameProgress puzzleProgress = user.getGameProgress().get("puzzle");
+                        if (puzzleProgress.getScores() != null) {
+                            soLanChoi[0] = puzzleProgress.getScores().size();
+                        }
+                    }
+                    final java.util.List<String> achievements = user.getAchievements() == null ? new java.util.ArrayList<>() : user.getAchievements();
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("achievement")
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                final boolean[] changed = {false};
+                                final java.util.List<String> newAchievements = new java.util.ArrayList<>();
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        String id = document.getString("id");
+                                        String name = document.getString("name");
+                                        Long minLevelLong = document.getLong("minGameLevel");
+                                        if (minLevelLong != null && id != null && id.startsWith("puzzle")) {
+                                            int minLevel = minLevelLong.intValue();
+                                            if (soLanChoi[0] >= minLevel && !achievements.contains(id)) {
+                                                achievements.add(id);
+                                                newAchievements.add(name != null ? name : id);
+                                                changed[0] = true;
+                                            }
+                                        }
+                                    }
+                                    if (changed[0]) {
+                                        userViewModel.updateAchievements(userEmail, achievements);
+                                        for (String achv : newAchievements) {
+                                            android.widget.Toast.makeText(this, "Bạn vừa nhận được thành tựu: " + achv, android.widget.Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                            });
+                }
+            });
+        }
         // Show congratulation dialog
-        new AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Chúc mừng!")
                 .setMessage("Bạn đã hoàn thành trò chơi trong " + formatTime(seconds) + "!")
                 .setPositiveButton("Chơi lại", (dialog, which) -> startNewGame())

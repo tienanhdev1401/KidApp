@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.kidapp.R;
 import com.example.kidapp.models.FlipCard;
 import com.example.kidapp.models.FlipCardLevel;
@@ -287,6 +288,7 @@ public class GameLatTheActivity extends AppCompatActivity {
                         final int soManHoanThanh;
                         if (user.getGameProgress() != null && user.getGameProgress().containsKey("flipcard")) {
                             soManHoanThanh = user.getGameProgress().get("flipcard").getLevelReached();
+                            Log.d("GameLatTheActivity", "Level reached: " + soManHoanThanh);
                         } else {
                             soManHoanThanh = 0;
                         }
@@ -296,12 +298,6 @@ public class GameLatTheActivity extends AppCompatActivity {
                         } else {
                             achievements = user.getAchievements();
                         }
-
-
-                        Log.d("GameLatTheActivity", "Achievements: " + achievements);
-                        Log.d("GameLatTheActivity", "So man hoan thanh: " + soManHoanThanh);
-
-
 
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         db.collection("achievement")
@@ -314,13 +310,58 @@ public class GameLatTheActivity extends AppCompatActivity {
                                             String id = document.getString("id");
                                             String name = document.getString("name");
                                             Long minLevelLong = document.getLong("minGameLevel");
+                                            String imageUrl = document.getString("imageUrl");
                                             if (minLevelLong != null && id != null && id.startsWith("flipcard")) {
                                                 int minLevel = minLevelLong.intValue();
-                                                if (soManHoanThanh+1 >= minLevel && !achievements.contains(id)) {
+                                                if (soManHoanThanh >= minLevel && !achievements.contains(id)) {
                                                     achievements.add(id);
-                                                    Log.d("GameLatTheActivity", "Achievements Id: " + id);
                                                     newAchievements.add(name != null ? name : id);
                                                     changed[0] = true;
+                                                    // Hiện animation và ảnh thành tựu
+                                                    runOnUiThread(() -> {
+                                                        LottieAnimationView achievementAnimationView = findViewById(R.id.achievementAnimationView);
+                                                        ImageView achievementImageView = findViewById(R.id.achievementImageView);
+                                                        if (achievementImageView != null) {
+                                                            achievementImageView.setVisibility(View.GONE);
+                                                        }
+                                                        if (achievementAnimationView != null) {
+                                                            achievementAnimationView.setAnimation(R.raw.achievement_animation);
+                                                            achievementAnimationView.setVisibility(View.VISIBLE);
+                                                            achievementAnimationView.playAnimation();
+
+                                                            achievementAnimationView.addAnimatorListener(new android.animation.Animator.AnimatorListener() {
+                                                                @Override
+                                                                public void onAnimationStart(android.animation.Animator animation) {}
+
+                                                                @Override
+                                                                public void onAnimationEnd(android.animation.Animator animation) {
+                                                                    achievementAnimationView.setVisibility(View.GONE);
+                                                                    achievementImageView.setVisibility(View.GONE);
+                                                                }
+
+                                                                @Override
+                                                                public void onAnimationCancel(android.animation.Animator animation) {}
+
+                                                                @Override
+                                                                public void onAnimationRepeat(android.animation.Animator animation) {}
+                                                            });
+                                                        }
+                                                        if (achievementImageView != null && imageUrl != null && !imageUrl.isEmpty()) {
+                                                            // Chỉ hiển thị ImageView nếu ảnh tải thành công
+                                                            Picasso.get().load(imageUrl).into(achievementImageView, new com.squareup.picasso.Callback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    achievementImageView.setVisibility(View.VISIBLE);
+                                                                    Log.d("Achievement", "Flip Card: Image loaded successfully.");
+                                                                }
+
+                                                                @Override
+                                                                public void onError(Exception e) {
+                                                                    Log.e("Achievement", "Flip Card: Error loading image: " + e.getMessage());
+                                                                }
+                                                            });
+                                                        }
+                                                    });
                                                 }
                                             }
                                         }

@@ -11,6 +11,10 @@ public class User {
     private java.util.List<String> storyIds;
     private int totalListeningTime;
     private java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress;
+    private String gender;
+    private String dateOfBirth;
+    private String avatarUrl;
+    private String phone;
 
     // Default constructor for Firebase
     public User() {
@@ -20,9 +24,23 @@ public class User {
         this.email = email;
         this.password = password;
         this.username = username;
+        this.gender = null;
+        this.dateOfBirth = null;
+        this.avatarUrl = null;
+        this.phone = null;
     }
 
-    public User(String email, String password, String username, java.util.List<String> achievements, java.util.List<String> storyIds, int totalListeningTime, java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress) {
+    public User(String email, String password, String username, String gender, String dateOfBirth, String avatarUrl, String phone) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.avatarUrl = avatarUrl;
+        this.phone = phone;
+    }
+
+    public User(String email, String password, String username, java.util.List<String> achievements, java.util.List<String> storyIds, int totalListeningTime, java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress, String gender, String dateOfBirth, String avatarUrl, String phone) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -30,6 +48,10 @@ public class User {
         this.storyIds = storyIds;
         this.totalListeningTime = totalListeningTime;
         this.gameProgress = gameProgress;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.avatarUrl = avatarUrl;
+        this.phone = phone;
     }
 
     // Getters and setters
@@ -87,6 +109,38 @@ public class User {
 
     public void setGameProgress(Map<String, GameProgress> gameProgress) {
         this.gameProgress = gameProgress;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
 

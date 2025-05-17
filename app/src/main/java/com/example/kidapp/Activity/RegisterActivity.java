@@ -157,6 +157,10 @@ public class RegisterActivity extends AppCompatActivity {
             Map<String, Object> userData = new HashMap<>();
             userData.put("email", email);
             userData.put("username", username);
+            userData.put("gender", null);
+            userData.put("dateOfBirth", null);
+            userData.put("avatarUrl", null);
+            userData.put("phone", null);
             userData.put("createdAt", System.currentTimeMillis());
             userData.put("achievements", new ArrayList<>()); // achievements rỗng
             userData.put("storyIds", new ArrayList<>()); // storyIds rỗng

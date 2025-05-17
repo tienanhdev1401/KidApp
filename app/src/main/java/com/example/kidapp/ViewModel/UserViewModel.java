@@ -38,4 +38,12 @@ public class UserViewModel extends AndroidViewModel {
     public void updateGameProgress(String userEmail, String gameKey, int newLevel, int newScore) {
         userRepository.updateGameProgress(userEmail, gameKey, newLevel, newScore);
     }
+
+    public void updateUser(String email, String gender, String dateOfBirth, String phone, String avatarUrl) {
+        userRepository.updateUser(email, gender, dateOfBirth, phone, avatarUrl);
+    }
+
+    public void addPuzzleScore(String userEmail, int score) {
+        userRepository.addPuzzleScore(userEmail, score);
+    }
 }
