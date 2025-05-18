@@ -40,6 +40,11 @@
             android:name=".Activity.PvpLobbyActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.PvpGameActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden" />
+        <activity
             android:name=".Activity.PvpWaitingRoomActivity"
             android:exported="false" />
         <activity

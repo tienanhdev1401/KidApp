@@ -14,12 +14,14 @@ public class PvpRoom implements Serializable {
     private String gameType; // FLIP_CARD, PUZZLE, GUESS_WORD, MATH, etc.
     private String gameId; // ID của game cụ thể
     private String status; // WAITING, PLAYING, FINISHED
-    private long createdAt;
+    private Long createdAt;
     private Map<String, Integer> scores; // userId -> score
+    private Map<String, Object> extraData; // Lưu dữ liệu bổ sung như điểm số, thời gian còn lại, v.v.
 
     // Constructor mặc định (cần thiết cho Firebase)
     public PvpRoom() {
         this.scores = new HashMap<>();
+        this.extraData = new HashMap<>();
     }
 
     // Constructor với các tham số
@@ -33,6 +35,7 @@ public class PvpRoom implements Serializable {
         this.createdAt = System.currentTimeMillis();
         this.scores = new HashMap<>();
         scores.put(hostId, 0);
+        this.extraData = new HashMap<>();
     }
 
     // Getters và setters
@@ -108,11 +111,11 @@ public class PvpRoom implements Serializable {
         this.status = status;
     }
 
-    public long getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(long createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -122,6 +125,62 @@ public class PvpRoom implements Serializable {
 
     public void setScores(Map<String, Integer> scores) {
         this.scores = scores;
+    }
+
+    public Map<String, Object> getExtraData() {
+        if (extraData == null) {
+            extraData = new HashMap<>();
+        }
+        return extraData;
+    }
+
+    public void setExtraData(Map<String, Object> extraData) {
+        this.extraData = extraData;
+    }
+
+    // Helper methods - Các phương thức để lấy/thiết lập giá trị trong extraData
+    public Object getExtraValue(String key) {
+        if (extraData != null && extraData.containsKey(key)) {
+            return extraData.get(key);
+        }
+        return null;
+    }
+
+    public void setExtraValue(String key, Object value) {
+        if (extraData == null) {
+            extraData = new HashMap<>();
+        }
+        extraData.put(key, value);
+    }
+
+    // Lấy giá trị Boolean từ extraData
+    public Boolean getBooleanExtraValue(String key, Boolean defaultValue) {
+        if (extraData != null && extraData.containsKey(key)) {
+            Object value = extraData.get(key);
+            if (value instanceof Boolean) {
+                return (Boolean) value;
+            }
+        }
+        return defaultValue;
+    }
+
+    // Lấy giá trị Integer từ extraData
+    public Integer getIntegerExtraValue(String key, Integer defaultValue) {
+        if (extraData != null && extraData.containsKey(key)) {
+            Object value = extraData.get(key);
+            if (value instanceof Integer) {
+                return (Integer) value;
+            } else if (value instanceof Long) {
+                return ((Long) value).intValue();
+            } else if (value instanceof String) {
+                try {
+                    return Integer.parseInt((String) value);
+                } catch (NumberFormatException e) {
+                    return defaultValue;
+                }
+            }
+        }
+        return defaultValue;
     }
 
     // Phương thức hỗ trợ

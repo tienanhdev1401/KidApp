@@ -20,10 +20,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.kidapp.DB.FirebaseInitializer;
+import com.example.kidapp.DB.PvpRoomManager;
 import com.example.kidapp.R;
 import com.example.kidapp.ViewModel.PvpViewModel;
 import com.example.kidapp.ViewModel.UserViewModel;
 import com.example.kidapp.models.PvpRoom;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PvpWaitingRoomActivity extends AppCompatActivity {
     private static final String TAG = "PvpWaitingRoomActivityiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
@@ -87,11 +91,47 @@ public class PvpWaitingRoomActivity extends AppCompatActivity {
             Log.d(TAG, "Start button clicked");
             PvpRoom room = pvpViewModel.getCurrentRoom().getValue();
             if (room != null && room.getGuestId() != null && !room.getGuestId().isEmpty()) {
+                // Vô hiệu hóa nút bắt đầu để ngăn nhấn nhiều lần
+                btnStart.setEnabled(false);
+                
+                // Thông báo cho người dùng
+                Toast.makeText(this, "Bắt đầu trò chơi...", Toast.LENGTH_SHORT).show();
+                
                 // Cập nhật trạng thái trước khi bắt đầu
                 Log.d(TAG, "Updating room status to PLAYING");
-                pvpViewModel.updateRoomStatus("PLAYING");
-                // Game sẽ tự động bắt đầu khi cập nhật trạng thái phòng và
-                // listener phát hiện trạng thái là PLAYING trong updateRoomUI
+                Log.d(TAG, "************ HOST STARTING GAME - CHANGING STATUS TO PLAYING ************");
+                
+                // Thay vì chỉ cập nhật trạng thái, cũng thêm các trạng thái của game
+                Map<String, Object> gameUpdate = new HashMap<>();
+                gameUpdate.put("status", "PLAYING");
+                gameUpdate.put("gameStarted", true);
+                gameUpdate.put("gameStartTime", System.currentTimeMillis());
+                gameUpdate.put("countdownStartTime", System.currentTimeMillis());
+                
+                // Cập nhật trực tiếp vào Firebase để cả hai máy nhận thông báo
+                FirebaseInitializer.getPvpRoomsRef().child(room.getRoomId())
+                    .updateChildren(gameUpdate)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Room status updated to PLAYING, starting game now");
+                        
+                        // Bắt đầu game sau khi cập nhật thành công
+                        Intent gameIntent = new Intent(PvpWaitingRoomActivity.this, PvpGameActivity.class);
+                        gameIntent.putExtra("ROOM_ID", room.getRoomId());
+                        gameIntent.putExtra("GAME_START_IMMEDIATELY", true);
+                        
+                        // Đánh dấu trong PvpRoomManager để ngăn xóa phòng
+                        PvpRoomManager.getInstance().setPreventRoomDeletion(room.getRoomId(), true);
+                        PvpRoomManager.getInstance().registerRoomUsage(room.getRoomId());
+                        
+                        startActivity(gameIntent);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Failed to update room status", e);
+                        btnStart.setEnabled(true);
+                        Toast.makeText(PvpWaitingRoomActivity.this, 
+                                "Lỗi khi bắt đầu game: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
             } else {
                 Toast.makeText(this, "Chưa đủ người chơi để bắt đầu", Toast.LENGTH_SHORT).show();
             }
@@ -140,6 +180,29 @@ public class PvpWaitingRoomActivity extends AppCompatActivity {
         // Kiểm tra xem thông tin phòng có đầy đủ không
         if (room.getRoomName() == null || room.getHostName() == null) {
             Log.e(TAG, "Room data incomplete, cannot update UI");
+            return;
+        }
+
+        // Nếu phòng đã bắt đầu chơi, chuyển đến màn hình game ngay lập tức
+        if ("PLAYING".equals(room.getStatus())) {
+            Log.d(TAG, "Room status is PLAYING, starting game");
+            
+            // Thêm đoạn log này để xác nhận đã nhận được trạng thái PLAYING
+            Log.d(TAG, "************ DETECTED PLAYING STATUS - WILL START GAME NOW ************");
+            Log.d(TAG, "Role: " + (isHost() ? "HOST" : "GUEST") + ", Room status: " + room.getStatus());
+            
+            // Chuyển sang màn hình game ngay lập tức
+            Intent intent = new Intent(this, PvpGameActivity.class);
+            intent.putExtra("ROOM_ID", room.getRoomId());
+            intent.putExtra("GAME_START_IMMEDIATELY", true);
+            
+            // QUAN TRỌNG: Đánh dấu trong PvpRoomManager để ngăn xóa phòng
+            PvpRoomManager.getInstance().setPreventRoomDeletion(room.getRoomId(), true);
+            PvpRoomManager.getInstance().registerRoomUsage(room.getRoomId());
+            
+            Log.d(TAG, "Setting prevent room deletion to TRUE for room: " + room.getRoomId());
+            startActivity(intent);
+            finish();
             return;
         }
 
@@ -215,54 +278,31 @@ public class PvpWaitingRoomActivity extends AppCompatActivity {
         } else {
             btnCancel.setText("Rời Phòng");
         }
-
-        // Nếu phòng đã bắt đầu chơi, chuyển đến màn hình game
-        if ("PLAYING".equals(room.getStatus())) {
-            Log.d(TAG, "Room status is PLAYING, starting game");
-            startGame();
-        }
     }
 
     private void startGame() {
         PvpRoom room = pvpViewModel.getCurrentRoom().getValue();
-        if (room == null) return;
-
-        Log.d(TAG, "Starting game of type: " + room.getGameType());
-        
-        // Tạo Intent dựa trên loại game
-        Intent gameIntent = null;
-        
-        switch (room.getGameType()) {
-            case "FLIP_CARD":
-                gameIntent = new Intent(this, GameLatTheActivity.class);
-                Log.d(TAG, "Creating intent for FLIP_CARD game");
-                break;
-            case "PUZZLE":
-                gameIntent = new Intent(this, GameXepHinhActivity.class);
-                Log.d(TAG, "Creating intent for PUZZLE game");
-                break;
-            case "GUESS_WORD":
-                gameIntent = new Intent(this, GameDoanChuActivity.class);
-                Log.d(TAG, "Creating intent for GUESS_WORD game");
-                break;
-            case "MATH":
-                gameIntent = new Intent(this, MathQuizActivity.class);
-                Log.d(TAG, "Creating intent for MATH game");
-                break;
+        if (room == null) {
+            showMessage("Không thể bắt đầu game: Không có dữ liệu phòng");
+            return;
         }
 
-        if (gameIntent != null) {
-            // Thêm thông tin room vào intent
-            gameIntent.putExtra("ROOM_ID", room.getRoomId());
-            gameIntent.putExtra("IS_PVP_MODE", true);
-            gameIntent.putExtra("GAME_LEVEL", room.getGameId());
-            
-            Log.d(TAG, "Starting game activity with ROOM_ID: " + room.getRoomId());
-            startActivity(gameIntent);
-        } else {
-            Log.e(TAG, "Could not create game intent for game type: " + room.getGameType());
-            Toast.makeText(this, "Không thể bắt đầu trò chơi này", Toast.LENGTH_SHORT).show();
+        // Bắt đầu game
+        Intent intent = new Intent(this, PvpGameActivity.class);
+        intent.putExtra("ROOM_ID", room.getRoomId());
+        
+        // QUAN TRỌNG: Đánh dấu trong PvpRoomManager để ngăn xóa phòng
+        PvpRoomManager.getInstance().setPreventRoomDeletion(room.getRoomId(), true);
+        PvpRoomManager.getInstance().registerRoomUsage(room.getRoomId());
+        
+        Log.d(TAG, "Setting prevent room deletion to TRUE for room: " + room.getRoomId());
+        
+        // Đặt cờ phòng ở trạng thái PLAYING - chỉ host cần làm điều này
+        if (isHost()) {
+            pvpViewModel.updateRoomStatus("PLAYING");
         }
+        
+        startActivity(intent);
     }
 
     private void copyToClipboard(String text) {
@@ -329,7 +369,15 @@ public class PvpWaitingRoomActivity extends AppCompatActivity {
             Log.d(TAG, "Host ID: " + room.getHostId() + ", Host Name: " + room.getHostName());
             Log.d(TAG, "Guest ID: " + (room.getGuestId() != null ? room.getGuestId() : "none") + 
                     ", Guest Name: " + (room.getGuestName() != null ? room.getGuestName() : "none"));
-            Log.d(TAG, "Status: " + room.getStatus());
+            
+            // Thêm log đặc biệt cho trạng thái phòng để debug khi host bắt đầu game
+            String status = room.getStatus();
+            Log.d(TAG, "********* ROOM STATUS UPDATED: " + status + " *********");
+            if ("PLAYING".equals(status)) {
+                Log.d(TAG, "PLAYING STATUS DETECTED in observer!");
+                String role = isHost() ? "HOST" : "GUEST";
+                Log.d(TAG, "User role: " + role + " detected room status changed to PLAYING");
+            }
             
             // Cập nhật UI chỉ khi room có dữ liệu đầy đủ
             if (room.getRoomName() != null && room.getHostName() != null) {
@@ -499,5 +547,16 @@ public class PvpWaitingRoomActivity extends AppCompatActivity {
                     "Lỗi kết nối đến server: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean isHost() {
+        PvpRoom room = pvpViewModel.getCurrentRoom().getValue();
+        if (room == null) return false;
+        String currentUserId = pvpViewModel.getCurrentUserId();
+        return currentUserId != null && currentUserId.equals(room.getHostId());
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 } 

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.kidapp.DB.FirebaseInitializer;
 import com.example.kidapp.DB.PvpRoomHelper;
+import com.example.kidapp.DB.PvpRoomManager;
 import com.example.kidapp.models.PvpRoom;
 import com.example.kidapp.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +29,7 @@ public class PvpViewModel extends ViewModel {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private UserViewModel userViewModel;
     private Application application;
+    private boolean preventRoomDeletion = false;
 
     public PvpViewModel() {
         // Đảm bảo Firebase đã được khởi tạo
@@ -235,8 +237,20 @@ public class PvpViewModel extends ViewModel {
                 Log.d(TAG, "Room updated: " + room.getRoomId() + ", Status: " + room.getStatus());
                 Log.d(TAG, "Host: " + room.getHostName() + ", Guest: " + (room.getGuestName() != null ? room.getGuestName() : "none"));
                 
+                // Thêm log đặc biệt khi phát hiện trạng thái PLAYING
+                if ("PLAYING".equals(room.getStatus())) {
+                    Log.d(TAG, "********* DETECTED ROOM STATUS CHANGED TO PLAYING IN VIEWMODEL *********");
+                }
+                
                 // Luôn cập nhật UI để đảm bảo thông tin mới nhất được hiển thị
-                handler.post(() -> currentRoom.setValue(room));
+                // Sử dụng post để chạy trên main thread
+                handler.post(() -> {
+                    try {
+                        currentRoom.setValue(room);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error updating room LiveData", e);
+                    }
+                });
             }
             
             @Override
@@ -265,6 +279,22 @@ public class PvpViewModel extends ViewModel {
         }
     }
 
+    // Thêm phương thức mới để ngăn xóa phòng
+    public void setPreventRoomDeletion(boolean preventDeletion) {
+        // Thay vì lưu vào biến instance, lưu vào PvpRoomManager
+        PvpRoom room = currentRoom.getValue();
+        if (room != null) {
+            String roomId = room.getRoomId();
+            PvpRoomManager.getInstance().setPreventRoomDeletion(roomId, preventDeletion);
+            Log.d(TAG, "Room deletion prevention set to: " + preventDeletion + " for room: " + roomId);
+
+            if (preventDeletion) {
+                // Đăng ký sử dụng phòng
+                PvpRoomManager.getInstance().registerRoomUsage(roomId);
+            }
+        }
+    }
+
     // Rời phòng
     public void leaveRoom() {
         PvpRoom room = currentRoom.getValue();
@@ -277,19 +307,29 @@ public class PvpViewModel extends ViewModel {
         Log.d(TAG, "Leaving room: " + roomId);
         
         try {
+            // Kiểm tra trạng thái từ PvpRoomManager
+            boolean preventDeletion = PvpRoomManager.getInstance().shouldPreventDeletion(roomId);
+            
             // Đảm bảo loại bỏ listener trước
             PvpRoomHelper.removeRoomListener(roomId);
+            
+            // Hủy đăng ký sử dụng phòng
+            PvpRoomManager.getInstance().unregisterRoomUsage(roomId);
             
             // Đặt phòng hiện tại về null ngay lập tức để tránh gọi lại
             currentRoom.postValue(null);
             
-            // Nếu là chủ phòng thì LUÔN xóa phòng
-            if (currentUserId != null && currentUserId.equals(room.getHostId())) {
+            // Nếu là chủ phòng và KHÔNG bị ngăn xóa phòng, thì xóa phòng
+            if (currentUserId != null && currentUserId.equals(room.getHostId()) && !preventDeletion) {
                 Log.d(TAG, "User is host, deleting room: " + roomId);
                 
                 // Xóa phòng không cần callback để tránh treo
                 PvpRoomHelper.deleteRoom(roomId);
             } 
+            // Nếu là chủ phòng và bị ngăn xóa phòng, chỉ ngắt kết nối
+            else if (currentUserId != null && currentUserId.equals(room.getHostId()) && preventDeletion) {
+                Log.d(TAG, "User is host but room deletion is prevented, keeping room: " + roomId);
+            }
             // Nếu là khách, cập nhật phòng để chỉ còn chủ phòng
             else if (currentUserId != null && currentUserId.equals(room.getGuestId())) {
                 Log.d(TAG, "User is guest, updating room to waiting state: " + roomId);
