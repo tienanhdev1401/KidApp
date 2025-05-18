@@ -31,6 +31,9 @@ import com.example.kidapp.R;
 import com.example.kidapp.ViewModel.PvpViewModel;
 import com.example.kidapp.ViewModel.UserViewModel;
 import com.example.kidapp.models.PvpRoom;
+import com.example.kidapp.models.FlipCard;
+import com.example.kidapp.models.FlipCardLevel;
+import com.example.kidapp.ViewModel.FlipCardLevelViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -95,7 +99,16 @@ public class PvpGameActivity extends AppCompatActivity {
             R.drawable.ic_add,        // Placeholder - replace with actual drawable resources
             R.drawable.panda_icon,    // Placeholder - replace with actual drawable resources
     };
-    private Integer[] cardValues;
+    
+    // ViewModel cho FlipCard
+    private FlipCardLevelViewModel flipCardLevelViewModel;
+    
+    // Dữ liệu thẻ từ Firestore
+    private FlipCardLevel currentFlipCardLevel;
+    private List<FlipCard> flipCardList;
+    
+    // Mảng chứa các cặp giá trị thẻ (thay thế cardValues)
+    private Integer[] pairValues;
     
     // Thêm biến đếm ngược
     private TextView tvCountdown;
@@ -106,6 +119,10 @@ public class PvpGameActivity extends AppCompatActivity {
     
     // ValueEventListener để theo dõi thay đổi điểm số theo thời gian thực
     private com.google.firebase.database.ValueEventListener scoreListener;
+    
+    // Biến để theo dõi trạng thái tải dữ liệu thẻ
+    private boolean isLoadingCardData = false;
+    private androidx.lifecycle.Observer<List<FlipCardLevel>> flipCardLevelObserver = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +174,9 @@ public class PvpGameActivity extends AppCompatActivity {
         pvpViewModel = new ViewModelProvider(this).get(PvpViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         pvpViewModel.setUserViewModel(userViewModel);
+        
+        // Khởi tạo FlipCardLevelViewModel để tải dữ liệu thẻ
+        flipCardLevelViewModel = new ViewModelProvider(this).get(FlipCardLevelViewModel.class);
         
         Log.d(TAG, "ViewModels initialized");
         
@@ -500,7 +520,13 @@ public class PvpGameActivity extends AppCompatActivity {
         switch (gameType) {
             case "FLIP_CARD":
                 gameContent = inflater.inflate(R.layout.game_content_flip_card, gameContentFrame, false);
-                initFlipCardGame(gameContent);
+                if (!gameActuallyStarted) {
+                    // Tải dữ liệu thẻ từ Firestore trước khi bắt đầu game
+                    loadFlipCardData();
+                } else {
+                    // Nếu game đã bắt đầu, sử dụng dữ liệu đã có
+                    initFlipCardGame(gameContent);
+                }
                 break;
             case "PUZZLE":
                 // TODO: Add puzzle game content
@@ -523,6 +549,58 @@ public class PvpGameActivity extends AppCompatActivity {
         }
     }
     
+    // Phương thức mới để tải dữ liệu thẻ từ Firestore
+    private void loadFlipCardData() {
+        if (isLoadingCardData) {
+            Log.d(TAG, "Already loading card data, ignoring duplicate request");
+            return;
+        }
+        
+        Log.d(TAG, "Loading flip card data from Firestore");
+        isLoadingCardData = true;
+        
+        // Tạo observer chỉ khi cần
+        if (flipCardLevelObserver == null) {
+            flipCardLevelObserver = levels -> {
+                isLoadingCardData = false;
+                
+                if (levels != null && !levels.isEmpty()) {
+                    // Chọn một level ngẫu nhiên
+                    Random random = new Random();
+                    FlipCardLevel randomLevel = levels.get(random.nextInt(levels.size()));
+                    
+                    currentFlipCardLevel = randomLevel;
+                    flipCardList = randomLevel.getCards();
+                    
+                    Log.d(TAG, "Loaded flip card level: " + randomLevel.getTopic() +
+                          " with " + (flipCardList != null ? flipCardList.size() : 0) + " cards");
+                    
+                    // Tìm gameContent đã tạo
+                    View gameContent = gameContentFrame.getChildAt(0);
+                    if (gameContent != null) {
+                        initFlipCardGame(gameContent);
+                    } else {
+                        Log.e(TAG, "Game content view not found");
+                    }
+                } else {
+                    Log.e(TAG, "Failed to load flip card data or no levels available");
+                    // Fallback to default images if data loading fails
+                    flipCardList = null;
+                    View gameContent = gameContentFrame.getChildAt(0);
+                    if (gameContent != null) {
+                        initFlipCardGame(gameContent);
+                    }
+                }
+                
+                // Hủy đăng ký observer sau khi xử lý xong
+                flipCardLevelViewModel.getAllLevels().removeObserver(flipCardLevelObserver);
+            };
+        }
+        
+        // Đăng ký observer
+        flipCardLevelViewModel.getAllLevels().observe(this, flipCardLevelObserver);
+    }
+    
     private void initFlipCardGame(View gameContent) {
         try {
             Log.d(TAG, "Initializing flip card game");
@@ -537,55 +615,62 @@ public class PvpGameActivity extends AppCompatActivity {
             gridCards.removeAllViews();
             cards.clear();
             
-            // Determine grid size based on difficulty
-            int gridSize = 4; // Default for easy
-            String difficulty = currentRoom != null ? currentRoom.getGameId() : "easy";
-            Log.d(TAG, "Game difficulty: " + difficulty);
+            // Tạo danh sách các cặp thẻ theo logic của GameLatTheActivity
+            List<CardPair> cardPairs = new ArrayList<>();
             
-            if (difficulty != null) {
-                if (difficulty.equalsIgnoreCase("trung bình") || 
-                    difficulty.equalsIgnoreCase("trungbinh") || 
-                    difficulty.equalsIgnoreCase("medium")) {
-                    gridSize = 4;
-                } else if (difficulty.equalsIgnoreCase("khó") || 
-                           difficulty.equalsIgnoreCase("kho") || 
-                           difficulty.equalsIgnoreCase("hard")) {
-                    gridSize = 6;
+            // Check if we have Firestore data available
+            if (flipCardList != null && !flipCardList.isEmpty()) {
+                Log.d(TAG, "Using Firestore card data with " + flipCardList.size() + " cards");
+                
+                // Tạo các cặp thẻ theo logic GameLatTheActivity
+                for (int i = 0; i < flipCardList.size(); i++) {
+                    FlipCard flipCard = flipCardList.get(i);
+                    // Tạo hai thẻ giống nhau cho mỗi cặp
+                    CardPair pair = new CardPair(flipCard.getCardImageUrl(), i);
+                    cardPairs.add(pair);
+                    cardPairs.add(pair); // Thêm 2 lần để tạo cặp
+                    
+                    Log.d(TAG, "Created card pair for card " + i + " with URL: " + flipCard.getCardImageUrl());
+                }
+            } else {
+                // Fallback to default images if no Firestore data
+                Log.d(TAG, "Using default card images");
+                
+                // Check if cardImages array is large enough
+                if (cardImages.length == 0) {
+                    Log.e(TAG, "cardImages array is empty");
+                    Toast.makeText(this, "Lỗi: Không có hình ảnh cho thẻ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                // Tạo các cặp thẻ với hình ảnh mặc định
+                for (int i = 0; i < cardImages.length; i++) {
+                    // Tạo cặp thẻ với hình ảnh mặc định
+                    CardPair pair = new CardPair(null, i);
+                    cardPairs.add(pair);
+                    cardPairs.add(pair); // Thêm 2 lần để tạo cặp
                 }
             }
             
-            Log.d(TAG, "Grid size set to: " + gridSize);
+            // Tính kích thước lưới dựa vào số lượng thẻ, làm tròn lên
+            int totalCards = cardPairs.size();
+            int gridSize = (int) Math.ceil(Math.sqrt(totalCards));
+            
+            Log.d(TAG, "Total cards: " + totalCards + ", calculated grid size: " + gridSize + "x" + gridSize);
             
             // Set grid dimensions
             gridCards.setColumnCount(gridSize);
             gridCards.setRowCount(gridSize);
             
-            // Create pairs of values (positions of images in cardImages array)
-            int pairsCount = (gridSize * gridSize) / 2;
-            cardValues = new Integer[gridSize * gridSize];
+            Log.d(TAG, "Created " + cardPairs.size() + " cards in pairs");
             
-            // Check if cardImages array is large enough
-            if (cardImages.length == 0) {
-                Log.e(TAG, "cardImages array is empty");
-                Toast.makeText(this, "Lỗi: Không có hình ảnh cho thẻ", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            // Shuffle card pairs
+            Collections.shuffle(cardPairs);
             
-            // Fill half the array with image positions
-            for (int i = 0; i < pairsCount; i++) {
-                cardValues[i] = i % (cardImages.length); // Use modulo to cycle through available images
-                cardValues[i + pairsCount] = i % (cardImages.length); // Duplicate for pairs
-            }
-            
-            Log.d(TAG, "Card values array created with " + cardValues.length + " elements");
-            
-            // Shuffle card values
-            Collections.shuffle(Arrays.asList(cardValues));
-            
-            Log.d(TAG, "Card values shuffled");
+            Log.d(TAG, "Card pairs shuffled");
             
             // Create and add cards to grid
-            for (int i = 0; i < gridSize * gridSize; i++) {
+            for (int i = 0; i < cardPairs.size(); i++) {
                 try {
                     // Inflate card layout
                     View cardView = inflater.inflate(R.layout.item_flip_card, gridCards, false);
@@ -612,15 +697,54 @@ public class PvpGameActivity extends AppCompatActivity {
                         continue;
                     }
                     
-                    // Set image resource
-                    int imageIndex = cardValues[i] % cardImages.length;
-                    cardImage.setImageResource(cardImages[imageIndex]);
+                    // Store the card pair value in card's tag for matching later
+                    CardPair currentPair = cardPairs.get(i);
+                    card.setTag(currentPair.getValue());
+                    
+                    // Set image resource based on available data
+                    if (currentPair.getImageUrl() != null && !currentPair.getImageUrl().isEmpty()) {
+                        // Use Firestore data - load image with Picasso
+                        Log.d(TAG, "Loading image from URL: " + currentPair.getImageUrl() + " for card " + i);
+                        
+                        // Enhanced Picasso configuration for more reliable loading
+                        com.squareup.picasso.Picasso.get()
+                                .load(currentPair.getImageUrl())
+                                .placeholder(R.drawable.panda_icon)
+                                .error(R.drawable.panda_icon)
+                                .fit()
+                                .centerCrop()  // Better for filling the entire space
+                                .noFade()
+                                .into(cardImage, new com.squareup.picasso.Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                    }
+                                    
+                                    @Override
+                                    public void onError(Exception e) {
+                                        cardImage.setImageResource(R.drawable.panda_icon);
+                                    }
+                                });
+                    } else {
+                        // Use default images
+                        int imageResource = cardImages[currentPair.getValue() % cardImages.length];
+                        cardImage.setImageResource(imageResource);
+                    }
+                    
+                    // ADDED: Explicitly set initial visibility states
+                    LinearLayout frontLayout = card.findViewById(R.id.cardFrontLayout);
+                    LinearLayout backLayout = card.findViewById(R.id.cardBackLayout);
+                    if (frontLayout != null && backLayout != null) {
+                        // Initially show card back, hide card front
+                        frontLayout.setVisibility(View.INVISIBLE);
+                        backLayout.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "Set initial visibility for card " + i + ": front=INVISIBLE, back=VISIBLE");
+                    }
                     
                     // Set click listener
                     final int position = i;
                     card.setOnClickListener(v -> {
                         if (allowCardFlip && !isCardFlipped(position)) {
-                            Log.d(TAG, "Card clicked at position " + position + ", image: " + imageIndex);
+                            Log.d(TAG, "Card clicked at position " + position);
                             flipCard(card, position);
                         } else {
                             Log.d(TAG, "Card click ignored: allowCardFlip=" + allowCardFlip + 
@@ -654,6 +778,25 @@ public class PvpGameActivity extends AppCompatActivity {
         }
     }
     
+    // Class mới biểu diễn một cặp thẻ bài
+    private static class CardPair {
+        private final String imageUrl;
+        private final int value;
+        
+        public CardPair(String imageUrl, int value) {
+            this.imageUrl = imageUrl;
+            this.value = value;
+        }
+        
+        public String getImageUrl() {
+            return imageUrl;
+        }
+        
+        public int getValue() {
+            return value;
+        }
+    }
+    
     private boolean isCardFlipped(int position) {
         return position == firstCardPosition || position == secondCardPosition;
     }
@@ -662,6 +805,17 @@ public class PvpGameActivity extends AppCompatActivity {
         // Get views
         LinearLayout frontLayout = card.findViewById(R.id.cardFrontLayout);
         LinearLayout backLayout = card.findViewById(R.id.cardBackLayout);
+        
+        // Ensure we can find both layouts
+        if (frontLayout == null || backLayout == null) {
+            Log.e(TAG, "Cannot find front or back layout for card at position " + position);
+            return;
+        }
+        
+        // Log initial state for debugging
+        Log.d(TAG, "Flipping card " + position + ", initial visibility - front: " + 
+              (frontLayout.getVisibility() == View.VISIBLE ? "VISIBLE" : "INVISIBLE") + 
+              ", back: " + (backLayout.getVisibility() == View.VISIBLE ? "VISIBLE" : "INVISIBLE"));
         
         // Determine which card is being flipped (first or second)
         if (firstCard == null) {
@@ -698,6 +852,8 @@ public class PvpGameActivity extends AppCompatActivity {
                         backLayout.setVisibility(View.INVISIBLE);
                         frontLayout.setVisibility(View.VISIBLE);
                         
+                        Log.d(TAG, "Card " + position + " mid-flip - front: VISIBLE, back: INVISIBLE");
+                        
                         // Animate back
                         card.setRotationY(-90);
                         card.animate()
@@ -714,6 +870,17 @@ public class PvpGameActivity extends AppCompatActivity {
         LinearLayout frontLayout = card.findViewById(R.id.cardFrontLayout);
         LinearLayout backLayout = card.findViewById(R.id.cardBackLayout);
         
+        // Ensure we can find both layouts
+        if (frontLayout == null || backLayout == null) {
+            Log.e(TAG, "Cannot find front or back layout for card while flipping back");
+            return;
+        }
+        
+        // Log initial state for debugging
+        Log.d(TAG, "Flipping card back, initial visibility - front: " + 
+              (frontLayout.getVisibility() == View.VISIBLE ? "VISIBLE" : "INVISIBLE") + 
+              ", back: " + (backLayout.getVisibility() == View.VISIBLE ? "VISIBLE" : "INVISIBLE"));
+        
         // Flip animation
         card.animate()
                 .setDuration(200)
@@ -725,6 +892,8 @@ public class PvpGameActivity extends AppCompatActivity {
                         // Swap visibility
                         frontLayout.setVisibility(View.INVISIBLE);
                         backLayout.setVisibility(View.VISIBLE);
+                        
+                        Log.d(TAG, "Card flipped back - front: INVISIBLE, back: VISIBLE");
                         
                         // Animate back
                         card.setRotationY(-90);
@@ -739,8 +908,9 @@ public class PvpGameActivity extends AppCompatActivity {
     
     private void checkCardsMatch() {
         if (firstCard != null && secondCard != null && firstCardPosition != -1 && secondCardPosition != -1) {
-            // Check if the two flipped cards match
-            if (cardValues[firstCardPosition].equals(cardValues[secondCardPosition])) {
+            // Check if the two flipped cards match using tags
+            if (firstCard.getTag() != null && secondCard.getTag() != null && 
+                firstCard.getTag().equals(secondCard.getTag())) {
                 // Match found
                 firstCard.setEnabled(false);
                 secondCard.setEnabled(false);
@@ -1380,6 +1550,11 @@ public class PvpGameActivity extends AppCompatActivity {
             FirebaseInitializer.getPvpRoomsRef().child(currentRoom.getRoomId()).removeEventListener(scoreListener);
             scoreListener = null;
             Log.d(TAG, "Đã hủy lắng nghe điểm số khi onDestroy");
+        }
+        
+        // Đảm bảo hủy observer khi activity bị hủy
+        if (flipCardLevelObserver != null) {
+            flipCardLevelViewModel.getAllLevels().removeObserver(flipCardLevelObserver);
         }
         
         // Get room ID from intent
