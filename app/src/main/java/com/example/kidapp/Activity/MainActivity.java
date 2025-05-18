@@ -28,7 +28,6 @@ import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
 import com.example.kidapp.ViewModel.MusicCategoryViewModel;
 import com.example.kidapp.ViewModel.UserViewModel;
-import com.example.kidapp.models.Achievement;
 import com.example.kidapp.models.User;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -108,17 +107,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Tham chiếu đến TextView trong nav_header.xml
         usernametext = headerView.findViewById(R.id.user_name);
 
+
+
         //hiển thị tên
         UserViewModel userViewModel1 = new ViewModelProvider(this).get(UserViewModel.class);
         userViewModel1.getUserByEmail(currentUser.getEmail()).observe(this, user -> {
             if (user != null) {
                 Log.d("USER_PROFILE", "User found: " + user.getUsername()
-                        + " | Email: " + user.getEmail());
+                        + " | Email: " + user.getEmail()+"Avatar"+ user.getAvatarUrl());
                 // Cập nhật UI với thông tin người dùng
                 usernametext.setText("Chào Mừng, " +user.getUsername()); // Hoặc các view khác
+
+                // Kiểm tra xem tvUserName đã được ánh xạ chưa, nếu chưa thì tìm trong headerView
+                TextView tvUserName = headerView.findViewById(R.id.tvUserName);
+                if (tvUserName != null) {
+                     tvUserName.setText(user.getUsername());
+                }
+
+                ImageView avartar=headerView.findViewById(R.id.animal_image);
+                Log.d("USER_PROFILE", "Avatar"+ user.getAvatarUrl());
+
+                // Kiểm tra xem avartar có khác null không trước khi sử dụng
+                if (avartar != null) {
+                    // Tải avatar từ user.getAvatarUrl() bằng Glide
+                    if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                        Glide.with(this)
+                             .load(user.getAvatarUrl())
+                             .placeholder(R.drawable.animal_avatar)
+                             .into(avartar);
+                    } else {
+                        // Hiển thị ảnh mặc định nếu không có avatarUrl
+                        avartar.setImageResource(R.drawable.animal_avatar);
+                        Log.e("USER_PROFILE", "ImageView avartar not found in headerView");
+                    }
+                } else {
+                    Log.e("MainActivity", "ImageView avartar not found in headerView");
+                }
+
             } else {
                 Log.d("USER_PROFILE", "No user found with email: " + currentUser.getEmail());
                 usernametext.setText("Chào Mừng!");
+
+                // Nếu avartar tồn tại, đặt ảnh mặc định ngay cả khi không có user
+                ImageView avartar=headerView.findViewById(R.id.animal_image);
+                 if (avartar != null) {
+                    avartar.setImageResource(R.drawable.animal_avatar);
+                }
             }
         });
 
@@ -168,40 +202,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else {
                 Log.d("Không có âm nhạc", "No music categories found.");
             }
-        });
-
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Achievement achievement = new Achievement(
-            "audio_10min",
-            "Người nghe chăm chỉ",
-            "Nghe đủ 10 phút audio",
-            "https://static.vecteezy.com/system/resources/previews/050/489/412/non_2x/golden-medal-with-red-ribbon-representing-first-place-achievement-vector.jpg",
-            10,    // minListeningTime
-            null,  // minStoriesRead
-            null   // minGameLevel
-        );
-
-        // Lưu với id tự động
-//        db.collection("achievement")
-//        .add(achievement)
-//        .addOnSuccessListener(documentReference -> {
-//            // Thành công
-//        })
-//        .addOnFailureListener(e -> {
-//            // Thất bại
-//        });
-
-        // Hoặc lưu với id cụ thể (nên dùng để dễ truy vấn)
-        db.collection("achievement")
-        .document(achievement.getId())
-        .set(achievement)
-        .addOnSuccessListener(aVoid -> {
-            // Thành công
-        })
-        .addOnFailureListener(e -> {
-            // Thất bại
         });
     }
 
@@ -611,9 +611,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_puzzle_game) {
             startActivity(new Intent(MainActivity.this, PuzzleSelectionActivity.class));
         } else if (itemId == R.id.nav_card_flipping_game) {
-            startActivity(new Intent(MainActivity.this, FlipCardLevelSelectionActivity.class));
+            startActivity(new Intent(MainActivity.this, GameLatTheActivity.class));
         } else if (itemId == R.id.nav_word_guessing_game) {
-            startActivity(new Intent(MainActivity.this, GuessWordLevelListActivity.class));
+            startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
         } else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
         } else if (itemId == R.id.nav_story_history) {

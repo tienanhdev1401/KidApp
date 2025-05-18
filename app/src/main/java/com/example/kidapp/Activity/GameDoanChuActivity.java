@@ -26,8 +26,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import android.animation.Animator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.ProgressBar;
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
+import android.content.Intent;
 
-public class GameDoanChuActivity extends AppCompatActivity {
+public class GameDoanChuActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     private FlexboxLayout wordFrame;
     private FlexboxLayout wordCardsContainer;
@@ -46,6 +50,11 @@ public class GameDoanChuActivity extends AppCompatActivity {
     private static final int SELECTED_BG = R.drawable.textview_selected_bg;
     private static final int INFRAME_BG = R.drawable.textview_inframe_bg;
 
+    private ProgressBar progressBar;
+    private ImageView btnSound;
+    private Button btnNextStage;
+    private TextToSpeech tts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +64,9 @@ public class GameDoanChuActivity extends AppCompatActivity {
         wordCardsContainer = findViewById(R.id.wordCardsContainer);
         btnCheck = findViewById(R.id.btnCheck);
         imageView = findViewById(R.id.imageView);
+        progressBar = findViewById(R.id.progressBar);
+        btnSound = findViewById(R.id.btnSound);
+        btnNextStage = findViewById(R.id.btnNextStage);
 
         userViewModel = new androidx.lifecycle.ViewModelProvider(this).get(UserViewModel.class);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -73,17 +85,189 @@ public class GameDoanChuActivity extends AppCompatActivity {
 
         ImageView btn_Back = findViewById(R.id.btnBack);
         btn_Back.setOnClickListener(v -> finish());
+
+        btnSound.setOnClickListener(v -> playCurrentStageSound());
+        btnNextStage.setOnClickListener(v -> {
+            currentStageIndex++;
+            if (currentStageIndex < stages.size()) {
+                setupStage(currentStageIndex);
+            } else {
+                showToast("Chúc mừng! Bạn đã hoàn thành tất cả màn chơi!");
+                btnCheck.setEnabled(false);
+                btnNextStage.setVisibility(View.VISIBLE);
+                btnNextStage.setText("Hoàn thành");
+
+                btnNextStage.setOnClickListener(v2 -> {
+                    Intent intent = new Intent(GameDoanChuActivity.this, GuessWordLevelListActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+
+                if (userEmail != null && currentLevel != null) {
+                    userViewModel.updateGameProgress(
+                            userEmail,
+                            "wordguess",
+                            currentLevel.getId(),
+                            score
+                    );
+                }
+
+                if (userEmail != null) {
+                    userViewModel.getUserByEmail(userEmail).observe(this, user -> {
+                        if (user != null) {
+                            final int soManHoanThanh;
+                            if (user.getGameProgress() != null && user.getGameProgress().containsKey("wordguess")) {
+                                soManHoanThanh = user.getGameProgress().get("wordguess").getLevelReached();
+                            } else {
+                                soManHoanThanh = 0;
+                            }
+                            final List<String> achievements;
+                            if (user.getAchievements() == null) {
+                                achievements = new ArrayList<>();
+                            } else {
+                                achievements = user.getAchievements();
+                            }
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("achievement")
+                                    .get()
+                                    .addOnCompleteListener(task -> {
+                                        final boolean[] changed = {false};
+                                        final List<String> newAchievements = new ArrayList<>();
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                String id = document.getString("id");
+                                                String name = document.getString("name");
+                                                Long minLevelLong = document.getLong("minGameLevel");
+                                                String imageUrl = document.getString("imageUrl");
+                                                if (minLevelLong != null && id != null && id.startsWith("wordguess")) {
+                                                    int minLevel = minLevelLong.intValue();
+                                                    if (soManHoanThanh >= minLevel && !achievements.contains(id)) {
+                                                        achievements.add(id);
+                                                        newAchievements.add(name != null ? name : id);
+                                                        changed[0] = true;
+                                                        Log.d("Achievement", "Preparing to run UI thread for achievement: " + (name != null ? name : id));
+                                                        runOnUiThread(() -> {
+                                                            Log.d("Achievement", "Attempting to show achievement animation for: " + (name != null ? name : id));
+                                                            LottieAnimationView achievementAnimationView = findViewById(R.id.achievementAnimationView);
+                                                            ImageView achievementImageView = findViewById(R.id.achievementImageView);
+                                                            if (achievementAnimationView != null) {
+                                                                Log.d("Achievement", "LottieAnimationView found.");
+                                                                achievementAnimationView.setAnimation(R.raw.achievement_animation);
+                                                                achievementAnimationView.setVisibility(View.VISIBLE);
+                                                                achievementAnimationView.playAnimation();
+
+                                                                achievementAnimationView.addAnimatorListener(new Animator.AnimatorListener() {
+                                                                    @Override
+                                                                    public void onAnimationStart(Animator animation) {}
+
+                                                                    @Override
+                                                                    public void onAnimationEnd(Animator animation) {
+                                                                        Log.d("Achievement", "Achievement animation ended, hiding views.");
+                                                                        achievementAnimationView.setVisibility(View.GONE);
+                                                                        achievementImageView.setVisibility(View.GONE);
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onAnimationCancel(Animator animation) {}
+
+                                                                    @Override
+                                                                    public void onAnimationRepeat(Animator animation) {}
+                                                                });
+                                                            } else {
+                                                                Log.e("Achievement", "LottieAnimationView not found!");
+                                                            }
+                                                            if (achievementImageView != null) {
+                                                                Log.d("Achievement", "ImageView found.");
+                                                                if (imageUrl != null && !imageUrl.isEmpty()) {
+                                                                    achievementImageView.setVisibility(View.VISIBLE);
+                                                                    Picasso.get().load(imageUrl).into(achievementImageView, new com.squareup.picasso.Callback() {
+                                                                        @Override
+                                                                        public void onSuccess() {
+                                                                            Log.d("Achievement", "Image loaded successfully.");
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onError(Exception e) {
+                                                                            Log.e("Achievement", "Error loading image: " + e.getMessage());
+                                                                        }
+                                                                    });
+                                                                    Log.d("Achievement", "Loading image: " + imageUrl);
+                                                                } else {
+                                                                    achievementImageView.setVisibility(View.GONE);
+                                                                    Log.d("Achievement", "No image URL provided.");
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                            if (changed[0]) {
+                                                userViewModel.updateAchievements(userEmail, achievements);
+                                                for (String achv : newAchievements) {
+                                                    Toast.makeText(this, "Bạn vừa nhận được thành tựu: " + achv, Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
+                                    });
+                        }
+                    });
+                }
+            }
+        });
+
+        // Khởi tạo TextToSpeech
+        tts = new TextToSpeech(this, this);
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.ENGLISH); // Thiết lập tiếng Anh
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "English language not supported or missing data");
+                // Thử ngôn ngữ mặc định nếu tiếng Anh không khả dụng
+                result = tts.setLanguage(Locale.getDefault()); // Hoặc có thể giữ nguyên tiếng Anh và báo lỗi
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Default language not supported or missing data");
+                    Toast.makeText(this, "Text-to-Speech không khả dụng cho ngôn ngữ này.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d("TTS", "Default language set successfully");
+                }
+            } else {
+                Log.d("TTS", "English language set successfully");
+            }
+        } else {
+            Log.e("TTS", "Initialization failed");
+            Toast.makeText(this, "Khởi tạo Text-to-Speech thất bại.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
     }
 
     private void setupStage(int index) {
         wordFrame.removeAllViews();
         wordCardsContainer.removeAllViews();
         selectedWords.clear();
+        btnSound.setVisibility(View.GONE);
+        btnCheck.setVisibility(View.VISIBLE);
+        btnNextStage.setVisibility(View.GONE);
 
         if (index == 0) score = 0;
 
         TextView tvLevel = findViewById(R.id.tvLevel);
         tvLevel.setText("Màn " + (index + 1) + "/" + stages.size());
+
+        int progress = (int) (((double) (index + 1) / stages.size()) * 100);
+        progressBar.setProgress(progress);
 
         WordGuessStage stage = stages.get(index);
         currentCorrectPhrase = stage.getAnswer();
@@ -107,14 +291,14 @@ public class GameDoanChuActivity extends AppCompatActivity {
         String uniqueTag = word + "_" + index;
         card.setTag(uniqueTag);
         card.setBackgroundResource(NORMAL_BG);
-        card.setTextSize(30);
+        card.setTextSize(27);
         card.setTextColor(Color.parseColor("#BDE1F7"));
         card.setGravity(Gravity.CENTER);
-        card.setPadding(20, 20, 20, 20);
+        card.setPadding(10, 10, 10, 10);
         FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
                 FlexboxLayout.LayoutParams.WRAP_CONTENT,
                 FlexboxLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(10, 10, 10, 10);
+        params.setMargins(8, 8, 8, 8);
         card.setLayoutParams(params);
         card.setOnClickListener(v -> {
             String clickedTag = (String) v.getTag();
@@ -139,14 +323,14 @@ public class GameDoanChuActivity extends AppCompatActivity {
         wordView.setText(word);
         wordView.setTag(tag);
         wordView.setBackgroundResource(INFRAME_BG);
-        wordView.setTextSize(30);
+        wordView.setTextSize(27);
         wordView.setTextColor(Color.WHITE);
         wordView.setGravity(Gravity.CENTER);
-        wordView.setPadding(20, 20, 20, 20);
+        wordView.setPadding(10, 10, 10, 10);
         FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
                 FlexboxLayout.LayoutParams.WRAP_CONTENT,
                 FlexboxLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(10, 10, 10, 10);
+        params.setMargins(5, 5, 5, 5);
         wordView.setLayoutParams(params);
         wordView.setOnClickListener(v -> {
             String clickedTag = (String) v.getTag();
@@ -170,142 +354,27 @@ public class GameDoanChuActivity extends AppCompatActivity {
     private void checkAnswer() {
         StringBuilder userPhraseBuilder = new StringBuilder();
         for (String tag : selectedWords) {
-            // Lấy ký tự đầu tiên trước dấu _
             String realChar = tag.split("_")[0];
             userPhraseBuilder.append(realChar);
         }
+
         String userPhrase = userPhraseBuilder.toString().trim();
         Log.d("GameDoanChuActivity", "User phrase: " + userPhrase);
         Log.d("GameDoanChuActivity", "Correct phrase: " + currentCorrectPhrase);
+
         if (userPhrase.equalsIgnoreCase(currentCorrectPhrase)) {
             score += 20;
             showToast("Chính xác! Giỏi quá!");
+            btnSound.setVisibility(View.VISIBLE);
+            btnCheck.setVisibility(View.GONE);
+            btnNextStage.setVisibility(View.VISIBLE);
+
             LottieAnimationView animationView = findViewById(R.id.animationView);
             animationView.setVisibility(View.VISIBLE);
             animationView.playAnimation();
-            wordFrame.postDelayed(() -> {
-                currentStageIndex++;
-                if (currentStageIndex < stages.size()) {
-                    setupStage(currentStageIndex);
-                } else {
-                    showToast("Chúc mừng! Bạn đã hoàn thành tất cả màn chơi!");
-                    btnCheck.setEnabled(false);
-                    // Cập nhật tiến trình game cho user
-                    if (userEmail != null && currentLevel != null) {
-                        userViewModel.updateGameProgress(
-                            userEmail,
-                            "wordguess",
-                            currentLevel.getId(),
-                            score
-                        );
-                    }
-                    // Cập nhật achievements nếu đủ điều kiện
-                    if (userEmail != null) {
-                        userViewModel.getUserByEmail(userEmail).observe(this, user -> {
-                            if (user != null) {
-                                final int soManHoanThanh;
-                                if (user.getGameProgress() != null && user.getGameProgress().containsKey("wordguess")) {
-                                    soManHoanThanh = user.getGameProgress().get("wordguess").getLevelReached();
-                                } else {
-                                    soManHoanThanh = 0;
-                                }
-                                final List<String> achievements;
-                                if (user.getAchievements() == null) {
-                                    achievements = new ArrayList<>();
-                                } else {
-                                    achievements = user.getAchievements();
-                                }
-                                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                db.collection("achievement")
-                                        .get()
-                                        .addOnCompleteListener(task -> {
-                                            final boolean[] changed = {false};
-                                            final List<String> newAchievements = new ArrayList<>();
-                                            if (task.isSuccessful()) {
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    String id = document.getString("id");
-                                                    String name = document.getString("name");
-                                                    Long minLevelLong = document.getLong("minGameLevel");
-                                                    String imageUrl = document.getString("imageUrl");
-                                                    if (minLevelLong != null && id != null && id.startsWith("wordguess")) {
-                                                        int minLevel = minLevelLong.intValue();
-                                                        if (soManHoanThanh >= minLevel && !achievements.contains(id)) {
-                                                            achievements.add(id);
-                                                            newAchievements.add(name != null ? name : id);
-                                                            changed[0] = true;
-                                                            // Hiện animation và ảnh thành tựu
-                                                            Log.d("Achievement", "Preparing to run UI thread for achievement: " + (name != null ? name : id));
-                                                            runOnUiThread(() -> {
-                                                                Log.d("Achievement", "Attempting to show achievement animation for: " + (name != null ? name : id));
-                                                                LottieAnimationView achievementAnimationView = findViewById(R.id.achievementAnimationView);
-                                                                ImageView achievementImageView = findViewById(R.id.achievementImageView);
-                                                                if (achievementAnimationView != null) {
-                                                                    Log.d("Achievement", "LottieAnimationView found.");
-                                                                    achievementAnimationView.setAnimation(R.raw.achievement_animation);
-                                                                    achievementAnimationView.setVisibility(View.VISIBLE);
-                                                                    achievementAnimationView.playAnimation();
 
-                                                                    achievementAnimationView.addAnimatorListener(new Animator.AnimatorListener() {
-                                                                        @Override
-                                                                        public void onAnimationStart(Animator animation) {}
+            // Phần code tự động chuyển màn đã được xóa ở đây
 
-                                                                        @Override
-                                                                        public void onAnimationEnd(Animator animation) {
-                                                                            Log.d("Achievement", "Achievement animation ended, hiding views.");
-                                                                            achievementAnimationView.setVisibility(View.GONE);
-                                                                            // Ẩn ImageView sau khi animation kết thúc
-                                                                            achievementImageView.setVisibility(View.GONE);
-                                                                            // Giữ ImageView hiển thị một lúc nếu có ảnh và đã tải thành công
-                                                                            // Logic ẩn ImageView sẽ ở đây hoặc trong listener Picasso nếu cần
-                                                                        }
-
-                                                                        @Override
-                                                                        public void onAnimationCancel(Animator animation) {}
-
-                                                                        @Override
-                                                                        public void onAnimationRepeat(Animator animation) {}
-                                                                    });
-                                                                } else {
-                                                                    Log.e("Achievement", "LottieAnimationView not found!");
-                                                                }
-                                                                if (achievementImageView != null) {
-                                                                    Log.d("Achievement", "ImageView found.");
-                                                                    if (imageUrl != null && !imageUrl.isEmpty()) {
-                                                                        achievementImageView.setVisibility(View.VISIBLE);
-                                                                        Picasso.get().load(imageUrl).into(achievementImageView, new com.squareup.picasso.Callback() {
-                                                                            @Override
-                                                                            public void onSuccess() {
-                                                                                Log.d("Achievement", "Image loaded successfully.");
-                                                                            }
-
-                                                                            @Override
-                                                                            public void onError(Exception e) {
-                                                                                Log.e("Achievement", "Error loading image: " + e.getMessage());
-                                                                            }
-                                                                        });
-                                                                        Log.d("Achievement", "Loading image: " + imageUrl);
-                                                                    } else {
-                                                                        achievementImageView.setVisibility(View.GONE);
-                                                                        Log.d("Achievement", "No image URL provided.");
-                                                                    }
-                                                                }
-                                                            });
-                                                        }
-                                                    }
-                                                }
-                                                if (changed[0]) {
-                                                    userViewModel.updateAchievements(userEmail, achievements);
-                                                    for (String achv : newAchievements) {
-                                                        Toast.makeText(this, "Bạn vừa nhận được thành tựu: " + achv, Toast.LENGTH_SHORT).show();
-                                                    }
-                                                }
-                                            }
-                                        });
-                            }
-                        });
-                    }
-                }
-            }, 1000);
         } else {
             showToast("Sai rồi! Hãy thử lại!");
         }
@@ -313,5 +382,22 @@ public class GameDoanChuActivity extends AppCompatActivity {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void playCurrentStageSound() {
+        if (currentCorrectPhrase != null && !currentCorrectPhrase.isEmpty()) {
+            if (tts != null && tts.isSpeaking()) {
+                tts.stop(); // Dừng phát âm trước nếu đang phát
+            }
+            if (tts != null && TextToSpeech.SUCCESS == tts.setLanguage(Locale.ENGLISH)) {
+                tts.speak(currentCorrectPhrase, TextToSpeech.QUEUE_FLUSH, null, null);
+            } else if (tts != null && TextToSpeech.SUCCESS == tts.setLanguage(Locale.getDefault())) {
+                tts.speak(currentCorrectPhrase, TextToSpeech.QUEUE_FLUSH, null, null);
+            } else {
+                Toast.makeText(this, "Text-to-Speech chưa sẵn sàng hoặc ngôn ngữ không được hỗ trợ.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Không có từ để phát âm.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

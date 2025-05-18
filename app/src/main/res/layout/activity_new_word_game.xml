@@ -59,6 +59,7 @@
                 android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_sound_on"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/tvLevel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvLevel"
@@ -177,6 +178,16 @@
             android:background="@color/transparent"
             android:textAllCaps="false"
             android:textSize="18sp" />
+        <Button
+            android:id="@+id/btnNextStage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIẾP TỤC"
+            android:textColor="@color/white"
+            android:background="@color/transparent"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:visibility="gone" />
     </LinearLayout>
     <!-- Interactive elements -->
     <com.airbnb.lottie.LottieAnimationView
