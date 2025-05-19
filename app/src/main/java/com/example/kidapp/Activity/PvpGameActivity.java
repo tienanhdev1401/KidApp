@@ -124,6 +124,11 @@ public class PvpGameActivity extends AppCompatActivity {
     private boolean isLoadingCardData = false;
     private androidx.lifecycle.Observer<List<FlipCardLevel>> flipCardLevelObserver = null;
     
+    private Timer gameStateCheckTimer;
+    
+    // Thêm biến điểm max
+    private int maxScore = 6;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -417,8 +422,29 @@ public class PvpGameActivity extends AppCompatActivity {
         // Bắt đầu bộ đếm thời gian game
         startGameTimer(GAME_DURATION_SECONDS);
         
+        // Bắt đầu timer kiểm tra trạng thái game
+        startGameStateCheckTimer();
+        
         Log.d(TAG, "Game actually started - cards enabled, timer started");
         Log.d(TAG, "User " + (isHost ? "HOST" : "GUEST") + " can now interact with cards, allowCardFlip = " + allowCardFlip);
+    }
+    
+    private void startGameStateCheckTimer() {
+        if (gameStateCheckTimer != null) {
+            gameStateCheckTimer.cancel();
+        }
+        
+        gameStateCheckTimer = new Timer();
+        gameStateCheckTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    if (currentRoom != null && gameActuallyStarted) {
+                        checkGameState();
+                    }
+                });
+            }
+        }, 0, 1000); // Kiểm tra mỗi giây
     }
     
     private void setupScoreListener() {
@@ -651,6 +677,10 @@ public class PvpGameActivity extends AppCompatActivity {
                     cardPairs.add(pair); // Thêm 2 lần để tạo cặp
                 }
             }
+            
+            // Tính điểm max dựa vào số lượng cặp thẻ
+            maxScore = cardPairs.size() / 2;
+            Log.d(TAG, "Max score set to: " + maxScore);
             
             // Tính kích thước lưới dựa vào số lượng thẻ, làm tròn lên
             int totalCards = cardPairs.size();
@@ -972,6 +1002,13 @@ public class PvpGameActivity extends AppCompatActivity {
             
             // Cập nhật điểm trực tiếp qua Firebase
             updateRoomDataToFirebase(currentRoom.getRoomId(), scoreUpdate);
+            
+            // Kiểm tra nếu điểm đạt max thì kết thúc game
+            if (myScore >= maxScore) {
+                Log.d(TAG, "Score reached max (" + maxScore + "), ending game");
+                allowCardFlip = false;
+                endGame();
+            }
         }
     }
     
@@ -980,7 +1017,10 @@ public class PvpGameActivity extends AppCompatActivity {
         // Điểm bên trái luôn là host, điểm bên phải luôn là guest
         tvPlayer1Score.setText(String.valueOf(hostScore));
         tvPlayer2Score.setText(String.valueOf(guestScore));
-        
+        if (hostScore >= maxScore || guestScore >= maxScore) {
+            allowCardFlip = false;
+            endGame();
+        }
         // Log để kiểm tra
         Log.d(TAG, "Cập nhật UI điểm số - Host: " + hostScore + ", Guest: " + guestScore);
     }
@@ -992,6 +1032,25 @@ public class PvpGameActivity extends AppCompatActivity {
         }
         
         Log.d(TAG, "Checking game state");
+        
+        // Kiểm tra trạng thái kết thúc game từ Firebase
+        Boolean gameEnded = currentRoom.getBooleanExtraValue("gameEnded", false);
+        if (gameEnded && gameActuallyStarted) {
+            Log.d(TAG, "Game đã kết thúc từ người chơi khác");
+            allowCardFlip = false; // Vô hiệu hóa tương tác với thẻ
+            
+            // Lấy điểm số cuối cùng từ Firebase
+            Integer finalHostScore = getIntValue(currentRoom, "finalHostScore", hostScore);
+            Integer finalGuestScore = getIntValue(currentRoom, "finalGuestScore", guestScore);
+            
+            // Cập nhật điểm số cuối cùng
+            hostScore = finalHostScore;
+            guestScore = finalGuestScore;
+            
+            // Hiển thị kết quả game
+            endGame();
+            return;
+        }
         
         // Check if both players are ready
         boolean bothPlayersReady = currentRoom.getHostId() != null && currentRoom.getGuestId() != null;
@@ -1118,6 +1177,13 @@ public class PvpGameActivity extends AppCompatActivity {
                 Log.d(TAG, "Scores from Firebase scores map - My userId: " + currentUserId + 
                       ", My score: " + myScore + ", Opponent ID: " + opponentId + 
                       ", Opponent score: " + opponentScore);
+                
+                // Kiểm tra nếu điểm đạt max thì kết thúc game
+                if (myScore >= maxScore || opponentScore >= maxScore) {
+                    Log.d(TAG, "Score reached max (" + maxScore + "), ending game");
+                    allowCardFlip = false;
+                    endGame();
+                }
             } else {
                 // Nếu không có map scores, quay lại dùng hostScore/guestScore
                 int hostScore = getIntValue(currentRoom, "hostScore", 0);
@@ -1233,7 +1299,7 @@ public class PvpGameActivity extends AppCompatActivity {
     }
     
     private void checkGameEnd() {
-        // For flip card: Check if all cards are matched
+        // Kiểm tra xem tất cả thẻ đã được lật chưa
         boolean allMatched = true;
         for (CardView card : cards) {
             if (card.isEnabled()) {
@@ -1243,6 +1309,10 @@ public class PvpGameActivity extends AppCompatActivity {
         }
         
         if (allMatched) {
+            Log.d(TAG, "Tất cả thẻ đã được lật - Kết thúc game");
+            // Vô hiệu hóa tương tác với thẻ
+            allowCardFlip = false;
+            // Kết thúc game và hiển thị điểm
             endGame();
         }
     }
@@ -1293,7 +1363,7 @@ public class PvpGameActivity extends AppCompatActivity {
             Log.d(TAG, "Game ended - Final scores: Host: " + hostScore + ", Guest: " + guestScore);
             
             // Update game state in Firebase (host only)
-            if (isHost) {
+            if (isHost || !isHost) {
                 Map<String, Object> gameEndUpdate = new HashMap<>();
                 gameEndUpdate.put("gameEnded", true);
                 gameEndUpdate.put("remainingTime", 0);
@@ -1545,6 +1615,13 @@ public class PvpGameActivity extends AppCompatActivity {
             gameTimer = null;
         }
         
+        // Clean up game state check timer
+        if (gameStateCheckTimer != null) {
+            Log.d(TAG, "Cancelling game state check timer");
+            gameStateCheckTimer.cancel();
+            gameStateCheckTimer = null;
+        }
+        
         // Hủy lắng nghe điểm số khi Activity bị hủy
         if (currentRoom != null && scoreListener != null) {
             FirebaseInitializer.getPvpRoomsRef().child(currentRoom.getRoomId()).removeEventListener(scoreListener);
@@ -1773,7 +1850,7 @@ public class PvpGameActivity extends AppCompatActivity {
     // Phương thức đơn giản để tăng điểm và cập nhật lên Firebase
     private void incrementScore() {
         // Tăng điểm của người chơi hiện tại
-        if (isHost) {
+        if (isHost || !isHost) {
             hostScore++;
             Log.d(TAG, "Host ghi điểm: " + hostScore);
         } else {
@@ -1789,7 +1866,11 @@ public class PvpGameActivity extends AppCompatActivity {
             updateRoomDataToFirebase(currentRoom.getRoomId(), scoreUpdate);
             Log.d(TAG, "Đã cập nhật điểm lên Firebase - Host: " + hostScore + ", Guest: " + guestScore);
         }
-        
+        if (guestScore == maxScore || hostScore == maxScore)
+        {
+            endGame();
+            Log.d(TAG, "Max điểm: " + maxScore);
+        }
         // Cập nhật UI
         updateScoreUI();
     }
