@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Rank -->
+        <TextView
+            android:id="@+id/tvRank"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Player Avatar -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgPlayerAvatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            app:civ_border_color="@color/avatar_border"
+            app:civ_border_width="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvRank"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Tier Badge ImageView -->
+        <ImageView
+            android:id="@+id/imgTierBadge"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:elevation="4dp"
+            android:src="@drawable/bronze"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/imgPlayerAvatar"
+            app:layout_constraintEnd_toEndOf="@+id/imgPlayerAvatar"
+            android:layout_marginEnd="-20dp"
+            android:layout_marginBottom="-20dp"/>
+
+        <!-- Player Username -->
+        <TextView
+            android:id="@+id/tvPlayerUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="ProGamer2025"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/imgPlayerAvatar"
+            app:layout_constraintTop_toTopOf="@+id/imgPlayerAvatar" />
+
+        <!-- Player Tier Name -->
+        <TextView
+            android:id="@+id/tvPlayerTier"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Kim Cương"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/tvPlayerUsername"
+            app:layout_constraintTop_toTopOf="@+id/tvPlayerUsername"
+            app:layout_constraintEnd_toStartOf="@+id/tvPlayerStars"/>
+
+        <!-- Player Stats -->
+        <TextView
+            android:id="@+id/tvPlayerStats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Tỉ lệ thắng: 92.3%"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/imgPlayerAvatar"
+            app:layout_constraintTop_toBottomOf="@+id/tvPlayerUsername" />
+
+        <!-- Player Stars -->
+        <TextView
+            android:id="@+id/tvPlayerStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="4dp"
+            android:text="8750"
+            android:textColor="@color/star_color"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

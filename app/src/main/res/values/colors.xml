@@ -48,4 +48,34 @@
     <color name="off_white">#F0F0F0</color>
     <color name="cool_mint">#C5E3BF</color>
 
+    <color name="light_blue">#E3F2FD</color>
+
+
+    <color name="primary_color">#3F51B5</color>
+    <color name="primary_dark_color">#303F9F</color>
+    <color name="accent_color">#FF4081</color>
+    <color name="background_color">#F5F5F5</color>
+
+
+
+    <color name="text_primary_1">#212121</color>
+    <color name="text_secondary_1">#757575</color>
+
+    <color name="rank_color">#343434</color>
+    <color name="star_color">#FFC107</color>
+    <color name="trending_up">#4CAF50</color>
+    <color name="trending_down">#F44336</color>
+    <color name="trending_same">#9E9E9E</color>
+
+    <color name="tier_bronze">#CD7F32</color>
+    <color name="tier_silver">#C0C0C0</color>
+    <color name="tier_gold">#FFD700</color>
+    <color name="tier_platinum">#E5E4E2</color>
+    <color name="tier_diamond">#B9F2FF</color>
+    <color name="tier_emerald">#50C878</color>
+    <color name="tier_master">#9D4EDD</color>
+    <color name="tier_legendary">#FF6D00</color>
+
+    <color name="avatar_border">#BDBDBD</color>
+
 </resources>

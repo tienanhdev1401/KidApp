@@ -54,6 +54,14 @@ public class PvpLobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pvp_lobby);
 
+        ImageView btnRanking=findViewById(R.id.btnRanking);
+        btnRanking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PvpLobbyActivity.this,RankingActivity.class));
+            }
+        });
+
         // Đảm bảo Firebase đã được khởi tạo
         FirebaseInitializer.initializeFirebase();
 
