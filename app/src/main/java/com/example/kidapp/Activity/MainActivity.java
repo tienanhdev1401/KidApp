@@ -556,6 +556,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, GuessWordLevelListActivity.class));
             dialog.dismiss();
         });
+
+
+        ImageView btnPvp = dialogView.findViewById(R.id.Imv_Pvp);
+        Glide.with(MainActivity.this)
+                .asGif()
+                .load(R.drawable.pvp)
+                .into(btnPvp);
+
+        btnPvp.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, PvpGameActivity.class));
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 

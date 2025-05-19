@@ -44,7 +44,7 @@
                     android:id="@+id/Imv_puzzel"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
                     android:src="@drawable/puzzel_game"/>
             </androidx.cardview.widget.CardView>
@@ -80,7 +80,7 @@
                     android:id="@+id/Imv_card"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
                     android:src="@drawable/memory_card_game"/>
             </androidx.cardview.widget.CardView>
@@ -122,7 +122,7 @@
                     android:id="@+id/Imv_DoanAnh"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
                     android:src="@drawable/puzzel_game"/>
             </androidx.cardview.widget.CardView>
@@ -143,22 +143,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
+            android:elevation="0dp"
             android:gravity="center">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 app:cardCornerRadius="10dp"
-                android:elevation="1dp"
-                android:layout_marginTop="5dp"
-                android:backgroundTint="#63C3BD">
+                android:elevation="0dp"
+                android:layout_marginTop="5dp">
                 <ImageView
                     android:id="@+id/Imv_Pvp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/puzzel_game"/>
+                    android:src="@drawable/pvp"/>
             </androidx.cardview.widget.CardView>
 
             <TextView
