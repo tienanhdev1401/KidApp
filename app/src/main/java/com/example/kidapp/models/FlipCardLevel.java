@@ -6,6 +6,7 @@ import java.util.List;
 public class FlipCardLevel implements Serializable {
     private int id;
     private String topic;
+    private String imageUrl;
     private List<FlipCard> cards;
 
     // Constructor rỗng cho Firebase
@@ -15,6 +16,13 @@ public class FlipCardLevel implements Serializable {
     public FlipCardLevel(int id, String topic, List<FlipCard> cards) {
         this.id = id;
         this.topic = topic;
+        this.cards = cards;
+    }
+
+    public FlipCardLevel(int id, String topic, String imageUrl, List<FlipCard> cards) {
+        this.id = id;
+        this.topic = topic;
+        this.imageUrl = imageUrl;
         this.cards = cards;
     }
 
@@ -32,6 +40,14 @@ public class FlipCardLevel implements Serializable {
 
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public List<FlipCard> getCards() {

@@ -12,24 +12,34 @@ import java.util.HashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-
 class CloudinaryService(private val context: Context) {
     private val TAG = "CloudinaryService"
-    private val config = HashMap<String, String>()
-    private val CLOUDINARY_API_KEY_SECRET = BuildConfig.CLOUDINARY_API_KEY_SECRET
-    private val CLOUDINARY_API_KEY_PUBLIC = BuildConfig.CLOUDINARY_API_KEY_PUBLIC
-    private val CLOUDINARY_NAME = BuildConfig.CLOUDINARY_NAME
 
-    init {
-        initConfig()
+    companion object {
+        private var isInitialized = false
+        private val CLOUDINARY_API_KEY_SECRET = BuildConfig.CLOUDINARY_API_KEY_SECRET
+        private val CLOUDINARY_API_KEY_PUBLIC = BuildConfig.CLOUDINARY_API_KEY_PUBLIC
+        private val CLOUDINARY_NAME = BuildConfig.CLOUDINARY_NAME
+
+        // Khởi tạo MediaManager chỉ một lần duy nhất
+        fun initialize(context: Context) {
+            if (!isInitialized) {
+                val config = HashMap<String, String>().apply {
+                    put("cloud_name", CLOUDINARY_NAME)
+                    put("api_key", CLOUDINARY_API_KEY_PUBLIC)
+                    put("api_secret", CLOUDINARY_API_KEY_SECRET)
+                    put("secure", "true")
+                }
+                MediaManager.init(context, config)
+                isInitialized = true
+                Log.d("CloudinaryService", "MediaManager initialized successfully")
+            }
+        }
     }
 
-    private fun initConfig() {
-        config["cloud_name"] = CLOUDINARY_NAME
-        config["api_key"] = CLOUDINARY_API_KEY_PUBLIC
-        config["api_secret"] = CLOUDINARY_API_KEY_SECRET
-        config["secure"] = "true"
-        MediaManager.init(context, config)
+    init {
+        // Chỉ khởi tạo nếu chưa được khởi tạo
+        initialize(context)
     }
 
     // Non-suspend version for Java compatibility
@@ -78,4 +88,4 @@ class CloudinaryService(private val context: Context) {
     suspend fun uploadImageSuspend(file: File): String {
         return uploadImage(file)
     }
-} 
+}

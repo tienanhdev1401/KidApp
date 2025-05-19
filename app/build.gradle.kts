@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.core.ktx)
     implementation(libs.core)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -90,6 +91,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-database")
     implementation ("io.github.sceneview:arsceneview:0.10.0")
     implementation ("com.android.volley:volley:1.2.1")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
@@ -114,4 +116,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
+    
+
+    //cloudinary
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
 }

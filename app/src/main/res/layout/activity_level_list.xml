@@ -1,108 +1,195 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_blue_to_green"
-    android:gravity="center">
+    android:background="@drawable/blue_gradient_bg">
 
-    <!-- Header giống hình mẫu -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
+        android:id="@+id/headerCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp">
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Tiêu đề bằng ảnh -->
-
-        <ImageButton
-            android:id="@+id/btnPrevPage"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="25dp"
-            android:background="@drawable/bg_circle_btn"
-            android:contentDescription="Trước"
-            android:src="@drawable/ic_arrow_left_green"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <ImageView
-            android:id="@+id/ivLevelSelect"
-            android:layout_width="213dp"
-            android:layout_height="48dp"
-            android:src="@drawable/select_level"
-            app:layout_constraintBottom_toTopOf="@id/tvStarCount"
-            app:layout_constraintEnd_toStartOf="@id/btnNextPage"
-
-            app:layout_constraintStart_toEndOf="@id/btnPrevPage"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/btnNextPage"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="25dp"
-            android:background="@drawable/bg_circle_btn"
-            android:contentDescription="Sau"
-            android:src="@drawable/ic_arrow_right_green"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <LinearLayout
-            android:id="@+id/tvStarCount"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/ivLevelSelect"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:padding="16dp">
+
             <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_star_yellow"/>
+                android:id="@+id/btn_Back"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_button_bg"
+                android:contentDescription="Back button"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
-                android:id="@+id/tvStar"
-                android:layout_width="wrap_content"
+                android:id="@+id/titleTextView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="24/45"
-                android:textSize="22sp"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/kids_font"
+                android:gravity="center"
+                android:text="Chọn Màn Đoán Ảnh"
+                android:textColor="#00008B"
+                android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#FFF"
-                android:layout_marginStart="8dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="2"
-                android:shadowDy="2"
-                android:shadowRadius="4"/>
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_Back"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- RecyclerView chiếm phần còn lại màn hình -->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
-    <!-- Nút giỏ hàng tròn đỏ ở dưới cùng -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/subtitleCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="#FFF0E5"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerCard">
+
+        <TextView
+            android:id="@+id/subtitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_puzzle"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/kids_font"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:text="Hãy chọn một màn chơi để bắt đầu!"
+            android:textColor="#673AB7"
+            android:textSize="18sp" />
+    </androidx.cardview.widget.CardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewLevels"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/subtitleCard" />
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
+        android:id="@+id/loadingCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ProgressBar
+                android:id="@+id/loadingProgressBar"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:indeterminateTint="#00008B" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/kids_font"
+                android:text="Đang tải màn chơi..."
+                android:textColor="#673AB7"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/emptyStateCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginBottom="12dp">
-        <ImageButton
-            android:id="@+id/btnCart"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:background="@drawable/bg_circle_btn_red"
-            android:src="@drawable/ic_cart_white"
-            android:contentDescription="Giỏ hàng"/>
-    </LinearLayout>
-</LinearLayout>
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#E0F7FA"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_empty_state" />
+
+            <TextView
+                android:id="@+id/emptyTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/kids_font"
+                android:text="Không tìm thấy màn chơi nào!"
+                android:textAlignment="center"
+                android:textColor="#673AB7"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/refreshButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#FF4081"
+                android:fontFamily="@font/kids_font"
+                android:paddingStart="24dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="12dp"
+                android:text="Thử lại"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

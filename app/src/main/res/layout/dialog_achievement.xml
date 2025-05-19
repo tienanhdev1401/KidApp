@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/ivDialogAchievementIcon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/no_image"
+        android:layout_gravity="center"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:id="@+id/tvDialogAchievementName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên thành tựu"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#222"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvDialogAchievementDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mô tả thành tựu"
+        android:textColor="#666"
+        android:textSize="14sp"
+        android:gravity="center"/>
+
+</LinearLayout> 

@@ -8,6 +8,7 @@ public class WordGuessLevel implements Serializable {
     private String name;
     private String title;
     private List<WordGuessStage> stages;
+    private String imageUrl;
 
     public WordGuessLevel() {}
 
@@ -22,4 +23,7 @@ public class WordGuessLevel implements Serializable {
 
     public List<WordGuessStage> getStages() { return stages; }
     public void setStages(List<WordGuessStage> stages) { this.stages = stages; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 } 

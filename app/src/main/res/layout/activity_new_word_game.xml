@@ -59,6 +59,7 @@
                 android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_sound_on"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/tvLevel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tvLevel"
@@ -106,6 +107,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
+            <!-- Animation thành tựu mới đạt được -->
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/achievementAnimationView"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="false"
+                app:lottie_rawRes="@raw/achievement_animation"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Ảnh thành tựu mới đạt được -->
+            <ImageView
+                android:id="@+id/achievementImageView"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:visibility="gone"
+                android:scaleType="centerInside"
+                app:layout_constraintTop_toBottomOf="@+id/achievementAnimationView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -152,6 +178,16 @@
             android:background="@color/transparent"
             android:textAllCaps="false"
             android:textSize="18sp" />
+        <Button
+            android:id="@+id/btnNextStage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIẾP TỤC"
+            android:textColor="@color/white"
+            android:background="@color/transparent"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:visibility="gone" />
     </LinearLayout>
     <!-- Interactive elements -->
     <com.airbnb.lottie.LottieAnimationView
