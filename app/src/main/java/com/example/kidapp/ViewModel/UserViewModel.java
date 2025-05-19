@@ -46,4 +46,9 @@ public class UserViewModel extends AndroidViewModel {
     public void addPuzzleScore(String userEmail, int score) {
         userRepository.addPuzzleScore(userEmail, score);
     }
+
+    // Cập nhật điểm xếp hạng cho user
+    public void updateUserRankingScore(String userEmail, int newScore) {
+        userRepository.updateUserRankingScore(userEmail, newScore);
+    }
 }

@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.core.content.ContextCompat;
 
 import com.example.kidapp.DB.FirebaseInitializer;
 import com.example.kidapp.DB.PvpRoomManager;
@@ -73,6 +74,8 @@ public class PvpGameActivity extends AppCompatActivity {
     private TextView tvGameResultTitle, tvGameResultMessage;
     private MaterialButton btnGameResultAction;
     private LayoutInflater inflater;
+    private TextView tvPlayer1ScoreArrow, tvPlayer2ScoreArrow;
+    private TextView tvMyRankingScore, tvRankingScoreChange;
     
     // Game specific UI components
     private GridLayout gridCards;
@@ -297,6 +300,8 @@ public class PvpGameActivity extends AppCompatActivity {
         tvGameResultTitle = findViewById(R.id.tvGameResultTitle);
         tvGameResultMessage = findViewById(R.id.tvGameResultMessage);
         btnGameResultAction = findViewById(R.id.btnGameResultAction);
+        tvMyRankingScore = findViewById(R.id.tvMyRankingScore);
+        tvRankingScoreChange = findViewById(R.id.tvRankingScoreChange);
         
         // Thêm overlay đếm ngược
         createCountdownOverlay();
@@ -1469,6 +1474,94 @@ public class PvpGameActivity extends AppCompatActivity {
                 "\nĐiểm của bạn: " + myFinalScore + 
                 "\nĐiểm đối thủ: " + opponentFinalScore );
         
+        // Apply score highlight animation based on win/loss
+        TextView myScoreTextView = isHost ? tvPlayer1Score : tvPlayer2Score;
+        TextView opponentScoreTextView = isHost ? tvPlayer2Score : tvPlayer1Score;
+        TextView myScoreArrow = isHost ? tvPlayer1ScoreArrow : tvPlayer2ScoreArrow;
+        TextView opponentScoreArrow = isHost ? tvPlayer2ScoreArrow : tvPlayer1ScoreArrow;
+
+        if (isWin != null) {
+            if (isWin) {
+                // Animate winner's score (e.g., green flash)
+                animateScoreHighlight(myScoreTextView, ContextCompat.getColor(this, android.R.color.holo_green_light));
+                // Show up arrow for winner
+                showArrowTemporarily(myScoreArrow, true);
+            } else {
+                // Animate loser's score (e.g., red flash)
+                animateScoreHighlight(myScoreTextView, ContextCompat.getColor(this, android.R.color.holo_red_light));
+                // Show down arrow for loser
+                showArrowTemporarily(myScoreArrow, false);
+            }
+        } else {
+            // Animate both scores for a draw (e.g., blue flash)
+            animateScoreHighlight(myScoreTextView, ContextCompat.getColor(this, android.R.color.holo_blue_light));
+            animateScoreHighlight(opponentScoreTextView, ContextCompat.getColor(this, android.R.color.holo_blue_light));
+            // No arrows for a draw, or you could show horizontal arrows if desired
+        }
+
+        // Update and animate ranking score
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.getEmail() != null) {
+            userViewModel.getUserByEmail(currentUser.getEmail()).observe(this, user -> {
+                if (user != null) {
+                    int currentRankingScore = user.getScoreranking();
+                    int scoreChange = 0;
+
+                    if (isWin != null) {
+                        if (isWin) {
+                            scoreChange = 1; // +1 star for win
+                        } else {
+                            scoreChange = -1; // -1 star for loss
+                        }
+                    } else {
+                        scoreChange = 0; // +0 points for draw
+                    }
+
+                    int newRankingScore = currentRankingScore + scoreChange;
+
+                    // Ensure scoreRanking does not go below 0
+                    if (newRankingScore < 0) {
+                        newRankingScore = 0;
+                    }
+
+                    // Display current ranking score
+                    tvMyRankingScore.setText("Điểm xếp hạng: " + currentRankingScore);
+
+                    // Display and animate ranking score change
+                    if (scoreChange != 0) {
+                        String changeText = (scoreChange > 0 ? "+" : "") + scoreChange;
+                        String arrow = (scoreChange > 0 ? "↑" : "↓");
+                        int changeColor = ContextCompat.getColor(this, scoreChange > 0 ? android.R.color.holo_green_light : android.R.color.holo_red_light);
+
+                        tvRankingScoreChange.setText(changeText + " " + arrow);
+                        tvRankingScoreChange.setTextColor(changeColor);
+                        tvRankingScoreChange.setVisibility(View.VISIBLE);
+
+                        // Simple animation for score change text (e.g., fade in/out)
+                        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(tvRankingScoreChange, "alpha", 0f, 1f);
+                        alphaAnimator.setDuration(1500); // Animation duration
+                        alphaAnimator.setRepeatCount(ObjectAnimator.INFINITE); // Repeat indefinitely
+                        alphaAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+                        alphaAnimator.start();
+
+                        // --- IMPORTANT --- //
+                        // Call method in UserViewModel to update user's scoreRanking in database
+                        userViewModel.updateUserRankingScore(user.getEmail(), newRankingScore);
+                        // ----------------- //
+
+                    } else {
+                        tvRankingScoreChange.setVisibility(View.GONE);
+                    }
+                }
+                // Remove observer after getting user data once and handling score change
+                userViewModel.getUserByEmail(currentUser.getEmail()).removeObservers(this);
+            });
+        } else {
+            Log.e(TAG, "Current user is null or email is null, cannot fetch ranking score");
+            tvMyRankingScore.setText("Điểm xếp hạng: N/A");
+            tvRankingScoreChange.setVisibility(View.GONE);
+        }
+
         // Set button action
         btnGameResultAction.setOnClickListener(v -> {
             gameOverlayFrame.setVisibility(View.GONE);
@@ -2179,5 +2272,27 @@ public class PvpGameActivity extends AppCompatActivity {
         btnAnswer2.setText(String.valueOf(answers.get(1)));
         btnAnswer3.setText(String.valueOf(answers.get(2)));
         btnAnswer4.setText(String.valueOf(answers.get(3)));
+    }
+
+    private void showArrowTemporarily(TextView arrowTextView, boolean isUpArrow) {
+        if (arrowTextView == null) return;
+
+        // Set arrow text and color
+        arrowTextView.setText(isUpArrow ? "↑" : "↓");
+        arrowTextView.setTextColor(isUpArrow ? ContextCompat.getColor(this, android.R.color.holo_green_light) : ContextCompat.getColor(this, android.R.color.holo_red_light));
+
+        // Show the arrow for 2 seconds
+        arrowTextView.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(() -> {
+            arrowTextView.setVisibility(View.GONE);
+        }, 2000); // Show for 2 seconds
+    }
+
+    // Helper method to animate score highlight
+    private void animateScoreHighlight(TextView scoreTextView, int color) {
+        ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(scoreTextView, "textColor", scoreTextView.getCurrentTextColor(), color);
+        colorAnimator.setDuration(500);
+        colorAnimator.setInterpolator(new AccelerateInterpolator());
+        colorAnimator.start();
     }
 } 
