@@ -13,5 +13,5 @@
         android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
-        android:src="@drawable/story"></ImageView>
+        android:src="@drawable/reading_image"></ImageView>
 </LinearLayout> 
