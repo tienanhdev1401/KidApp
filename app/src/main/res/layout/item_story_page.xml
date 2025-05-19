@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp">
+
+            <ImageView
+                android:id="@+id/ivPageImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/img_placeholder" />
+
+            <ImageView
+                android:id="@+id/ivPlaceholder"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add_photo"
+                android:alpha="0.7" />
+
+            <TextView
+                android:id="@+id/tvPageNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="8dp"
+                android:background="@drawable/rounded_corner_background"
+                android:padding="4dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                tools:text="Trang 1" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvPageContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:padding="12dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            tools:text="Ngày xửa ngày xưa, có một chú gấu con sống trong khu rừng xanh tươi. Mỗi ngày, chú đều ra suối để chơi đùa với những người bạn của mình." />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView> 

@@ -19,7 +19,7 @@ import com.example.kidapp.databinding.ActivityAiStoryCreatorBinding;
 import com.example.kidapp.ViewModel.StoryElementViewModel;
 import com.example.kidapp.Adapter.StoryElementAdapter;
 import com.example.kidapp.models.StoryElement;
-import com.example.kidapp.models.StoryModel;
+import com.example.kidapp.models.StoryByAiModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +86,8 @@ public class AIStoryCreatorActivity extends AppCompatActivity {
                     selectedSetting = element;
                 } else {
                     selectedSetting = null;
+                    // Reset background image to default
+                    binding.previewBackgroundImage.setImageResource(R.drawable.preview_background_placeholder);
                 }
                 updatePreview();
             }, 
@@ -171,6 +173,8 @@ public class AIStoryCreatorActivity extends AppCompatActivity {
         // Update background
         if (selectedSetting != null) {
             binding.previewBackgroundImage.setVisibility(View.VISIBLE);
+            // Reset the image first before loading a new one
+            binding.previewBackgroundImage.setImageResource(R.drawable.preview_background_placeholder);
             Glide.with(this)
                     .load(selectedSetting.getImageUrl())
                     .into(binding.previewBackgroundImage);
@@ -209,7 +213,7 @@ public class AIStoryCreatorActivity extends AppCompatActivity {
         // Thêm các nhân vật đã chọn vào container
         for (StoryElement character : selectedCharacters) {
             ImageView characterView = new ImageView(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(120, 120);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(170, 170);
             params.setMargins(8, 0, 8, 0);
             characterView.setLayoutParams(params);
             characterView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -258,7 +262,7 @@ public class AIStoryCreatorActivity extends AppCompatActivity {
         // Thêm các vật phẩm đã chọn vào container
         for (StoryElement item : selectedItems) {
             ImageView itemView = new ImageView(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(100, 100);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(140, 140);
             params.setMargins(8, 0, 8, 0);
             itemView.setLayoutParams(params);
             itemView.setScaleType(ImageView.ScaleType.CENTER_CROP);

@@ -169,25 +169,7 @@ public class RegisterActivity extends AppCompatActivity {
             // Tạo gameProgress mặc định
             Map<String, Object> gameProgress = new HashMap<>();
 
-            // flipcard
-            Map<String, Object> flipcard = new HashMap<>();
-            flipcard.put("levelReached", 0);
-            flipcard.put("scores", new HashMap<String, Object>());
-            gameProgress.put("flipcard", flipcard);
-
-            // wordguess
-            Map<String, Object> wordguess = new HashMap<>();
-            wordguess.put("levelReached", 0);
-            wordguess.put("scores", new HashMap<String, Object>());
-            gameProgress.put("wordguess", wordguess);
-
-            // puzzle (không có levelReached)
-            Map<String, Object> puzzle = new HashMap<>();
-            puzzle.put("scores", new HashMap<String, Object>());
-            gameProgress.put("puzzle", puzzle);
-
-            userData.put("gameProgress", gameProgress);
-
+            // Add a new document with the user's UID
             db.collection("users").document(user.getUid())
                     .set(userData)
                     .addOnSuccessListener(aVoid -> Log.d("RegisterActivity", "User data saved to Firestore"))

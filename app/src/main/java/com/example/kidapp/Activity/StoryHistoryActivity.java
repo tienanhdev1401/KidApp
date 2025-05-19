@@ -2,84 +2,97 @@ package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.kidapp.Fragment.AIStoryFragment;
+import com.example.kidapp.Fragment.ManualStoryFragment;
 import com.example.kidapp.R;
-import com.example.kidapp.Service.GeminiService;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class StoryHistoryActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private TextView emptyView;
-    private FloatingActionButton fabCreateStory;
-    private Toolbar toolbar;
+    private ViewPager2 viewPager;
+    private TabLayout tabLayout;
+    private ExtendedFloatingActionButton fabCreateStory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_history);
-
-        // Khởi tạo các thành phần UI
-        initializeUI();
-
-        // Thiết lập toolbar
-        setupToolbar();
-
-        // Thiết lập RecyclerView
-        setupRecyclerView();
-
-        // Thiết lập nút tạo truyện mới
-        setupCreateButton();
-    }
-
-    private void initializeUI() {
-        recyclerView = findViewById(R.id.recyclerViewStories);
-        emptyView = findViewById(R.id.emptyView);
-        fabCreateStory = findViewById(R.id.fabCreateStory);
-        toolbar = findViewById(R.id.toolbar);
-    }
-
-    private void setupToolbar() {
+        
+        // Khởi tạo Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Truyện AI");
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-    }
 
-    private void setupRecyclerView() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        
-        // Hiện tại chưa có adapter và dữ liệu, hiển thị emptyView
-        recyclerView.setVisibility(View.GONE);
-        emptyView.setVisibility(View.VISIBLE);
-    }
+        // Ánh xạ các view
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
+        fabCreateStory = findViewById(R.id.fabCreateStory);
 
-    private void setupCreateButton() {
+        // Thiết lập ViewPager2 với adapter
+        viewPager.setAdapter(new StoryPagerAdapter(this));
+
+        // Kết nối TabLayout với ViewPager2
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText("Truyện AI");
+            } else {
+                tab.setText("Truyện thủ công");
+            }
+        }).attach();
+
+        // Nút tạo truyện mới
         fabCreateStory.setOnClickListener(v -> {
-            // Mở AIStoryCreatorActivity khi nhấn nút tạo truyện mới
-            Intent intent = new Intent(StoryHistoryActivity.this, AIStoryCreatorActivity.class);
-            startActivity(intent);
+            // Chuyển đến màn hình tạo truyện mới
+            navigateToStoryCreation();
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+    // Adapter cho ViewPager2
+    private static class StoryPagerAdapter extends FragmentStateAdapter {
+        public StoryPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
         }
-        return super.onOptionsItemSelected(item);
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            // Trả về fragment tương ứng với position
+            if (position == 0) {
+                return new AIStoryFragment();
+            } else {
+                return new ManualStoryFragment();
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return 2; // Có 2 tab: Truyện AI và Truyện thủ công
+        }
+    }
+
+    private void navigateToStoryCreation() {
+        // Chuyển đến màn hình tạo truyện mới
+        Intent intent = new Intent(this, StoryCreationActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

@@ -12,16 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
-import com.example.kidapp.models.StoryModel;
+import com.example.kidapp.models.StoryByAiModel;
 
 import java.util.ArrayList;
 
 public class ScenesPagerAdapter extends RecyclerView.Adapter<ScenesPagerAdapter.SceneViewHolder> {
 
     private Context context;
-    private ArrayList<StoryModel.SceneModel> scenes;
+    private ArrayList<StoryByAiModel.SceneModel> scenes;
 
-    public ScenesPagerAdapter(Context context, ArrayList<StoryModel.SceneModel> scenes) {
+    public ScenesPagerAdapter(Context context, ArrayList<StoryByAiModel.SceneModel> scenes) {
         this.context = context;
         this.scenes = scenes;
     }
@@ -35,7 +35,7 @@ public class ScenesPagerAdapter extends RecyclerView.Adapter<ScenesPagerAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull SceneViewHolder holder, int position) {
-        StoryModel.SceneModel scene = scenes.get(position);
+        StoryByAiModel.SceneModel scene = scenes.get(position);
         
         // Hiển thị nội dung cảnh
         holder.sceneContent.setText(scene.getVietnameseContent());

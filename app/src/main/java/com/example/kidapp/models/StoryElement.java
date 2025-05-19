@@ -1,9 +1,12 @@
 package com.example.kidapp.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.firestore.PropertyName;
 import com.google.firebase.firestore.Exclude;
 
-public class StoryElement {
+public class StoryElement implements Parcelable {
     private String id;
     
     @PropertyName("name")
@@ -24,6 +27,25 @@ public class StoryElement {
         this.imageUrl = imageUrl;
         this.type = type.name();
     }
+    
+    protected StoryElement(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        imageUrl = in.readString();
+        type = in.readString();
+    }
+
+    public static final Creator<StoryElement> CREATOR = new Creator<StoryElement>() {
+        @Override
+        public StoryElement createFromParcel(Parcel in) {
+            return new StoryElement(in);
+        }
+
+        @Override
+        public StoryElement[] newArray(int size) {
+            return new StoryElement[size];
+        }
+    };
 
     @Exclude
     public String getId() {
@@ -77,5 +99,18 @@ public class StoryElement {
 
     public enum ElementType {
         CHARACTER, SETTING, ITEM
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(imageUrl);
+        dest.writeString(type);
     }
 } 

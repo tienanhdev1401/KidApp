@@ -4,16 +4,22 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.kidapp.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthRepository {
     private static AuthRepository instance;
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore db;
     private MutableLiveData<User> userLiveData;
     private MutableLiveData<String> errorLiveData;
     private MutableLiveData<Boolean> isLoadingLiveData;
 
     private AuthRepository() {
         firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         userLiveData = new MutableLiveData<>();
         errorLiveData = new MutableLiveData<>();
         isLoadingLiveData = new MutableLiveData<>(false);
@@ -94,6 +100,48 @@ public class AuthRepository {
     public void logout() {
         firebaseAuth.signOut();
         userLiveData.setValue(null);
+    }
+
+    // AuthRepository.java
+
+    public void registerUser(String email, String username, String password) {
+        isLoadingLiveData.setValue(true);
+
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+                        if (firebaseUser != null) {
+                            // Save user info to Firestore
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("email", email);
+                            userData.put("username", username);
+                            userData.put("createdAt", System.currentTimeMillis());
+
+                            db.collection("users")
+                                    .document(firebaseUser.getUid())
+                                    .set(userData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Update LiveData on success
+                                        User user = new User(firebaseUser.getUid(), username, email);
+                                        userLiveData.setValue(user);
+                                        errorLiveData.setValue(null);
+                                        isLoadingLiveData.setValue(false);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        errorLiveData.setValue("Failed to save user info: " + e.getMessage());
+                                        isLoadingLiveData.setValue(false);
+                                    });
+                        } else {
+                            errorLiveData.setValue("User is null after registration.");
+                            isLoadingLiveData.setValue(false);
+                        }
+                    } else {
+                        errorLiveData.setValue("Registration failed: " + task.getException().getMessage());
+                        isLoadingLiveData.setValue(false);
+                    }
+                });
     }
 
     public boolean isUserLoggedIn() {

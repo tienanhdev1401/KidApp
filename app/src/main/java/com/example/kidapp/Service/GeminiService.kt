@@ -3,7 +3,7 @@ package com.example.kidapp.Service
 import android.content.Context
 import android.util.Log
 import com.example.kidapp.BuildConfig
-import com.example.kidapp.models.StoryModel
+import com.example.kidapp.models.StoryByAiModel
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
@@ -18,7 +18,9 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 class GeminiService(private val context: Context) {
@@ -36,15 +38,17 @@ class GeminiService(private val context: Context) {
     private val FAL_API_URL = "https://fal.run/fal-ai/flux/dev"
     private val FAL_API_KEY = BuildConfig.FAL_AI_API_KEY
 
-    // Thư mục lưu ảnh
-    private val imageDir by lazy {
-        File(context.filesDir, "story_images").apply {
-            if (!exists()) mkdirs()
-        }
-    }
-
     private var storyCharacterDescriptions: Map<String, String> = mutableMapOf()
     private var storyStylePrompt: String = ""
+
+    private val cloudinaryService = CloudinaryService(context)
+    private val uploadsDir: File by lazy {
+        File(context.filesDir, "uploads").apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    }
 
     init {
         // Create generationConfig using the factory function
@@ -65,12 +69,12 @@ class GeminiService(private val context: Context) {
     }
 
     interface StoryCallback {
-        fun onSuccess(story: StoryModel)
+        fun onSuccess(story: StoryByAiModel)
         fun onError(throwable: Throwable)
     }
 
     // Updated to support multiple characters and items
-    suspend fun generateStory(characters: List<String>, setting: String, items: List<String>): Result<StoryModel> {
+    suspend fun generateStory(characters: List<String>, setting: String, items: List<String>): Result<StoryByAiModel> {
         // Reset character descriptions for new story
         storyCharacterDescriptions = mutableMapOf()
 
@@ -106,7 +110,7 @@ class GeminiService(private val context: Context) {
                         val content = parts[1]
 
                         // Tạo đối tượng StoryModel
-                        val storyModel = StoryModel(
+                        val storyModel = StoryByAiModel(
                             title,
                             content,
                             "", // Không cần imageUrl chính nữa vì sẽ có ảnh cho từng cảnh
@@ -128,14 +132,14 @@ class GeminiService(private val context: Context) {
                         val scenes = parseScenes(content)
                         for (sceneContent in scenes) {
                             val imageUrl = generateImageForScene(sceneContent, characters, setting)
-                            val scene = StoryModel.SceneModel(sceneContent, imageUrl)
+                            val scene = StoryByAiModel.SceneModel(sceneContent, imageUrl)
                             storyModel.addScene(scene)
                         }
 
                         // Nếu không có cảnh nào, tạo một cảnh mặc định với toàn bộ nội dung
                         if (storyModel.scenes.isEmpty()) {
                             val defaultImageUrl = generateImageForScene(content, characters, setting)
-                            val defaultScene = StoryModel.SceneModel(content, defaultImageUrl)
+                            val defaultScene = StoryByAiModel.SceneModel(content, defaultImageUrl)
                             storyModel.addScene(defaultScene)
                         }
 
@@ -173,7 +177,7 @@ class GeminiService(private val context: Context) {
     }
 
     // Backward compatibility method for single character and item
-    suspend fun generateStory(character: String, setting: String, item: String): Result<StoryModel> {
+    suspend fun generateStory(character: String, setting: String, item: String): Result<StoryByAiModel> {
         return generateStory(listOf(character), setting, listOf(item))
     }
 
@@ -303,7 +307,6 @@ class GeminiService(private val context: Context) {
     }
 
     private suspend fun generateImageForScene(sceneContent: String, characters: List<String>, setting: String): String {
-        // Sử dụng nội dung tiếng Anh để tạo prompt cho việc tạo ảnh
         val imagePrompt = """
             Create a children's story illustration:
             Characters: ${characters.joinToString(", ")}
@@ -314,10 +317,45 @@ class GeminiService(private val context: Context) {
 
         return try {
             val imageDescription = getImageDescriptionFromGemini(imagePrompt)
-            generateImageWithFalAi(imageDescription)
+            val falImageUrl = generateImageWithFalAi(imageDescription)
+            
+            // Tải ảnh về thư mục tạm
+            val imageFile = downloadImage(falImageUrl)
+            
+            // Upload lên Cloudinary
+            val cloudinaryUrl = cloudinaryService.uploadImage(imageFile)
+            
+            // Xóa file tạm sau khi upload
+            imageFile.delete()
+            
+            cloudinaryUrl
         } catch (e: Exception) {
             Log.e(TAG, "Error generating image for scene: ${e.message}")
             "https://picsum.photos/600/400?random=${System.currentTimeMillis()}"
+        }
+    }
+
+    private suspend fun downloadImage(imageUrl: String): File = withContext(Dispatchers.IO) {
+        val fileName = "image_${System.currentTimeMillis()}.jpg"
+        val outputFile = File(uploadsDir, fileName)
+        
+        try {
+            val connection = URL(imageUrl).openConnection()
+            connection.connect()
+            
+            val inputStream = connection.getInputStream()
+            val outputStream = FileOutputStream(outputFile)
+            
+            inputStream.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+            
+            outputFile
+        } catch (e: Exception) {
+            Log.e(TAG, "Error downloading image: ${e.message}")
+            throw e
         }
     }
 
@@ -371,12 +409,7 @@ class GeminiService(private val context: Context) {
                         val imagesArray = jsonResponse.getJSONArray("images")
                         if (imagesArray.length() > 0) {
                             val imageObject = imagesArray.getJSONObject(0)
-                            val imageUrl = imageObject.getString("url")
-                            if (imageUrl.isNotEmpty()) {
-                                return@use downloadAndSaveImage(imageUrl)
-                            } else {
-                                throw IOException("Empty image URL in response")
-                            }
+                            return@use imageObject.getString("url")
                         } else {
                             throw IOException("No images in response")
                         }
@@ -417,7 +450,7 @@ class GeminiService(private val context: Context) {
                                 val imageObject = imagesArray.getJSONObject(0)
                                 val imageUrl = imageObject.getString("url")
                                 if (imageUrl.isNotEmpty()) {
-                                    return@withContext downloadAndSaveImage(imageUrl)
+                                    return@withContext imageUrl
                                 } else {
                                     throw IOException("Empty image URL in completed result")
                                 }
@@ -436,29 +469,6 @@ class GeminiService(private val context: Context) {
             }
         }
         throw IOException("Timeout waiting for image generation")
-    }
-
-    private suspend fun downloadAndSaveImage(imageUrl: String): String = withContext(Dispatchers.IO) {
-        val imageRequest = Request.Builder()
-            .url(imageUrl)
-            .build()
-
-        client.newCall(imageRequest).execute().use { imageResponse ->
-            if (!imageResponse.isSuccessful) {
-                throw IOException("Failed to download image")
-            }
-
-            val fileName = "scene_${System.currentTimeMillis()}.jpg"
-            val imageFile = File(imageDir, fileName)
-
-            imageResponse.body?.let { responseBody ->
-                imageFile.outputStream().use { fileOut ->
-                    responseBody.byteStream().copyTo(fileOut)
-                }
-            }
-
-            "file://${imageFile.absolutePath}"
-        }
     }
 
     private fun buildImagePrompt(sceneContent: String, characters: List<String>, setting: String): String {
@@ -529,18 +539,9 @@ class GeminiService(private val context: Context) {
         """.trimIndent()
     }
 
-    // Hàm dọn dẹp ảnh cũ
+    // Hàm dọn dẹp ảnh cũ - không còn cần thiết vì sử dụng URL trực tiếp
     fun cleanupOldImages() {
-        try {
-            // Xóa các ảnh cũ hơn 24 giờ
-            val twentyFourHoursAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
-            imageDir.listFiles()?.forEach { file ->
-                if (file.lastModified() < twentyFourHoursAgo) {
-                    file.delete()
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error cleaning up old images: ${e.message}")
-        }
+        // Không cần thiết nữa vì đang sử dụng URL trực tiếp từ fal.ai
+        Log.d(TAG, "Image cleanup not needed - using direct URLs")
     }
 }

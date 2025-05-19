@@ -33,6 +33,9 @@ android {
         // Thêm API keys vào BuildConfig
         buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("gemini.api.key", "")}\"")
         buildConfigField("String", "FAL_AI_API_KEY", "\"${localProperties.getProperty("fal.ai.api.key", "")}\"")
+        buildConfigField("String", "CLOUDINARY_API_KEY_SECRET", "\"${localProperties.getProperty("cloudinary.api.key.secret", "")}\"")
+        buildConfigField("String", "CLOUDINARY_NAME", "\"${localProperties.getProperty("cloudinary.name", "")}\"")
+        buildConfigField("String", "CLOUDINARY_API_KEY_PUBLIC", "\"${localProperties.getProperty("cloudinary.api.key.public", "")}\"")
     }
 
     buildFeatures {
@@ -68,6 +71,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.core.ktx)
     implementation(libs.core)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -86,6 +90,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-database")
     implementation ("io.github.sceneview:arsceneview:0.10.0")
     implementation ("com.android.volley:volley:1.2.1")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
@@ -99,6 +105,11 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.json:json:20240205")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
+    implementation("androidx.navigation:navigation-fragment:2.7.7")
+    implementation("androidx.navigation:navigation-ui:2.7.7")
     
     // Thêm các dependencies mới
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")

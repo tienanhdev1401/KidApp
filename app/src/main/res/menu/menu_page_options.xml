@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <item
+        android:id="@+id/action_edit_page"
+        android:title="Chỉnh sửa trang"
+        app:showAsAction="never" />
+        
+    <item
+        android:id="@+id/action_preview_page"
+        android:title="Xem trước trang"
+        app:showAsAction="never" />
+        
+    <item
+        android:id="@+id/action_delete_page"
+        android:title="Xóa trang"
+        app:showAsAction="never" />
+</menu> 

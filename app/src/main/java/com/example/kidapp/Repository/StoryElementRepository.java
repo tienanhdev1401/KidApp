@@ -53,6 +53,30 @@ public class StoryElementRepository {
                         Log.d(TAG, "Query successful, documents count: " + snapshot.size());
                         Log.d(TAG, "Query criteria - type: " + type.name());
                         
+                        if (snapshot.isEmpty()) {
+                            Log.w(TAG, "No documents found for type: " + type.name() + ". Adding sample data.");
+                            // Thêm dữ liệu mẫu nếu không có dữ liệu từ Firebase
+                            switch (type) {
+                                case CHARACTER:
+                                    elements.add(createSampleElement("Bé Na", "https://example.com/na.jpg", type));
+                                    elements.add(createSampleElement("Bé Bin", "https://example.com/bin.jpg", type));
+                                    elements.add(createSampleElement("Mèo Tom", "https://example.com/tom.jpg", type));
+                                    break;
+                                case SETTING:
+                                    elements.add(createSampleElement("Trường học", "https://example.com/school.jpg", type));
+                                    elements.add(createSampleElement("Rừng rậm", "https://example.com/forest.jpg", type));
+                                    elements.add(createSampleElement("Bãi biển", "https://example.com/beach.jpg", type));
+                                    break;
+                                case ITEM:
+                                    elements.add(createSampleElement("Bút chì", "https://example.com/pencil.jpg", type));
+                                    elements.add(createSampleElement("Quả bóng", "https://example.com/ball.jpg", type));
+                                    elements.add(createSampleElement("Đồ chơi", "https://example.com/toy.jpg", type));
+                                    break;
+                            }
+                            Log.d(TAG, "Added " + elements.size() + " sample elements for type: " + type.name());
+                            return elements;
+                        }
+                        
                         for (var doc : snapshot.getDocuments()) {
                             try {
                                 Log.d(TAG, "Document ID: " + doc.getId() + ", data: " + doc.getData());
@@ -65,7 +89,7 @@ public class StoryElementRepository {
                                 elements.add(element);
                                 Log.d(TAG, "Loaded element: " + element.getName() + ", type: " + element.getType());
                             } catch (Exception e) {
-                                Log.e(TAG, "Error converting document: " + e.getMessage());
+                                Log.e(TAG, "Error converting document: " + e.getMessage(), e);
                             }
                         }
                         
@@ -75,9 +99,37 @@ public class StoryElementRepository {
                         String errorMessage = task.getException() != null ? 
                             task.getException().getMessage() : "Unknown error";
                         Log.e(TAG, "Failed to load elements: " + errorMessage);
-                        return new ArrayList<>();
+                        
+                        // Trả về dữ liệu mẫu trong trường hợp lỗi
+                        List<StoryElement> fallbackElements = new ArrayList<>();
+                        Log.w(TAG, "Returning fallback sample data due to error");
+                        switch (type) {
+                            case CHARACTER:
+                                fallbackElements.add(createSampleElement("Bé Na (Fallback)", "https://example.com/na.jpg", type));
+                                fallbackElements.add(createSampleElement("Bé Bin (Fallback)", "https://example.com/bin.jpg", type));
+                                break;
+                            case SETTING:
+                                fallbackElements.add(createSampleElement("Trường học (Fallback)", "https://example.com/school.jpg", type));
+                                fallbackElements.add(createSampleElement("Rừng rậm (Fallback)", "https://example.com/forest.jpg", type));
+                                break;
+                            case ITEM:
+                                fallbackElements.add(createSampleElement("Bút chì (Fallback)", "https://example.com/pencil.jpg", type));
+                                fallbackElements.add(createSampleElement("Quả bóng (Fallback)", "https://example.com/ball.jpg", type));
+                                break;
+                        }
+                        return fallbackElements;
                     }
                 });
+    }
+
+    // Helper method to create sample elements
+    private StoryElement createSampleElement(String name, String imageUrl, StoryElement.ElementType type) {
+        StoryElement element = new StoryElement();
+        element.setId("sample-" + type.name().toLowerCase() + "-" + name.toLowerCase().replace(" ", "-"));
+        element.setName(name);
+        element.setImageUrl(imageUrl);
+        element.setType(type.name());
+        return element;
     }
 
     public Task<Void> addElement(StoryElement element) {
