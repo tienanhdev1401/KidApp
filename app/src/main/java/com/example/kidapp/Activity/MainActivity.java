@@ -565,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(btnPvp);
 
         btnPvp.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, PvpGameActivity.class));
+            startActivity(new Intent(MainActivity.this, PvpLobbyActivity.class));
             dialog.dismiss();
         });
 
