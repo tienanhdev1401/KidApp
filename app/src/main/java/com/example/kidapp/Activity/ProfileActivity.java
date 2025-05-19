@@ -4,6 +4,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import android.app.AlertDialog;
+import android.content.Context;
+import com.squareup.picasso.Picasso;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +34,9 @@ public class ProfileActivity extends AppCompatActivity {
     private AchievementAdapter achievementAdapter;
     private List<Achievement> allAchievements = new ArrayList<>();
     private TextView[] dayViews = new TextView[7];
+    private LinearLayout llBeginnerAchievements;
+    private LinearLayout llMiddleAchievements;
+    private LinearLayout llMasterAchievements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +44,12 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         profileTitle = findViewById(R.id.profile_title);
-        achievementRecyclerView = findViewById(R.id.achievement_recycler);
-        achievementRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+
+        // Find new LinearLayouts
+        llBeginnerAchievements = findViewById(R.id.ll_beginner_achievements);
+        llMiddleAchievements = findViewById(R.id.ll_middle_achievements);
+        llMasterAchievements = findViewById(R.id.ll_master_achievements);
 
         ImageView backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
@@ -70,21 +85,8 @@ public class ProfileActivity extends AppCompatActivity {
                         Achievement ach = doc.toObject(Achievement.class);
                         allAchievements.add(ach);
                     }
-                    achievementAdapter = new AchievementAdapter(allAchievements, userAchievements);
-                    achievementRecyclerView.setAdapter(achievementAdapter);
-
-                    // Hiển thị danh sách tên các thành tựu đã đạt
-                    if (userAchievements.isEmpty()) {
-                        TextView tvAchievedList = findViewById(R.id.tv_achieved_list);
-                        tvAchievedList.setText("Bạn chưa đạt thành tựu nào.");
-                    } else {
-                        List<String> achievedNames = new ArrayList<>();
-                        for (Achievement ach : allAchievements) {
-                            if (userAchievements.contains(ach.getId())) {
-                                achievedNames.add(ach.getName());
-                            }
-                        }
-                    }
+                    // Display achievements by category
+                    displayAchievementsByCategory(allAchievements, userAchievements);
                 });
             } else {
                 Log.d("USER_PROFILE", "No user found with email: " + currentUser.getEmail());
@@ -123,5 +125,73 @@ public class ProfileActivity extends AppCompatActivity {
             // Tăng ngày lên 1
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
+    }
+
+    private void displayAchievementsByCategory(List<Achievement> allAchievements, List<String> userAchievements) {
+        // Xóa các view cũ trong LinearLayouts trước khi thêm mới
+        llBeginnerAchievements.removeAllViews();
+        llMiddleAchievements.removeAllViews();
+        llMasterAchievements.removeAllViews();
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        for (Achievement achievement : allAchievements) {
+            View achievementView = inflater.inflate(R.layout.item_achievement, null);
+            ImageView icon = achievementView.findViewById(R.id.ivAchievementIcon);
+
+            // Kiểm tra xem người dùng đã đạt được thành tựu này chưa
+            if (userAchievements.contains(achievement.getId())) {
+                // Đã đạt được, tải ảnh avatar bằng Glide và hiển thị tên
+                Glide.with(this)
+                     .load(achievement.getImageUrl())
+                     .into(icon);
+                achievementView.setAlpha(1.0f); // Đảm bảo hiển thị rõ
+            } else {
+                 // Chưa đạt được, tải ảnh avatar bằng Glide và làm mờ, hiển thị tên là "????"
+                 Glide.with(this)
+                      .load(achievement.getImageUrl())
+                      .into(icon); // Tải ảnh và áp dụng grayscale
+                 achievementView.setAlpha(0.3f); // Làm mờ icon
+             }
+
+             // Add click listener to show dialog
+             achievementView.setOnClickListener(v -> {
+                 showAchievementDialog(this, achievement);
+             });
+
+            // Thêm View vào LinearLayout phù hợp dựa vào tên
+            String achievementName = achievement.getName().toLowerCase();
+            if (achievementName.contains("beginner")) {
+                llBeginnerAchievements.addView(achievementView);
+            } else if (achievementName.contains("middle")) {
+                llMiddleAchievements.addView(achievementView);
+            } else if (achievementName.contains("master")) {
+                llMasterAchievements.addView(achievementView);
+            }
+        }
+    }
+
+    private void showAchievementDialog(Context context, Achievement achievement) {
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_achievement, null);
+        ImageView ivIcon = dialogView.findViewById(R.id.ivDialogAchievementIcon);
+        TextView tvName = dialogView.findViewById(R.id.tvDialogAchievementName);
+        TextView tvDesc = dialogView.findViewById(R.id.tvDialogAchievementDesc);
+
+        // Load icon using Picasso (as provided in the user's code)
+        if (achievement.getImageUrl() != null && !achievement.getImageUrl().isEmpty()) {
+            Picasso.get().load(achievement.getImageUrl())
+                    .placeholder(R.drawable.no_image)
+                    .error(R.drawable.no_image)
+                    .into(ivIcon);
+        } else {
+            ivIcon.setImageResource(R.drawable.no_image);
+        }
+        tvName.setText(achievement.getName());
+        tvDesc.setText(achievement.getDescription());
+
+        new AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setPositiveButton("Đóng", null)
+            .show();
     }
 }
