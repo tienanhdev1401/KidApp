@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <!-- Progress Container -->
@@ -110,10 +111,10 @@
             android:layout_height="wrap_content"
             android:text="Bạn cộng được bao nhiêu?"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textAlignment="center"
-            android:padding="16dp"/>
+            android:padding="12dp"/>
     </androidx.cardview.widget.CardView>
 
     <!-- Main Content Card -->
@@ -151,8 +152,8 @@
 
                 <!-- First Number Container -->
                 <FrameLayout
-                    android:layout_width="120dp"
-                    android:layout_height="120dp">
+                    android:layout_width="100dp"
+                    android:layout_height="100dp">
                     <ImageView
                         android:id="@+id/number1ImageView"
                         android:layout_width="match_parent"
@@ -169,14 +170,14 @@
                     android:layout_height="wrap_content"
                     android:text="+"
                     android:textColor="#FF5722"
-                    android:textSize="56sp"
+                    android:textSize="48sp"
                     android:textStyle="bold"
                     android:layout_marginHorizontal="16dp"/>
 
                 <!-- Second Number Container -->
                 <FrameLayout
-                    android:layout_width="120dp"
-                    android:layout_height="120dp">
+                    android:layout_width="100dp"
+                    android:layout_height="100dp">
                     <ImageView
                         android:id="@+id/number2ImageView"
                         android:layout_width="match_parent"
