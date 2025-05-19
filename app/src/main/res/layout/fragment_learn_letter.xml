@@ -19,7 +19,7 @@
         android:background="#fbf5f2">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/backButton"
+            android:id="@+id/backButtonCard"
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:cardCornerRadius="20dp"
@@ -27,7 +27,7 @@
             app:cardBackgroundColor="#fbf5f2">
 
             <ImageView
-                android:id="@+id/backButton"
+                android:id="@+id/backButtonIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:layout_gravity="center"

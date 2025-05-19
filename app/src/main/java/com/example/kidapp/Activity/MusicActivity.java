@@ -244,6 +244,24 @@ public class MusicActivity extends AppCompatActivity {
         registerReceiver(musicUpdateReceiver, filter, Context.RECEIVER_EXPORTED);
         // Cập nhật UI ngay lập tức khi trở lại
         updatePlayerUI();
+        
+        // Cập nhật lại adapter để hiển thị trạng thái yêu thích mới
+        refreshMusicList();
+    }
+
+    private void refreshMusicList() {
+        // Cập nhật lại danh sách bài hát từ cơ sở dữ liệu
+        musicViewModel.getAllMusics().observe(this, musics -> {
+            if (musics != null && !musics.isEmpty()) {
+                // Only take up to 3 items
+                List<Music> limitedMusics = musics.size() > 3 ? musics.subList(0, 3) : musics;
+                musicList.clear();
+                musicList.addAll(limitedMusics);
+                if (musicAdapter != null) {
+                    musicAdapter.refreshFavoriteStatus();
+                }
+            }
+        });
     }
 
     @Override

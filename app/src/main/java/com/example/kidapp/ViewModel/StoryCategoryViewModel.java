@@ -25,7 +25,7 @@ public class StoryCategoryViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Story>> getStoryByCategoryName(String categoryName) {
-        return storyCategoryRepository.getStoryByCategoryId(categoryName);
+        return storyCategoryRepository.getStoryByCategoryName(categoryName);
     }
 
     public LiveData<String> insertStoryCategory(StoryCategory storyCategory) {

@@ -1,4 +1,4 @@
-package com.example.kidapp.Model;
+package com.example.kidapp.models;
 
 public class Number {
     private int id;

@@ -38,8 +38,26 @@ public class LearnLetterFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_learn_letter, container, false);
+        
+        // Sửa lại để tránh NullPointerException
         CardView btnBack = view.findViewById(R.id.backButton);
-        btnBack.setOnClickListener(v -> requireActivity().finish());
+        // Kiểm tra xem backButton có tồn tại không
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> requireActivity().finish());
+        } else {
+            // Thử tìm backButtonCard thay thế
+            CardView backButtonCard = view.findViewById(R.id.backButtonCard);
+            if (backButtonCard != null) {
+                backButtonCard.setOnClickListener(v -> requireActivity().finish());
+            } else {
+                // Thử tìm backButtonIcon thay thế
+                View backButtonIcon = view.findViewById(R.id.backButtonIcon);
+                if (backButtonIcon != null) {
+                    backButtonIcon.setOnClickListener(v -> requireActivity().finish());
+                }
+            }
+        }
+        
         letterContainer = view.findViewById(R.id.letterContainer);
         setupLetterResources();
         setupClickListeners(view);

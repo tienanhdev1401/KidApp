@@ -2,6 +2,19 @@ plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
+}
+
+import java.util.Properties
+
+// Đọc local.properties để lấy API keys
+val localProperties by lazy {
+    Properties().apply {
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { this.load(it) }
+        }
+    }
 }
 
 android {
@@ -16,6 +29,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Thêm API keys vào BuildConfig
+        buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("gemini.api.key", "")}\"")
+        buildConfigField("String", "FAL_AI_API_KEY", "\"${localProperties.getProperty("fal.ai.api.key", "")}\"")
+        buildConfigField("String", "CLOUDINARY_API_KEY_SECRET", "\"${localProperties.getProperty("cloudinary.api.key.secret", "")}\"")
+        buildConfigField("String", "CLOUDINARY_NAME", "\"${localProperties.getProperty("cloudinary.name", "")}\"")
+        buildConfigField("String", "CLOUDINARY_API_KEY_PUBLIC", "\"${localProperties.getProperty("cloudinary.api.key.public", "")}\"")
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true  // Kích hoạt BuildConfig
     }
 
     buildTypes {
@@ -63,8 +88,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-firestore:24.9.1")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.1")) // Sử dụng phiên bản mới nhất của Firebase BoM
-    implementation("com.google.firebase:firebase-auth") // Dependency cho Firebase Authentication
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-storage")
     implementation ("io.github.sceneview:arsceneview:0.10.0")
     implementation ("com.android.volley:volley:1.2.1")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
@@ -72,10 +97,21 @@ dependencies {
     // Glide để tải ảnh từ URL
     implementation("com.github.bumptech.glide:glide:4.13.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.13.2")
-    implementation ("com.airbnb.android:lottie:6.0.0'")
     implementation ("com.squareup.picasso:picasso:2.8")
+    implementation("com.google.ai.client.generativeai:generativeai:0.2.2")
+    implementation("com.google.guava:guava:33.0.0-jre")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.json:json:20240205")
 
-
-
-
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
+    implementation("androidx.navigation:navigation-fragment:2.7.7")
+    implementation("androidx.navigation:navigation-ui:2.7.7")
+    
+    // Thêm các dependencies mới
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-ktx:1.8.2")
 }

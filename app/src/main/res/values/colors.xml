@@ -12,5 +12,31 @@
     <color name="quiz_title_color">#1976D2</color>
     <color name="quiz_question_color">#0D47A1</color>
     <color name="transparent">#00000000</color>
+    <color name="colorPrimary">#42A5F5</color>
+    <color name="primary">#FF7EB3</color>
+    <color name="primary_dark">#FF54B0</color>
+    <color name="accent">#FFCA53</color>
+    <color name="background">#FFF9F6</color>
+    <color name="card_background">#FFFBF9</color>
+    <color name="text_primary">#4A4A4A</color>
+    <color name="text_secondary">#757575</color>
+    <color name="character_category">#A5D6A7</color>
+    <color name="setting_category">#90CAF9</color>
+    <color name="item_category">#FFCC80</color>
+    <color name="light_background">#F9F9F9</color>
+    <color name="gray">#757575</color>
+    <color name="secondary">#FF6D00</color>
+
+    <!-- Math Quiz Colors -->
+    <color name="option1_color">#4CAF50</color>
+    <color name="option2_color">#FF9800</color>
+    <color name="option3_color">#03A9F4</color>
+    <color name="option4_color">#E91E63</color>
+    <color name="correct_answer">#8BC34A</color>
+    <color name="addition_color">#FF5722</color>
+    <color name="subtraction_color">#9C27B0</color>
+
+    <color name="favorite">#FF0B55</color>
+    <color name="non_favorite">#E9ECEF</color>
 
 </resources>

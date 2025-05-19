@@ -100,6 +100,7 @@
 
                     <!-- Category 1 -->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/animalStory"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginEnd="12dp"
@@ -131,6 +132,7 @@
 
                     <!-- Category 2 -->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/fairyStory"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginEnd="12dp"
@@ -162,6 +164,7 @@
 
                     <!-- Category 3 -->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/moralStory"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginEnd="12dp"
@@ -193,6 +196,7 @@
 
                     <!-- Category 4 -->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/adventureStory"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         app:cardCornerRadius="12dp"

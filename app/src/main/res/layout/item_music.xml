@@ -56,13 +56,17 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/favoriteButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@drawable/love"
-            android:tint="#FF5252"
-            android:padding="4dp"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/favoriteBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:drawablePadding="0dp"
+            app:iconGravity="textEnd"
+            app:backgroundTint="@color/white"
+            app:iconPadding="2dp"
+            app:iconSize="30dp"
+            app:icon="@drawable/love"
+            app:iconTint="#009688"
             android:contentDescription="Favorite" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

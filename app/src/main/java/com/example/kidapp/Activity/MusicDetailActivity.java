@@ -27,11 +27,16 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
 import com.example.kidapp.Service.MusicService;
+import com.example.kidapp.ViewModel.FavoriteViewModel;
 import com.example.kidapp.models.Music;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +60,10 @@ public class MusicDetailActivity extends AppCompatActivity {
 
     private Music music;
     private int musicPosition;
-    TextView songTitle, artistName;
-
+    private TextView songTitle, artistName;
+    private FavoriteViewModel favoriteViewModel;
+    private MaterialButton favoriteBtn;
+    private String userEmail;
 
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -156,7 +163,7 @@ public class MusicDetailActivity extends AppCompatActivity {
                     // Load ảnh mới
                     Glide.with(MusicDetailActivity.this)
                             .load(newMusic.getMusicAvtUrl())
-                            .override(920, 950)
+                            .override(950, 950)
                             .fitCenter()
                             .into(albumArt);
 
@@ -168,29 +175,6 @@ public class MusicDetailActivity extends AppCompatActivity {
             }
         }
     };
-//private BroadcastReceiver trackChangedReceiver = new BroadcastReceiver() {
-//    @Override
-//    public void onReceive(Context context, Intent intent) {
-//
-//        try {
-//            Bundle extras = intent.getExtras();
-//            if (extras != null) {
-//                Log.d("MusicDetail", "Extras keys: " + extras.keySet().toString());
-//                Music newMusic = extras.getParcelable("currentMusic");
-//                Log.d("MusicDetail", "Nhận được Music object: " + (newMusic != null ? newMusic.toString() : "null"));
-//
-//                if (newMusic != null) {
-//                    runOnUiThread(() -> {
-//                        Log.d("MusicDetail", "Bắt đầu cập nhật UI...");
-//                        updateUIWithNewTrack(newMusic);
-//                    });
-//                }
-//            }
-//        } catch (Exception e) {
-//            Log.e("MusicDetail", "Lỗi xử lý broadcast: " + e.getMessage());
-//        }
-//    }
-//};
 
     private void updateUIWithNewTrack(Music music) {
         if (music == null) {
@@ -235,8 +219,12 @@ public class MusicDetailActivity extends AppCompatActivity {
         playlist = getIntent().getParcelableArrayListExtra("playlist");
         musicPosition = getIntent().getIntExtra("musicPosition", -1);
         music = getIntent().getParcelableExtra("music");
+        favoriteViewModel = new ViewModelProvider(this).get(FavoriteViewModel.class);
 
-
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            userEmail = currentUser.getEmail();
+        }
         if (playlist == null || playlist.isEmpty()) {
             // Nếu playlist null thì tạo playlist chứa bài hát hiện tại
             if (music != null) {
@@ -245,7 +233,6 @@ public class MusicDetailActivity extends AppCompatActivity {
                 musicPosition = 0;
             }
         }
-
         // Kiểm tra vị trí hợp lệ
         if (musicPosition < 0 || musicPosition >= playlist.size()) {
             Log.e("MusicDetailActivity", "Vị trí bài hát không hợp lệ: " + musicPosition);
@@ -285,7 +272,7 @@ public class MusicDetailActivity extends AppCompatActivity {
         albumArt = findViewById(R.id.albumArt);
         btnPrevious = findViewById(R.id.previousButton);
         btnNext = findViewById(R.id.nextButton);
-        
+        favoriteBtn = findViewById(R.id.favoriteBtn);
         // Gửi playlist tới Service trước khi phát nhạc
         Intent serviceIntent = new Intent(this, MusicService.class);
         serviceIntent.putExtra("playlist", new ArrayList<>(playlist));
@@ -303,11 +290,22 @@ public class MusicDetailActivity extends AppCompatActivity {
 
         setUpUI();
         setupListeners();
-
+        setupObservers();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+    }
+
+    private void setupObservers() {
+        favoriteViewModel.isMusicFavorite(userEmail, music.getMusicId()).observe(this, isFavorite -> {
+            if (isFavorite != null) {
+                favoriteBtn.setIconResource(isFavorite ? R.drawable.love : R.drawable.non_favorite);
+                if (isFavorite) {
+                    favoriteBtn.setIconTint(getResources().getColorStateList(R.color.favorite));
+                }
+            }
         });
     }
 
@@ -423,6 +421,34 @@ public class MusicDetailActivity extends AppCompatActivity {
                 updateUIWithNewTrack(music);
                 updateUI();
                 sendActionToService(MusicService.ACTION_NEXT);
+            }
+        });
+        
+        favoriteBtn.setOnClickListener(v -> {
+            // Lấy trạng thái hiện tại và đảo ngược
+            favoriteViewModel.isMusicFavorite(userEmail, music.getMusicId()).observe(this, isFavorite -> {
+                if (isFavorite != null) {
+                    // Cập nhật UI ngay lập tức trước khi cập nhật database
+                    boolean newState = !isFavorite;
+                    favoriteBtn.setIconResource(newState ? R.drawable.love : R.drawable.non_favorite);
+                    if (newState) {
+                        favoriteBtn.setIconTint(getResources().getColorStateList(R.color.favorite));
+                    }
+                    
+                    // Sau đó cập nhật trong database
+                    favoriteViewModel.toggleMusicFavorite(userEmail, music.getMusicId());
+                }
+            });
+        });
+    }
+
+    private void updateFavoriteIcon(MaterialButton button, Music music) {
+        favoriteViewModel.isMusicFavorite(userEmail, music.getMusicId()).observe(this, isFavorite -> {
+            if (isFavorite) {
+                button.setIconResource(R.drawable.love);
+                button.setIconTint(getResources().getColorStateList(R.color.favorite));
+            } else {
+                button.setIconResource(R.drawable.non_favorite);
             }
         });
     }

@@ -38,21 +38,26 @@
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnBookmark"
+            app:layout_constraintEnd_toStartOf="@+id/btnFavorite"
             app:layout_constraintStart_toEndOf="@+id/btnBack"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/btnBookmark"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/circular_button_bg"
-            android:contentDescription="Đánh dấu"
-            android:src="@drawable/ic_bookmark"
-            android:tint="@color/white"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFavorite"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:backgroundTint="@color/white"
+            app:icon="@drawable/love"
+            app:iconGravity="textEnd"
+            app:iconPadding="2dp"
+            android:elevation="0dp"
+            app:cornerRadius="30dp"
+            app:iconSize="30dp"
+            app:iconTint="@color/favorite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Main story content area with scroll view -->
@@ -62,7 +67,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigationLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -232,17 +237,23 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/storyTabLayout">
 
-                <TextView
-                    android:id="@+id/tvStoryContent"
+                <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/kids_font"
-                    android:lineSpacingExtra="8dp"
-                    android:padding="16dp"
-                    android:textColor="#01579B"
-                    android:textSize="18sp"
-                    android:text="Một ngày hè oi ả, khi mặt trời đang chiếu rực, có một chú chào mào đang nhảy nhót khắp cánh đồng, ca hát vui vẻ và tận hưởng những giây phút thư giãn. Trong khi đó, một con kiến nhỏ chăm chỉ không ngừng làm việc, từng bước nhẹ nhàng đẩy từng hạt thức ăn về tổ để chuẩn bị cho mùa đông sắp tới.\n\nChào mào ngó thấy kiến đang bận rộn mà không hiểu vì sao con không dừng lại vui chơi cùng mình. Vì vậy, chú chào mào liền than thầm:\n\n“Sao con không nghỉ lại chơi cùng tôi? Hãy tận hưởng mùa hè này đi chứ!”\n\nNhưng con kiến kiên trì đáp lại:\n\n“Tôi đang tích trữ thức ăn cho mùa đông. Con nên tận hưởng bây giờ, nhưng hãy nhớ rằng ngày mai không bao giờ biết trước!”\n\nChú chào mào chỉ cười khẩy và nghĩ rằng mùa đông còn xa, nên không cần phải lo lắng. Thời gian trôi đi, và mùa đông lạnh giá cuối cùng cũng đến. Cánh đồng bỗng trở nên trơ trọi, thức ăn khan hiếm và cả thiên nhiên chìm trong băng giá.\n\nĐói khát và lạnh lẽo, chú chào mào buộc phải nhớ đến lời khuyên của kiến. Chú tìm đến tổ kiến để nhờ một chút thức ăn. Dù bận rộn với công việc của mình, con kiến vẫn chia sẻ thức ăn cùng chú chào mào, đồng thời nhắc nhở:\n\n“Nếu con đã nghe lời tôi, thì mùa hè nên dành thời gian làm việc để chuẩn bị cho mùa đông. Hãy nhớ rằng sự chăm chỉ hôm nay sẽ giúp con vượt qua những khó khăn ngày mai.”" />
+                    android:scrollbars="vertical"
+                    android:fadeScrollbars="false">
 
+                    <TextView
+                        android:id="@+id/tvStoryContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/kids_font"
+                        android:lineSpacingExtra="8dp"
+                        android:padding="16dp"
+                        android:textColor="#01579B"
+                        android:textSize="18sp"
+                        android:text="ss"/>
+                </ScrollView>
             </androidx.cardview.widget.CardView>
 
             <!-- Moral Card Tab -->
@@ -254,6 +265,7 @@
                 app:cardBackgroundColor="#BBDEFB"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
+                android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/storyContentCard"
@@ -263,7 +275,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:layout_marginBottom="20dp">
 
                     <TextView
                         android:id="@+id/tvMoralTitle"
@@ -386,56 +399,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Footer navigation buttons -->
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:id="@+id/navigationLayout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@drawable/footer_background"-->
-<!--        android:backgroundTint="#1E88E5"-->
-<!--        android:padding="16dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent">-->
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnPrevious"-->
-<!--            android:layout_width="65dp"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:background="@drawable/navigation_button_bg"-->
-<!--            android:backgroundTint="#29B6F6"-->
-<!--            android:contentDescription="Câu chuyện trước"-->
-<!--            android:src="@drawable/rewind_button"-->
-<!--            android:tint="@color/white"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnAudio"-->
-<!--            android:layout_width="70dp"-->
-<!--            android:layout_height="70dp"-->
-<!--            android:background="@drawable/audio_button_bg"-->
-<!--            android:backgroundTint="#29B6F6"-->
-<!--            android:contentDescription="Phát âm thanh"-->
-<!--            android:src="@drawable/detail_music_play"-->
-<!--            android:tint="@color/white"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toStartOf="@+id/btnNext"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/btnPrevious"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/btnNext"-->
-<!--            android:layout_width="65dp"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:background="@drawable/navigation_button_bg"-->
-<!--            android:backgroundTint="#29B6F6"-->
-<!--            android:contentDescription="Câu chuyện tiếp"-->
-<!--            android:src="@drawable/next_button"-->
-<!--            android:tint="@color/white"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     <!-- Interactive elements -->
     <com.airbnb.lottie.LottieAnimationView
@@ -443,7 +407,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/navigationLayout"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

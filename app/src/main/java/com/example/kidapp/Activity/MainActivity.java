@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -30,16 +31,20 @@ import com.example.kidapp.ViewModel.UserViewModel;
 import com.example.kidapp.models.User;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.kidapp.ViewModel.LoginViewModel;
 
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals;
+    private CardView cardNumbers, cardReading, cardShapes, cardVocab, cardAnalysis, cardSettings, cardGame, cardListen, cardMaths, cardAnimals, cardStory;
     private View frontNumbers, backNumbers;
     private View frontReading, backReading;
     private View frontShapes, backShapes;
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View frontMaths, backMaths;
     private View frontListen, backListen;
     private View frontGame, backGame;
+    private View frontStory, backStory;
+    private TextView usernametext;
 
     private ImageView profileButton;
     private FlipAnimationUtil numbersFlipAnimation;
@@ -62,11 +69,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FlipAnimationUtil mathsFlipAnimation;
     private FlipAnimationUtil listenFlipAnimation;
     private FlipAnimationUtil gameFlipAnimation;
+    private FlipAnimationUtil storyFlipAnimation;
     private DrawerLayout drawer;
     private ImageButton menuButton;
     private NavigationView navigationView;
-
+    private LoginViewModel loginViewModel;
     private FirebaseAuth mAuth;
+    private String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
+        // Initialize ViewModel
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+
+
+        // Check login status
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            mAuth.signOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        // Lấy NavigationView và header của nó
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0); // Lấy header đầu tiên
+
+        // Tham chiếu đến TextView trong nav_header.xml
+        usernametext = headerView.findViewById(R.id.user_name);
+
+        //hiển thị tên
+        userEmail = currentUser.getEmail();
+        Log.d("USER_PROFILE", "User email: " + userEmail);
+
+        UserViewModel userViewModel1 = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel1.getUserByEmail(currentUser.getEmail()).observe(this, user -> {
+            if (user != null) {
+                Log.d("USER_PROFILE", "User found: " + user.getUsername()
+                        + " | Email: " + user.getEmail());
+                // Cập nhật UI với thông tin người dùng
+                usernametext.setText("Chào Mừng, " +user.getUsername()); // Hoặc các view khác
+            } else {
+                Log.d("USER_PROFILE", "No user found with email: " + currentUser.getEmail());
+                usernametext.setText("Chào Mừng!");
+            }
+        });
 
         // Tạo toggle button cho navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -103,16 +148,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        userViewModel.getAllUsers().observe(this, users -> {
-            if (users != null && !users.isEmpty()) {
-                for (User user : users) {
-                    Log.d("USER", "User: " + user.getName()+" "+user.getEmail()+" "+user.getPassword());
-                }
-            } else {
-                Log.d("USER", "No users found.");
-            }
-        });
+//        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+//        userViewModel.getAllUsers().observe(this, users -> {
+//            if (users != null && !users.isEmpty()) {
+//                for (User user : users) {
+//                    Log.d("USER", "User: " + user.getUsername()+" "+user.getEmail()+" "+user.getPassword());
+//                }
+//            } else {
+//                Log.d("USER", "No users found.");
+//            }
+//        });
 
 //        FirebaseHelpers firebaseHelpers = new FirebaseHelpers();
 //        firebaseHelpers.createSampleMusicCategory();
@@ -142,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardMaths = findViewById(R.id.cardMaths);
         cardListen = findViewById(R.id.cardListen);
         cardGame = findViewById(R.id.cardGame);
+        cardStory = findViewById(R.id.cardStory);
 
         // Initialize front and back views
         inflateFrontBackViews();
@@ -191,6 +237,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         frontGame = getLayoutInflater().inflate(R.layout.card_front_game, null);
         backGame = getLayoutInflater().inflate(R.layout.card_back_game, null);
 
+        // Story Card
+        frontStory = getLayoutInflater().inflate(R.layout.card_front_story, null);
+        backStory = getLayoutInflater().inflate(R.layout.card_back_story, null);
+
         // Add views to CardViews
         cardNumbers.removeAllViews();
         cardNumbers.addView(frontNumbers);
@@ -231,10 +281,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardGame.removeAllViews();
         cardGame.addView(frontGame);
         cardGame.addView(backGame);
+
+        cardStory.removeAllViews();
+        cardStory.addView(frontStory);
+        cardStory.addView(backStory);
     }
 
     private void setupAnimations() {
-        // Initialize flip animations for all cards
         numbersFlipAnimation = new FlipAnimationUtil(this, frontNumbers, backNumbers);
         readingFlipAnimation = new FlipAnimationUtil(this, frontReading, backReading);
         shapesFlipAnimation = new FlipAnimationUtil(this, frontShapes, backShapes);
@@ -245,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mathsFlipAnimation = new FlipAnimationUtil(this, frontMaths, backMaths);
         listenFlipAnimation = new FlipAnimationUtil(this, frontListen, backListen);
         gameFlipAnimation = new FlipAnimationUtil(this, frontGame, backGame);
+        storyFlipAnimation = new FlipAnimationUtil(this, frontStory, backStory);
     }
 
     private void setupCardFlips() {
@@ -259,6 +313,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupMathsCard();
         setupListenCard();
         setupGameCard();
+        setupStoryCard();
 
         // Set up profile button click
         profileButton = findViewById(R.id.profileButton);
@@ -406,6 +461,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void setupStoryCard() {
+        cardStory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, StoryHistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     private void ShowGameOptionsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialogTheme);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_games_options, null);
@@ -472,7 +537,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(btnMusic);
 
         btnMusic.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, MusicActivity.class));
+            Intent intent = new Intent(MainActivity.this, MusicActivity.class);
+            intent.putExtra("userEmail", userEmail);
+            startActivity(intent);
             dialog.dismiss();
         });
 
@@ -484,7 +551,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(btnStory);
 
         btnStory.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, StoryActivity.class));
+            Intent intent = new Intent(MainActivity.this, StoryActivity.class);
+            intent.putExtra("userEmail", userEmail);
+            startActivity(intent);
+            startActivity(intent);
             dialog.dismiss();
         });
 
@@ -521,10 +591,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, GameDoanChuActivity.class));
         } else if (itemId == R.id.nav_profile) {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-        }
-        else if (itemId == R.id.nav_logout) {
-            mAuth.signOut();
+        } else if (itemId == R.id.nav_story_history) {
+            startActivity(new Intent(MainActivity.this, StoryHistoryActivity.class));
+        }  else if (itemId == R.id.nav_favorite) {
+            Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+            intent.putExtra("userEmail", userEmail);
+            startActivity(intent);
+        }else if (itemId == R.id.nav_logout) {
+            loginViewModel.logout();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
         }
 
         // Đóng Drawer sau khi xử lý
@@ -557,5 +633,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mathsFlipAnimation.cancelAutoFlip();
         listenFlipAnimation.cancelAutoFlip();
         gameFlipAnimation.cancelAutoFlip();
+        storyFlipAnimation.cancelAutoFlip();
     }
 }

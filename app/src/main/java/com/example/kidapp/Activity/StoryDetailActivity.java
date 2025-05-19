@@ -34,14 +34,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.example.kidapp.R;
 import com.example.kidapp.Service.StoryService;
+import com.example.kidapp.ViewModel.FavoriteViewModel;
 import com.example.kidapp.models.Story;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -55,7 +60,7 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
     private boolean isPlaying = false;
     private int totalDuration = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private ImageButton btnPlayVideo, btnPlayPause, btnFullscreen, btnBookmark, btnNextVideo, btnPreviousVideo, btnPLayAudio;
+    private ImageButton btnPlayVideo, btnPlayPause, btnFullscreen, btnNextVideo, btnPreviousVideo, btnPLayAudio;
     private ImageView thumbnailImageView, btnBack;
     private SeekBar seekBar;
     private VideoView videoView;
@@ -77,6 +82,9 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
     private NestedScrollView scrollView;
     private CardView videoPlayerCard;
     private ViewGroup.LayoutParams originalVideoParams;
+    private String userEmail;
+    private MaterialButton btnFavorite;
+    private FavoriteViewModel favoriteViewModel;
     // Broadcast receiver to update UI based on service state
     private BroadcastReceiver storyReceiver = new BroadcastReceiver() {
         @Override
@@ -151,18 +159,32 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         playlist = getIntent().getParcelableArrayListExtra("playlist");
         storyPosition = getIntent().getIntExtra("storyPosition", -1);
         story = getIntent().getParcelableExtra("story");
-
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            userEmail = currentUser.getEmail();
+        }
         setupViews();
         setupControlsHandling();
         registerBroadcastReceivers();
         updateUI();
         setBtnControl();
         startAndBindService();
-
+        setupObservers();
         // Thiết lập animation cho câu trả lời
         animationView = findViewById(R.id.animationView);
     }
-    
+
+    private void setupObservers() {
+        favoriteViewModel.isStoryFavorite(userEmail, story.getStoryId()).observe(this, isFavorite -> {
+            if (isFavorite != null) {
+                btnFavorite.setIconResource(isFavorite ? R.drawable.love : R.drawable.non_favorite);
+                if (isFavorite) {
+                    btnFavorite.setIconTint(getResources().getColorStateList(R.color.favorite));
+                }
+            }
+        });
+    }
+
     private void startAndBindService() {
         serviceIntent = new Intent(this, StoryService.class);
         serviceIntent.putParcelableArrayListExtra("playlist", playlist);
@@ -229,9 +251,6 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
 
         btnBack.setOnClickListener(v -> finish());
 
-        btnBookmark.setOnClickListener(v ->
-                Toast.makeText(this, "Đã thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show()
-        );
 
         btnSubmitAnswer.setOnClickListener(v -> checkAnswer());
 
@@ -279,6 +298,23 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+
+        btnFavorite.setOnClickListener(v -> {
+            // Lấy trạng thái hiện tại và đảo ngược
+            favoriteViewModel.isStoryFavorite(userEmail, story.getStoryId()).observe(this, isFavorite -> {
+                if (isFavorite != null) {
+                    // Cập nhật UI ngay lập tức trước khi cập nhật database
+                    boolean newState = !isFavorite;
+                    btnFavorite.setIconResource(newState ? R.drawable.love : R.drawable.non_favorite);
+                    if (newState) {
+                        btnFavorite.setIconTint(getResources().getColorStateList(R.color.favorite));
+                    }
+
+                    // Sau đó cập nhật trong database
+                    favoriteViewModel.toggleStoryFavorite(userEmail, story.getStoryId());
+                }
+            });
         });
     }
 
@@ -491,7 +527,6 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         moralCard = findViewById(R.id.moralCard);
         quizCard = findViewById(R.id.quizCard);
         btnBack = findViewById(R.id.btnBack);
-        btnBookmark = findViewById(R.id.btnBookmark);
         btnSubmitAnswer = findViewById(R.id.btnSubmitAnswer);
         rbOption1 = findViewById(R.id.rbOption1);
         rbOption2 = findViewById(R.id.rbOption2);
@@ -501,11 +536,14 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryServi
         quizContent = findViewById(R.id.tvQuizQuestion);
         animationView = findViewById(R.id.animationView);
         btnPreviousVideo = findViewById(R.id.btnPreviousVideo);
-         btnNextVideo = findViewById(R.id.btnNextVideo);
+        btnNextVideo = findViewById(R.id.btnNextVideo);
         storyContentCard.setVisibility(View.VISIBLE);
         moralCard.setVisibility(View.GONE);
         quizCard.setVisibility(View.GONE);
         scrollView = findViewById(R.id.scrollView);
+        btnFavorite = findViewById(R.id.btnFavorite);
+        favoriteViewModel = new ViewModelProvider(this).get(FavoriteViewModel.class);
+
 
         // Cấu hình VideoView để kết nối với MediaPlayer của Service
         videoView.getHolder().addCallback(new android.view.SurfaceHolder.Callback() {

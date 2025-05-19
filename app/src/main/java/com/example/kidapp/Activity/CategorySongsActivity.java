@@ -262,6 +262,22 @@ public class CategorySongsActivity extends AppCompatActivity {
         registerReceiver(musicUpdateReceiver, filter, Context.RECEIVER_EXPORTED);
         // Cập nhật UI ngay lập tức khi trở lại
         updatePlayerUI();
+        
+        // Cập nhật lại adapter để hiển thị trạng thái yêu thích mới
+        refreshMusicList();
+    }
+
+    private void refreshMusicList() {
+        // Cập nhật lại danh sách bài hát từ cơ sở dữ liệu
+        musicCategoryViewModel.getMusicByCategoryName(categoryName).observe(this, musics -> {
+            if (musics != null && !musics.isEmpty()) {
+                musicList.clear();
+                musicList.addAll(musics);
+                if (musicAdapter != null) {
+                    musicAdapter.refreshFavoriteStatus();
+                }
+            }
+        });
     }
 
     @Override

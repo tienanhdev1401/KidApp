@@ -18,4 +18,9 @@ public class UserViewModel extends AndroidViewModel {
     public LiveData<List<User>> getAllUsers() {
         return userRepository.getAllUsers();
     }
+
+    public LiveData<User> getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
 }

@@ -43,11 +43,12 @@ public class StoryActivity extends AppCompatActivity {
     private List<Story> storyList = new ArrayList<>();
     private List<Story> allStoryList = new ArrayList<>();
     private StoryViewModel storyViewModel;
-    private CardView playerCard;
+    private CardView playerCard, animalCard, moralCard, adventureCard, fairyCard;
     private ImageView playPauseButton, expandButton;
     private TextView storyTitle, storyDuration;
     private StoryService storyService;
     private boolean isServiceBound = false;
+
 
     // Service Connection để kết nối với StoryService
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -130,6 +131,9 @@ public class StoryActivity extends AppCompatActivity {
         
         // Cập nhật UI ngay khi resume Activity
         updatePlayerUI();
+        
+        // Cập nhật lại danh sách truyện để hiển thị trạng thái yêu thích mới
+        refreshStoryList();
     }
     
     @Override
@@ -190,7 +194,31 @@ public class StoryActivity extends AppCompatActivity {
             intent.putExtra("storyPosition", position);
             startActivity(intent);
         });
-        
+
+        animalCard.setOnClickListener(v -> {
+            Intent intent = new Intent(StoryActivity.this, CategoryStoryActivity.class);
+            intent.putExtra("categoryName", "Animals");
+            startActivity(intent);
+        });
+
+        fairyCard.setOnClickListener(v -> {
+            Intent intent = new Intent(StoryActivity.this, CategoryStoryActivity.class);
+            intent.putExtra("categoryName", "Fairy Tales");
+            startActivity(intent);
+            });
+
+        moralCard.setOnClickListener(v -> {
+            Intent intent = new Intent(StoryActivity.this, CategoryStoryActivity.class);
+            intent.putExtra("categoryName", "Moral");
+            startActivity(intent);
+        });
+
+        adventureCard.setOnClickListener(v -> {
+            Intent intent = new Intent(StoryActivity.this, StoryDetailActivity.class);
+            intent.putExtra("categoryName", "Adventure");
+            startActivity(intent);
+        });
+
         // Thiết lập điều khiển player
         setupPlayerControls();
     }
@@ -247,6 +275,8 @@ public class StoryActivity extends AppCompatActivity {
                 overridePendingTransition(R.animator.slide_up, 0);
             }
         });
+
+
     }
 
     private void setView() {
@@ -256,7 +286,11 @@ public class StoryActivity extends AppCompatActivity {
         expandButton = findViewById(R.id.expandBtn);
         storyTitle = findViewById(R.id.storyTitle);
         storyDuration = findViewById(R.id.storyDuration);
-        
+        animalCard = findViewById(R.id.animalStory);
+        adventureCard = findViewById(R.id.adventureStory);
+        fairyCard = findViewById(R.id.fairyStory);
+        moralCard = findViewById(R.id.moralStory);
+
         // Ẩn playerCard ban đầu cho đến khi có story chạy
         playerCard.setVisibility(View.GONE);
     }
@@ -336,6 +370,20 @@ public class StoryActivity extends AppCompatActivity {
                 } else {
                     page.setAlpha(1 - Math.abs(position));
                     page.setScaleY(Math.max(0.9f, 1 - Math.abs(position)));
+                }
+            }
+        });
+    }
+
+    private void refreshStoryList() {
+        // Cập nhật lại danh sách truyện từ cơ sở dữ liệu
+        storyViewModel.getAllStories().observe(this, stories -> {
+            if (stories != null && !stories.isEmpty()) {
+                List<Story> limitedStories = stories.size() > 3 ? stories.subList(0, 3) : stories;
+                storyList.clear();
+                storyList.addAll(limitedStories);
+                if (storyAdapter != null) {
+                    storyAdapter.refreshFavoriteStatus();
                 }
             }
         });

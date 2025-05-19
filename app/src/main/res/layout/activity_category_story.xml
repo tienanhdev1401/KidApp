@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/category_main"
+    android:background="#FFFBEF">
+
+    <!-- Top Bar with Category Title -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/categoryTopBarCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="12dp"
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="#FFFCE1"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/categoryTopBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/categoryBackButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_back"
+                android:padding="6dp"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:id="@+id/categoryTitleText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Category Name"
+                android:textColor="#FF6F00"
+                android:textSize="24sp"
+                android:fontFamily="@font/kids_font"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/categorySearchButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/search"
+                android:padding="6dp"
+                android:contentDescription="Search" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Category Banner -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/categoryBannerCard"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/categoryTopBarCard">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/categoryBannerImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/lullaby"
+                android:alpha="0.7"
+                android:contentDescription="Category Banner" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="15dp"
+                app:cardBackgroundColor="#80FFFFFF"
+                app:cardElevation="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/categoryDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fun stories to watch and learn!"
+                    android:textColor="#FF6F00"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/kids_font"
+                    android:textStyle="bold"
+                    android:padding="10dp" />
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Stories List Section Header -->
+    <TextView
+        android:id="@+id/songsListHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stories"
+        android:textColor="#FF6F00"
+        android:textSize="20sp"
+        android:fontFamily="@font/kids_font"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/categoryBannerCard" />
+
+    <!-- Stories List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/categoryRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="16dp"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/songsListHeader"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Empty State View -->
+    <include
+        android:id="@+id/emptyStateContainer"
+        layout="@layout/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/songsListHeader"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Now Playing Bar (Optional - Only needed if you have a player function) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#FF6F00"
+        app:cardElevation="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/playPauseBtn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/notification_pause"
+                android:contentDescription="Pause" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/storyTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="The Tortoise and the Hare"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/storyDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2:14 / 5:00"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/expandBtn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/up_arrow"
+                android:contentDescription="Expand player" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

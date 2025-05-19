@@ -2,11 +2,10 @@ package com.example.kidapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,19 +14,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.kidapp.R;
+import com.example.kidapp.ViewModel.LoginViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
-
-    private FirebaseAuth mAuth;
+    private LoginViewModel loginViewModel;
     private EditText emailInput, passwordInput;
     private Button loginButton;
     private TextView forgotPasswordLink, signUpLink;
+    private ProgressBar progressBar;
+    private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +43,10 @@ public class LoginActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
+        // Initialize ViewModel
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
         // Initialize UI elements
         emailInput = findViewById(R.id.emailInput);
@@ -52,41 +55,72 @@ public class LoginActivity extends AppCompatActivity {
         forgotPasswordLink = findViewById(R.id.tvForgotPassword);
         signUpLink = findViewById(R.id.tvSignUp);
 
-        // Set up login button click listener
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailInput.getText().toString().trim();
-                String password = passwordInput.getText().toString().trim();
+        // Add progress bar to layout if not already added
+        // progressBar = findViewById(R.id.progressBar);
 
-                if (validateForm(email, password)) {
-                    loginUser(email, password);
-                }
-            }
+        setupListeners();
+        observeViewModel();
+    }
+
+    private void setupListeners() {
+        // Set up login button click listener
+        loginButton.setOnClickListener(v -> {
+            String email = emailInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
+            loginViewModel.login(email, password);
         });
 
         // Set up forgot password link click listener
-        forgotPasswordLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailInput.getText().toString().trim();
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(LoginActivity.this, "Please enter your email address",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    sendPasswordResetEmail(email);
-                }
-            }
+        forgotPasswordLink.setOnClickListener(v -> {
+            String email = emailInput.getText().toString().trim();
+            loginViewModel.resetPassword(email);
         });
 
         // Set up sign up link click listener
-        signUpLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to Register Activity
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
+        signUpLink.setOnClickListener(v -> {
+            // Navigate to Register Activity
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    private void observeViewModel() {
+        // Observe user authentication state
+        loginViewModel.getUserLiveData().observe(this, user -> {
+            if (user != null) {
+                // User is logged in, navigate to MainActivity
+                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                navigateToMainActivity();
+                finish();
             }
+        });
+
+        // Observe loading state
+        loginViewModel.getIsLoadingLiveData().observe(this, isLoading -> {
+            // Toggle progress bar visibility
+            // progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+
+            // Toggle controls enabled/disabled during loading
+            boolean controlsEnabled = !isLoading;
+            emailInput.setEnabled(controlsEnabled);
+            passwordInput.setEnabled(controlsEnabled);
+            loginButton.setEnabled(controlsEnabled);
+        });
+
+        // Observe error messages
+        loginViewModel.getErrorLiveData().observe(this, errorMessage -> {
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Observe form field validation errors
+        loginViewModel.getEmailError().observe(this, error -> {
+            emailInput.setError(error);
+        });
+
+        loginViewModel.getPasswordError().observe(this, error -> {
+            passwordInput.setError(error);
         });
     }
 
@@ -94,67 +128,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            // User is already signed in, navigate to MainActivity
-            navigateToMainActivity();
-        }
-    }
 
-    private boolean validateForm(String email, String password) {
-        boolean valid = true;
-
-        if (TextUtils.isEmpty(email)) {
-            emailInput.setError("Required.");
-            valid = false;
-        } else {
-            emailInput.setError(null);
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            passwordInput.setError("Required.");
-            valid = false;
-        } else {
-            passwordInput.setError(null);
-        }
-
-        return valid;
-    }
-
-    private void loginUser(String email, String password) {
-        // Show progress indicator if needed
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success
-                        Log.d(TAG, "signInWithEmail:success");
-                        Toast.makeText(LoginActivity.this, "Login successful",
-                                Toast.LENGTH_SHORT).show();
-                        navigateToMainActivity();
-                    } else {
-                        // If sign in fails, display a message to the user
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(LoginActivity.this, "Authentication failed: " +
-                                task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    // Hide progress indicator if needed
-                });
-    }
-
-    private void sendPasswordResetEmail(String email) {
-        mAuth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this,
-                                "Password reset email sent", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(LoginActivity.this,
-                                "Failed to send reset email: " + task.getException().getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void navigateToMainActivity() {
