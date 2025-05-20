@@ -43,15 +43,15 @@
         <!-- Tier Badge ImageView -->
         <ImageView
             android:id="@+id/imgTierBadge"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="-10dp"
+            android:layout_marginBottom="-3dp"
             android:elevation="4dp"
-            android:src="@drawable/bronze"
             android:scaleType="fitCenter"
+            android:src="@drawable/bronze"
             app:layout_constraintBottom_toBottomOf="@+id/imgPlayerAvatar"
-            app:layout_constraintEnd_toEndOf="@+id/imgPlayerAvatar"
-            android:layout_marginEnd="-20dp"
-            android:layout_marginBottom="-20dp"/>
+            app:layout_constraintEnd_toEndOf="@+id/imgPlayerAvatar" />
 
         <!-- Player Username -->
         <TextView

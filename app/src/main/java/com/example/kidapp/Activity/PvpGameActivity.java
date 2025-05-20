@@ -2,10 +2,7 @@ package com.example.kidapp.Activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -15,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.gridlayout.widget.GridLayout;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.core.content.ContextCompat;
 
 import com.example.kidapp.DB.FirebaseInitializer;
 import com.example.kidapp.DB.PvpRoomManager;
@@ -74,8 +69,6 @@ public class PvpGameActivity extends AppCompatActivity {
     private TextView tvGameResultTitle, tvGameResultMessage;
     private MaterialButton btnGameResultAction;
     private LayoutInflater inflater;
-    private TextView tvPlayer1ScoreArrow, tvPlayer2ScoreArrow;
-    private TextView tvMyRankingScore, tvRankingScoreChange;
     
     // Game specific UI components
     private GridLayout gridCards;
@@ -135,7 +128,7 @@ public class PvpGameActivity extends AppCompatActivity {
     private Timer gameStateCheckTimer;
     
     // Thêm biến điểm max
-    private int maxScore = 100;
+    private int maxScore = -1;
     
     // Thêm các biến cho game làm toán
     private TextView tvMathQuestion;
@@ -144,15 +137,6 @@ public class PvpGameActivity extends AppCompatActivity {
     private int questionCount = 0;
     private static final int MAX_QUESTIONS = 10;
     private Random random = new Random();
-    
-    // Thêm biến để theo dõi trạng thái hoàn thành của người chơi
-    private boolean hostCompleted = false;
-    private boolean guestCompleted = false;
-    
-    private AlertDialog waitingDialog;
-    
-    private Timer completionCheckTimer;
-    private static final long COMPLETION_CHECK_INTERVAL = 500; // 0.5 giây
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,8 +284,6 @@ public class PvpGameActivity extends AppCompatActivity {
         tvGameResultTitle = findViewById(R.id.tvGameResultTitle);
         tvGameResultMessage = findViewById(R.id.tvGameResultMessage);
         btnGameResultAction = findViewById(R.id.btnGameResultAction);
-        tvMyRankingScore = findViewById(R.id.tvMyRankingScore);
-        tvRankingScoreChange = findViewById(R.id.tvRankingScoreChange);
         
         // Thêm overlay đếm ngược
         createCountdownOverlay();
@@ -1061,41 +1043,6 @@ public class PvpGameActivity extends AppCompatActivity {
         
         Log.d(TAG, "Checking game state");
         
-        // Kiểm tra trạng thái hoàn thành của người chơi từ extraData
-        Map<String, Object> extraData = currentRoom.getExtraData();
-        if (extraData != null) {
-            Boolean hostCompletedValue = (Boolean) extraData.get("hostCompleted");
-            Boolean guestCompletedValue = (Boolean) extraData.get("guestCompleted");
-            
-            if (hostCompletedValue != null) {
-                hostCompleted = hostCompletedValue;
-                Log.d(TAG, "Host completed status from Firebase: " + hostCompleted);
-            }
-            if (guestCompletedValue != null) {
-                guestCompleted = guestCompletedValue;
-                Log.d(TAG, "Guest completed status from Firebase: " + guestCompleted);
-            }
-        }
-        
-        // Nếu cả hai người chơi đã hoàn thành
-        if (hostCompleted && guestCompleted) {
-            Log.d(TAG, "Both players completed, preparing to end game");
-            
-            // Đóng dialog đợi nếu đang hiển thị
-            if (waitingDialog != null && waitingDialog.isShowing()) {
-                waitingDialog.dismiss();
-            }
-            
-            // Vô hiệu hóa tương tác với game
-            allowCardFlip = false;
-            
-            // Đợi một chút để đảm bảo dialog đã đóng
-            new Handler().postDelayed(() -> {
-                endGame();
-            }, 500);
-            return;
-        }
-        
         // Kiểm tra trạng thái kết thúc game từ Firebase
         Boolean gameEnded = currentRoom.getBooleanExtraValue("gameEnded", false);
         if (gameEnded && gameActuallyStarted) {
@@ -1426,15 +1373,16 @@ public class PvpGameActivity extends AppCompatActivity {
             // Log kết quả cuối cùng để debug
             Log.d(TAG, "Game ended - Final scores: Host: " + hostScore + ", Guest: " + guestScore);
             
-            // Nếu là host, xóa phòng ngay lập tức
-            if (isHost && currentRoom != null) {
-                FirebaseInitializer.getPvpRoomsRef().child(currentRoom.getRoomId()).removeValue()
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "Host đã xóa phòng: " + currentRoom.getRoomId());
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Lỗi khi xóa phòng: " + e.getMessage());
-                    });
+            // Update game state in Firebase (host only)
+            if (isHost || !isHost) {
+                Map<String, Object> gameEndUpdate = new HashMap<>();
+                gameEndUpdate.put("gameEnded", true);
+                gameEndUpdate.put("remainingTime", 0);
+                gameEndUpdate.put("finalHostScore", hostScore);
+                gameEndUpdate.put("finalGuestScore", guestScore);
+                updateRoomDataToFirebase(currentRoom.getRoomId(), gameEndUpdate);
+                
+                Log.d(TAG, "Host updated final scores to Firebase - Host: " + hostScore + ", Guest: " + guestScore);
             }
         }, 500); // Delay 500ms để đảm bảo cập nhật đã hoàn tất
     }
@@ -1474,94 +1422,6 @@ public class PvpGameActivity extends AppCompatActivity {
                 "\nĐiểm của bạn: " + myFinalScore + 
                 "\nĐiểm đối thủ: " + opponentFinalScore );
         
-        // Apply score highlight animation based on win/loss
-        TextView myScoreTextView = isHost ? tvPlayer1Score : tvPlayer2Score;
-        TextView opponentScoreTextView = isHost ? tvPlayer2Score : tvPlayer1Score;
-        TextView myScoreArrow = isHost ? tvPlayer1ScoreArrow : tvPlayer2ScoreArrow;
-        TextView opponentScoreArrow = isHost ? tvPlayer2ScoreArrow : tvPlayer1ScoreArrow;
-
-        if (isWin != null) {
-            if (isWin) {
-                // Animate winner's score (e.g., green flash)
-                animateScoreHighlight(myScoreTextView, ContextCompat.getColor(this, android.R.color.holo_green_light));
-                // Show up arrow for winner
-                showArrowTemporarily(myScoreArrow, true);
-            } else {
-                // Animate loser's score (e.g., red flash)
-                animateScoreHighlight(myScoreTextView, ContextCompat.getColor(this, android.R.color.holo_red_light));
-                // Show down arrow for loser
-                showArrowTemporarily(myScoreArrow, false);
-            }
-        } else {
-            // Animate both scores for a draw (e.g., blue flash)
-            animateScoreHighlight(myScoreTextView, ContextCompat.getColor(this, android.R.color.holo_blue_light));
-            animateScoreHighlight(opponentScoreTextView, ContextCompat.getColor(this, android.R.color.holo_blue_light));
-            // No arrows for a draw, or you could show horizontal arrows if desired
-        }
-
-        // Update and animate ranking score
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null && currentUser.getEmail() != null) {
-            userViewModel.getUserByEmail(currentUser.getEmail()).observe(this, user -> {
-                if (user != null) {
-                    int currentRankingScore = user.getScoreranking();
-                    int scoreChange = 0;
-
-                    if (isWin != null) {
-                        if (isWin) {
-                            scoreChange = 1; // +1 star for win
-                        } else {
-                            scoreChange = -1; // -1 star for loss
-                        }
-                    } else {
-                        scoreChange = 0; // +0 points for draw
-                    }
-
-                    int newRankingScore = currentRankingScore + scoreChange;
-
-                    // Ensure scoreRanking does not go below 0
-                    if (newRankingScore < 0) {
-                        newRankingScore = 0;
-                    }
-
-                    // Display current ranking score
-                    tvMyRankingScore.setText("Điểm xếp hạng: " + currentRankingScore);
-
-                    // Display and animate ranking score change
-                    if (scoreChange != 0) {
-                        String changeText = (scoreChange > 0 ? "+" : "") + scoreChange;
-                        String arrow = (scoreChange > 0 ? "↑" : "↓");
-                        int changeColor = ContextCompat.getColor(this, scoreChange > 0 ? android.R.color.holo_green_light : android.R.color.holo_red_light);
-
-                        tvRankingScoreChange.setText(changeText + " " + arrow);
-                        tvRankingScoreChange.setTextColor(changeColor);
-                        tvRankingScoreChange.setVisibility(View.VISIBLE);
-
-                        // Simple animation for score change text (e.g., fade in/out)
-                        ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(tvRankingScoreChange, "alpha", 0f, 1f);
-                        alphaAnimator.setDuration(1500); // Animation duration
-                        alphaAnimator.setRepeatCount(ObjectAnimator.INFINITE); // Repeat indefinitely
-                        alphaAnimator.setRepeatMode(ObjectAnimator.REVERSE);
-                        alphaAnimator.start();
-
-                        // --- IMPORTANT --- //
-                        // Call method in UserViewModel to update user's scoreRanking in database
-                        userViewModel.updateUserRankingScore(user.getEmail(), newRankingScore);
-                        // ----------------- //
-
-                    } else {
-                        tvRankingScoreChange.setVisibility(View.GONE);
-                    }
-                }
-                // Remove observer after getting user data once and handling score change
-                userViewModel.getUserByEmail(currentUser.getEmail()).removeObservers(this);
-            });
-        } else {
-            Log.e(TAG, "Current user is null or email is null, cannot fetch ranking score");
-            tvMyRankingScore.setText("Điểm xếp hạng: N/A");
-            tvRankingScoreChange.setVisibility(View.GONE);
-        }
-
         // Set button action
         btnGameResultAction.setOnClickListener(v -> {
             gameOverlayFrame.setVisibility(View.GONE);
@@ -1824,13 +1684,6 @@ public class PvpGameActivity extends AppCompatActivity {
         }
         
         super.onDestroy();
-        
-        if (waitingDialog != null && waitingDialog.isShowing()) {
-            waitingDialog.dismiss();
-        }
-        
-        // Hủy timer khi activity bị hủy
-        stopCompletionCheckTimer();
     }
     
     @Override
@@ -1947,47 +1800,68 @@ public class PvpGameActivity extends AppCompatActivity {
     }
     
     // Phương thức cập nhật dữ liệu phòng trực tiếp qua Firebase
-    private com.google.android.gms.tasks.Task<Void> updateRoomDataToFirebase(String roomId, Map<String, Object> updates) {
+    private void updateRoomDataToFirebase(String roomId, Map<String, Object> updates) {
         if (roomId == null || updates == null || updates.isEmpty()) {
             Log.e(TAG, "Invalid room data update request");
-            return com.google.android.gms.tasks.Tasks.forException(new Exception("Invalid update request"));
+            return;
         }
+        
+        // Lưu trữ lại tham chiếu phòng để xử lý lỗi
+        final String savedRoomId = roomId;
+        final Map<String, Object> savedUpdates = new HashMap<>(updates);
         
         Log.d(TAG, "Updating room data: " + roomId + " with " + updates.toString());
         
         // Kiểm tra xem phòng có tồn tại không trước khi cập nhật
-        return FirebaseInitializer.getPvpRoomsRef()
-            .child(roomId)
-            .updateChildren(updates)
-            .addOnSuccessListener(aVoid -> {
-                Log.d(TAG, "Room data updated successfully: " + updates.toString());
-            })
-            .addOnFailureListener(e -> {
-                Log.e(TAG, "Error updating room data: " + e.getMessage());
+        DatabaseReference roomsRef = FirebaseInitializer.getPvpRoomsRef();
+        roomsRef.child(roomId).addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+            @Override
+            public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    Log.e(TAG, "Cannot update room: Room doesn't exist: " + roomId);
+                    Toast.makeText(PvpGameActivity.this, 
+                        "Phòng không còn tồn tại, có thể đã bị đóng bởi chủ phòng", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 
-                // Thử cập nhật lại sau một khoảng thời gian
-                new Handler().postDelayed(() -> {
-                    Log.d(TAG, "Retrying room update after failure");
-                    FirebaseInitializer.getPvpRoomsRef()
-                        .child(roomId)
-                        .updateChildren(updates)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d(TAG, "Room data update retry successful");
-                        })
-                        .addOnFailureListener(retryE -> {
-                            Log.e(TAG, "Room data update retry failed: " + retryE.getMessage());
-                            Toast.makeText(this, 
-                                "Không thể cập nhật dữ liệu phòng: " + retryE.getMessage(), 
-                                Toast.LENGTH_SHORT).show();
-                        });
-                }, 500);
-            });
+                // Phòng tồn tại, tiến hành cập nhật
+                DatabaseReference roomRef = FirebaseInitializer.getPvpRoomsRef().child(roomId);
+                roomRef.updateChildren(savedUpdates)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Room data updated successfully: " + savedUpdates.toString());
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error updating room data: " + e.getMessage());
+                        
+                        // Thử cập nhật lại sau một khoảng thời gian
+                        new Handler().postDelayed(() -> {
+                            Log.d(TAG, "Retrying room update after failure");
+                            DatabaseReference retryRef = FirebaseInitializer.getPvpRoomsRef().child(savedRoomId);
+                            retryRef.updateChildren(savedUpdates)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "Room data update retry successful");
+                                })
+                                .addOnFailureListener(retryE -> {
+                                    Log.e(TAG, "Room data update retry failed: " + retryE.getMessage());
+                                    Toast.makeText(PvpGameActivity.this, 
+                                        "Không thể cập nhật dữ liệu phòng: " + retryE.getMessage(), 
+                                        Toast.LENGTH_SHORT).show();
+                                });
+                        }, 500);
+                    });
+            }
+            
+            @Override
+            public void onCancelled(com.google.firebase.database.DatabaseError databaseError) {
+                Log.e(TAG, "Error checking room existence", databaseError.toException());
+            }
+        });
     }
     
     // Phương thức đơn giản để tăng điểm và cập nhật lên Firebase
     private void incrementScore() {
         // Tăng điểm của người chơi hiện tại
-        if (isHost) {
+        if (isHost || !isHost) {
             hostScore++;
             Log.d(TAG, "Host ghi điểm: " + hostScore);
         } else {
@@ -2003,13 +1877,11 @@ public class PvpGameActivity extends AppCompatActivity {
             updateRoomDataToFirebase(currentRoom.getRoomId(), scoreUpdate);
             Log.d(TAG, "Đã cập nhật điểm lên Firebase - Host: " + hostScore + ", Guest: " + guestScore);
         }
-        
-        // Kiểm tra nếu điểm đạt max thì kết thúc game
-        if (guestScore == maxScore || hostScore == maxScore) {
+        if (guestScore == maxScore || hostScore == maxScore)
+        {
             endGame();
             Log.d(TAG, "Max điểm: " + maxScore);
         }
-        
         // Cập nhật UI
         updateScoreUI();
     }
@@ -2068,54 +1940,17 @@ public class PvpGameActivity extends AppCompatActivity {
             
             if (selectedAnswer == currentAnswer) {
                 // Đáp án đúng
-                if (isHost) {
-                    hostScore++;
+                incrementScore();
+                questionCount++;
+                
+                if (questionCount >= MAX_QUESTIONS) {
+                    // Đã hoàn thành 10 câu hỏi
+                    allowCardFlip = false;
+                    endGame();
                 } else {
-                    guestScore++;
+                    // Tạo câu hỏi mới
+                    generateNewQuestion();
                 }
-                
-                // Cập nhật điểm lên Firebase
-                Map<String, Object> scoreUpdate = new HashMap<>();
-                scoreUpdate.put("hostScore", hostScore);
-                scoreUpdate.put("guestScore", guestScore);
-                updateRoomDataToFirebase(currentRoom.getRoomId(), scoreUpdate);
-            }
-            
-            // Tăng số câu hỏi đã trả lời
-            questionCount++;
-            
-            // Kiểm tra nếu đã hoàn thành 10 câu hỏi
-            if (questionCount >= MAX_QUESTIONS) {
-                // Đánh dấu người chơi hiện tại đã hoàn thành
-                if (isHost) {
-                    hostCompleted = true;
-                } else {
-                    guestCompleted = true;
-                }
-                
-                // Cập nhật trạng thái hoàn thành lên Firebase
-                Map<String, Object> completionUpdate = new HashMap<>();
-                if (isHost) {
-                    completionUpdate.put("hostCompleted", true);
-                } else {
-                    completionUpdate.put("guestCompleted", true);
-                }
-                
-                // Cập nhật lên Firebase và đợi hoàn thành
-                updateRoomDataToFirebase(currentRoom.getRoomId(), completionUpdate)
-                    .addOnSuccessListener(aVoid -> {
-                        // Sau khi cập nhật thành công, bắt đầu kiểm tra định kỳ
-                        startCompletionCheckTimer();
-                    });
-                
-                // Vô hiệu hóa tương tác với game
-                allowCardFlip = false;
-                
-                // Hiển thị thông báo đang đợi đối thủ
-                showWaitingForOpponentDialog();
-            } else {
-                // Tạo câu hỏi mới nếu chưa hoàn thành
-                generateNewQuestion();
             }
         };
 
@@ -2126,100 +1961,6 @@ public class PvpGameActivity extends AppCompatActivity {
 
         // Tạo câu hỏi đầu tiên
         generateNewQuestion();
-    }
-
-    private void startCompletionCheckTimer() {
-        // Hủy timer cũ nếu có
-        if (completionCheckTimer != null) {
-            completionCheckTimer.cancel();
-        }
-        
-        // Tạo timer mới
-        completionCheckTimer = new Timer();
-        completionCheckTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(() -> {
-                    checkCompletionStatus();
-                });
-            }
-        }, 0, COMPLETION_CHECK_INTERVAL);
-        
-        Log.d(TAG, "Started completion check timer");
-    }
-
-    private void stopCompletionCheckTimer() {
-        if (completionCheckTimer != null) {
-            completionCheckTimer.cancel();
-            completionCheckTimer = null;
-            Log.d(TAG, "Stopped completion check timer");
-        }
-    }
-
-    private void checkCompletionStatus() {
-        if (currentRoom == null) return;
-        
-        // Đọc trực tiếp từ Firebase để lấy trạng thái mới nhất
-        FirebaseInitializer.getPvpRoomsRef()
-            .child(currentRoom.getRoomId())
-            .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
-                @Override
-                public void onDataChange(com.google.firebase.database.DataSnapshot dataSnapshot) {
-                    Boolean hostCompletedValue = dataSnapshot.child("hostCompleted").getValue(Boolean.class);
-                    Boolean guestCompletedValue = dataSnapshot.child("guestCompleted").getValue(Boolean.class);
-                    
-                    Log.d(TAG, "Completion status from Firebase - Host: " + hostCompletedValue + ", Guest: " + guestCompletedValue);
-                    
-                    if (hostCompletedValue != null) {
-                        hostCompleted = hostCompletedValue;
-                    }
-                    if (guestCompletedValue != null) {
-                        guestCompleted = guestCompletedValue;
-                    }
-                    
-                    // Kiểm tra nếu cả hai người chơi đã hoàn thành
-                    if (hostCompleted && guestCompleted) {
-                        // Dừng timer kiểm tra
-                        stopCompletionCheckTimer();
-                        
-                        // Đóng dialog đợi nếu đang hiển thị
-                        if (waitingDialog != null && waitingDialog.isShowing()) {
-                            waitingDialog.dismiss();
-                        }
-                        // Kết thúc game
-                        endGame();
-                    }
-                }
-                
-                @Override
-                public void onCancelled(com.google.firebase.database.DatabaseError databaseError) {
-                    Log.e(TAG, "Error checking completion status", databaseError.toException());
-                }
-            });
-    }
-
-    private void showWaitingForOpponentDialog() {
-        if (waitingDialog != null && waitingDialog.isShowing()) {
-            return;
-        }
-
-        // Tạo dialog với layout tùy chỉnh
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_waiting_opponent, null);
-        builder.setView(dialogView);
-        builder.setCancelable(false);
-
-        waitingDialog = builder.create();
-        waitingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        waitingDialog.show();
-
-        // Thêm animation cho icon loading
-        ImageView ivLoading = dialogView.findViewById(R.id.ivLoading);
-        ObjectAnimator rotation = ObjectAnimator.ofFloat(ivLoading, "rotation", 0f, 360f);
-        rotation.setDuration(2000);
-        rotation.setRepeatCount(ObjectAnimator.INFINITE);
-        rotation.setInterpolator(new LinearInterpolator());
-        rotation.start();
     }
 
     private void generateNewQuestion() {
@@ -2272,27 +2013,5 @@ public class PvpGameActivity extends AppCompatActivity {
         btnAnswer2.setText(String.valueOf(answers.get(1)));
         btnAnswer3.setText(String.valueOf(answers.get(2)));
         btnAnswer4.setText(String.valueOf(answers.get(3)));
-    }
-
-    private void showArrowTemporarily(TextView arrowTextView, boolean isUpArrow) {
-        if (arrowTextView == null) return;
-
-        // Set arrow text and color
-        arrowTextView.setText(isUpArrow ? "↑" : "↓");
-        arrowTextView.setTextColor(isUpArrow ? ContextCompat.getColor(this, android.R.color.holo_green_light) : ContextCompat.getColor(this, android.R.color.holo_red_light));
-
-        // Show the arrow for 2 seconds
-        arrowTextView.setVisibility(View.VISIBLE);
-        new Handler().postDelayed(() -> {
-            arrowTextView.setVisibility(View.GONE);
-        }, 2000); // Show for 2 seconds
-    }
-
-    // Helper method to animate score highlight
-    private void animateScoreHighlight(TextView scoreTextView, int color) {
-        ObjectAnimator colorAnimator = ObjectAnimator.ofArgb(scoreTextView, "textColor", scoreTextView.getCurrentTextColor(), color);
-        colorAnimator.setDuration(500);
-        colorAnimator.setInterpolator(new AccelerateInterpolator());
-        colorAnimator.start();
     }
 } 

@@ -123,15 +123,15 @@
             <!-- Tier Badge ImageView for Current User -->
             <ImageView
                 android:id="@+id/imgCurrentUserTierBadge"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="-10dp"
+                android:layout_marginBottom="-10dp"
                 android:elevation="4dp"
-                android:src="@drawable/bronze"
                 android:scaleType="fitCenter"
+                android:src="@drawable/bronze"
                 app:layout_constraintBottom_toBottomOf="@+id/imgUserTier"
-                app:layout_constraintEnd_toEndOf="@+id/imgUserTier"
-                android:layout_marginEnd="-20dp"
-                android:layout_marginBottom="-20dp"/>
+                app:layout_constraintEnd_toEndOf="@+id/imgUserTier" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
