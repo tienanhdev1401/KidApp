@@ -182,4 +182,24 @@ public class UserRepository {
             });
     }
 
+    // Cập nhật điểm xếp hạng (scoreRanking) cho user
+    public void updateUserRankingScore(String userEmail, int newScore) {
+        db.collection("users")
+            .whereEqualTo("email", userEmail)
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                    db.collection("users")
+                        .document(doc.getId())
+                        .update("scoreRanking", newScore);
+                } else {
+                    Log.e("UserRepository", "Không tìm thấy user với email: " + userEmail + " để cập nhật scoreRanking");
+                }
+            })
+            .addOnFailureListener(e -> {
+                Log.e("UserRepository", "Lỗi khi truy vấn user để cập nhật scoreRanking: " + e.getMessage());
+            });
+    }
+
 }

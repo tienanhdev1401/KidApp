@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -127,7 +128,15 @@ public class PvpGameActivity extends AppCompatActivity {
     private Timer gameStateCheckTimer;
     
     // Thêm biến điểm max
-    private int maxScore = 6;
+    private int maxScore = -1;
+    
+    // Thêm các biến cho game làm toán
+    private TextView tvMathQuestion;
+    private Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
+    private int currentAnswer;
+    private int questionCount = 0;
+    private static final int MAX_QUESTIONS = 10;
+    private Random random = new Random();
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -561,7 +570,8 @@ public class PvpGameActivity extends AppCompatActivity {
                 // TODO: Add guess word game content
                 break;
             case "MATH":
-                // TODO: Add math game content
+                gameContent = inflater.inflate(R.layout.game_content_math, gameContentFrame, false);
+                initMathGame(gameContent);
                 break;
             default:
                 // Default to flip card
@@ -1004,7 +1014,7 @@ public class PvpGameActivity extends AppCompatActivity {
             updateRoomDataToFirebase(currentRoom.getRoomId(), scoreUpdate);
             
             // Kiểm tra nếu điểm đạt max thì kết thúc game
-            if (myScore >= maxScore) {
+            if (myScore == maxScore) {
                 Log.d(TAG, "Score reached max (" + maxScore + "), ending game");
                 allowCardFlip = false;
                 endGame();
@@ -1017,7 +1027,7 @@ public class PvpGameActivity extends AppCompatActivity {
         // Điểm bên trái luôn là host, điểm bên phải luôn là guest
         tvPlayer1Score.setText(String.valueOf(hostScore));
         tvPlayer2Score.setText(String.valueOf(guestScore));
-        if (hostScore >= maxScore || guestScore >= maxScore) {
+        if (hostScore == maxScore || guestScore == maxScore) {
             allowCardFlip = false;
             endGame();
         }
@@ -1179,7 +1189,7 @@ public class PvpGameActivity extends AppCompatActivity {
                       ", Opponent score: " + opponentScore);
                 
                 // Kiểm tra nếu điểm đạt max thì kết thúc game
-                if (myScore >= maxScore || opponentScore >= maxScore) {
+                if (myScore == maxScore || opponentScore == maxScore) {
                     Log.d(TAG, "Score reached max (" + maxScore + "), ending game");
                     allowCardFlip = false;
                     endGame();
@@ -1293,6 +1303,7 @@ public class PvpGameActivity extends AppCompatActivity {
                 tvTimeRemaining.setText("0");
                 
                 // Game over
+                allowCardFlip = false;
                 endGame();
             }
         }.start();
@@ -1910,5 +1921,97 @@ public class PvpGameActivity extends AppCompatActivity {
                 Log.e(TAG, "Lỗi đọc điểm từ Firebase", databaseError.toException());
             }
         });
+    }
+
+    private void initMathGame(View gameContent) {
+        // Khởi tạo các view
+        tvMathQuestion = gameContent.findViewById(R.id.tvMathQuestion);
+        btnAnswer1 = gameContent.findViewById(R.id.btnAnswer1);
+        btnAnswer2 = gameContent.findViewById(R.id.btnAnswer2);
+        btnAnswer3 = gameContent.findViewById(R.id.btnAnswer3);
+        btnAnswer4 = gameContent.findViewById(R.id.btnAnswer4);
+
+        // Thiết lập click listener cho các nút đáp án
+        View.OnClickListener answerClickListener = v -> {
+            if (!allowCardFlip) return;
+            
+            Button clickedButton = (Button) v;
+            int selectedAnswer = Integer.parseInt(clickedButton.getText().toString());
+            
+            if (selectedAnswer == currentAnswer) {
+                // Đáp án đúng
+                incrementScore();
+                questionCount++;
+                
+                if (questionCount >= MAX_QUESTIONS) {
+                    // Đã hoàn thành 10 câu hỏi
+                    allowCardFlip = false;
+                    endGame();
+                } else {
+                    // Tạo câu hỏi mới
+                    generateNewQuestion();
+                }
+            }
+        };
+
+        btnAnswer1.setOnClickListener(answerClickListener);
+        btnAnswer2.setOnClickListener(answerClickListener);
+        btnAnswer3.setOnClickListener(answerClickListener);
+        btnAnswer4.setOnClickListener(answerClickListener);
+
+        // Tạo câu hỏi đầu tiên
+        generateNewQuestion();
+    }
+
+    private void generateNewQuestion() {
+        // Tạo phép tính ngẫu nhiên
+        int num1 = random.nextInt(20) + 1; // Số từ 1-20
+        int num2 = random.nextInt(20) + 1;
+        int operation = random.nextInt(4); // 0: +, 1: -, 2: *, 3: /
+        
+        String questionText;
+        switch (operation) {
+            case 0: // Phép cộng
+                currentAnswer = num1 + num2;
+                questionText = num1 + " + " + num2 + " = ?";
+                break;
+            case 1: // Phép trừ
+                currentAnswer = num1 - num2;
+                questionText = num1 + " - " + num2 + " = ?";
+                break;
+            case 2: // Phép nhân
+                currentAnswer = num1 * num2;
+                questionText = num1 + " × " + num2 + " = ?";
+                break;
+            default: // Phép chia
+                // Đảm bảo kết quả là số nguyên
+                currentAnswer = num1;
+                num2 = 1;
+                questionText = num1 + " ÷ " + num2 + " = ?";
+                break;
+        }
+        
+        tvMathQuestion.setText(questionText);
+        
+        // Tạo các đáp án ngẫu nhiên
+        List<Integer> answers = new ArrayList<>();
+        answers.add(currentAnswer);
+        
+        // Thêm 3 đáp án sai ngẫu nhiên
+        while (answers.size() < 4) {
+            int wrongAnswer = currentAnswer + random.nextInt(10) - 5; // Số ngẫu nhiên trong khoảng ±5
+            if (wrongAnswer != currentAnswer && !answers.contains(wrongAnswer)) {
+                answers.add(wrongAnswer);
+            }
+        }
+        
+        // Xáo trộn thứ tự đáp án
+        Collections.shuffle(answers);
+        
+        // Hiển thị đáp án lên các nút
+        btnAnswer1.setText(String.valueOf(answers.get(0)));
+        btnAnswer2.setText(String.valueOf(answers.get(1)));
+        btnAnswer3.setText(String.valueOf(answers.get(2)));
+        btnAnswer4.setText(String.valueOf(answers.get(3)));
     }
 } 

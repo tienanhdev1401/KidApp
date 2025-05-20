@@ -545,7 +545,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         ImageView btnCard = dialogView.findViewById(R.id.Imv_card);
-        btnCard.setImageResource(R.drawable.memory_card_game);
+        Glide.with(MainActivity.this)
+                .asGif()
+                .load(R.drawable.memory_gif)
+                .into(btnCard);
 
         btnCard.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, FlipCardLevelSelectionActivity.class));
@@ -555,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageView btnDoanChu = dialogView.findViewById(R.id.Imv_DoanAnh);
         Glide.with(MainActivity.this)
                 .asGif()
-                .load(R.drawable.puzzel_game)
+                .load(R.drawable.word_game)
                 .into(btnDoanChu);
 
         btnDoanChu.setOnClickListener(v -> {
