@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Kiểm tra xem tvUserName đã được ánh xạ chưa, nếu chưa thì tìm trong headerView
                 TextView tvUserName = headerView.findViewById(R.id.tvUserName);
                 if (tvUserName != null) {
-                     tvUserName.setText(user.getUsername());
+                    tvUserName.setText(user.getUsername());
                 }
 
                 ImageView avartar=headerView.findViewById(R.id.animal_image);
@@ -137,9 +137,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Tải avatar từ user.getAvatarUrl() bằng Glide
                     if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
                         Glide.with(this)
-                             .load(user.getAvatarUrl())
-                             .placeholder(R.drawable.animal_avatar)
-                             .into(avartar);
+                                .load(user.getAvatarUrl())
+                                .placeholder(R.drawable.animal_avatar)
+                                .into(avartar);
                     } else {
                         // Hiển thị ảnh mặc định nếu không có avatarUrl
                         avartar.setImageResource(R.drawable.animal_avatar);
@@ -337,13 +337,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listenFlipAnimation = new FlipAnimationUtil(this, frontListen, backListen);
         gameFlipAnimation = new FlipAnimationUtil(this, frontGame, backGame);
         storyFlipAnimation = new FlipAnimationUtil(this, frontStory, backStory);
-     //   pvpFlipAnimation = new FlipAnimationUtil(this, frontPvp, backPvp);
+        //   pvpFlipAnimation = new FlipAnimationUtil(this, frontPvp, backPvp);
     }
 
     private void setupCardFlips() {
         // Set up card flip animations and actions
         setupNumbersCard();
-    //    setupReadingCard();
+        //    setupReadingCard();
         setupShapesCard();
         setupVocabCard();
         setupAnalysisCard();
@@ -364,152 +364,158 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setupNumbersCard() {
         cardNumbers.setOnClickListener(v -> {
-            numbersFlipAnimation.cancelAutoFlip();
-            numbersFlipAnimation.flipCard();
+            if (numbersFlipAnimation != null) {
+                numbersFlipAnimation.cancelAutoFlip();
+                numbersFlipAnimation.flipCard();
 
-            if (!numbersFlipAnimation.isFront()) {
-                ImageView btnStart = backNumbers.findViewById(R.id.Imv_letter);
-                btnStart.setOnClickListener(view -> {
-                    Intent intent = new Intent(MainActivity.this, NumberLearnActivity.class);
-                    startActivity(intent);
-                });
+                if (!numbersFlipAnimation.isFront()) {
+                    ImageView btnStart = backNumbers.findViewById(R.id.Imv_letter);
+                    btnStart.setOnClickListener(view -> {
+                        Intent intent = new Intent(MainActivity.this, NumberLearnActivity.class);
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
 
-//    private void setupReadingCard() {
-//        cardReading.setOnClickListener(v -> {
-//            readingFlipAnimation.cancelAutoFlip();
-//            readingFlipAnimation.flipCard();
-//
-//            if (!readingFlipAnimation.isFront()) {
-//                ImageView btnStart = backReading.findViewById(R.id.Imv_reading);
-//                btnStart.setOnClickListener(view -> {
-//                    Intent intent = new Intent(MainActivity.this, ReadingActivity.class);
-//                    startActivity(intent);
-//                });
-//            }
-//        });
-//    }
 
     private void setupShapesCard() {
         cardShapes.setOnClickListener(v -> {
-            shapesFlipAnimation.cancelAutoFlip();
-            shapesFlipAnimation.flipCard();
+            if (shapesFlipAnimation != null) {
+                shapesFlipAnimation.cancelAutoFlip();
+                shapesFlipAnimation.flipCard();
 
-            if (!shapesFlipAnimation.isFront()) {
-                ImageView gameButton = backShapes.findViewById(R.id.Imv_sharps);
-                gameButton.setOnClickListener(view -> {
-                    Intent intent = new Intent(MainActivity.this, ShapesGameActivity.class);
-                    startActivity(intent);
-                });
+                if (!shapesFlipAnimation.isFront()) {
+                    ImageView gameButton = backShapes.findViewById(R.id.Imv_sharps);
+                    gameButton.setOnClickListener(view -> {
+                        Intent intent = new Intent(MainActivity.this, ShapesGameActivity.class);
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
 
     private void setupVocabCard() {
         cardVocab.setOnClickListener(v -> {
-            vocabFlipAnimation.cancelAutoFlip();
-            vocabFlipAnimation.flipCard();
+            if (vocabFlipAnimation != null) {
+                vocabFlipAnimation.cancelAutoFlip();
+                vocabFlipAnimation.flipCard();
 
-            if (!vocabFlipAnimation.isFront()) {
-                ImageView btnLetter = backVocab.findViewById(R.id.Imv_letter);
-                btnLetter.setOnClickListener(view -> {
-                    Intent intent = new Intent(MainActivity.this, LetterActivity.class);
-                    startActivity(intent);
-                });
+                if (!vocabFlipAnimation.isFront()) {
+                    ImageView btnLetter = backVocab.findViewById(R.id.Imv_letter);
+                    btnLetter.setOnClickListener(view -> {
+                        Intent intent = new Intent(MainActivity.this, LetterActivity.class);
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
 
     private void setupAnalysisCard() {
         cardAnalysis.setOnClickListener(v -> {
-            analysisFlipAnimation.cancelAutoFlip();
-            analysisFlipAnimation.flipCard();
+            if (analysisFlipAnimation != null) {
+                analysisFlipAnimation.cancelAutoFlip();
+                analysisFlipAnimation.flipCard();
+            }
         });
     }
 
     private void setupSettingsCard() {
         cardSettings.setOnClickListener(v -> {
-            settingsFlipAnimation.cancelAutoFlip();
-            settingsFlipAnimation.flipCard();
+            if (settingsFlipAnimation != null) {
+                settingsFlipAnimation.cancelAutoFlip();
+                settingsFlipAnimation.flipCard();
+            }
         });
     }
 
     private void setupAnimalsCard() {
         cardAnimals.setOnClickListener(v -> {
-            animalsFlipAnimation.cancelAutoFlip();
-            animalsFlipAnimation.flipCard();
+            if (animalsFlipAnimation != null) {
+                animalsFlipAnimation.cancelAutoFlip();
+                animalsFlipAnimation.flipCard();
 
-            if (!animalsFlipAnimation.isFront()) {
-                ImageView gifView = backAnimals.findViewById(R.id.Imv_animals);
-                Glide.with(MainActivity.this)
-                        .asGif()
-                        .load(R.drawable.panda)
-                        .into(gifView);
+                if (!animalsFlipAnimation.isFront()) {
+                    ImageView gifView = backAnimals.findViewById(R.id.Imv_animals);
+                    Glide.with(MainActivity.this)
+                            .asGif()
+                            .load(R.drawable.panda)
+                            .into(gifView);
 
-                gifView.setOnClickListener(view -> {
-                    Intent intent = new Intent(MainActivity.this, AnimalsActivity.class);
-                    startActivity(intent);
-                });
+                    gifView.setOnClickListener(view -> {
+                        Intent intent = new Intent(MainActivity.this, AnimalsActivity.class);
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
 
     private void setupMathsCard() {
         cardMaths.setOnClickListener(v -> {
-            mathsFlipAnimation.cancelAutoFlip();
-            mathsFlipAnimation.flipCard();
+            if (mathsFlipAnimation != null) {
+                mathsFlipAnimation.cancelAutoFlip();
+                mathsFlipAnimation.flipCard();
 
-            if (!mathsFlipAnimation.isFront()) {
-                ImageView btnMaths = backMaths.findViewById(R.id.Imv_maths);
-                btnMaths.setOnClickListener(view -> {
-                    Intent intent = new Intent(MainActivity.this, MathQuizActivity.class);
-                    startActivity(intent);
-                });
+                if (!mathsFlipAnimation.isFront()) {
+                    ImageView btnMaths = backMaths.findViewById(R.id.Imv_maths);
+                    btnMaths.setOnClickListener(view -> {
+                        Intent intent = new Intent(MainActivity.this, MathQuizActivity.class);
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
 
     private void setupListenCard() {
         cardListen.setOnClickListener(v -> {
-            listenFlipAnimation.cancelAutoFlip();
-            listenFlipAnimation.flipCard();
+            if (listenFlipAnimation != null) {
+                listenFlipAnimation.cancelAutoFlip();
+                listenFlipAnimation.flipCard();
 
-            if (!listenFlipAnimation.isFront()) {
-                ImageView gifView = backListen.findViewById(R.id.Imv_listen);
-                Glide.with(MainActivity.this)
-                        .asGif()
-                        .load(R.drawable.story)
-                        .into(gifView);
+                if (!listenFlipAnimation.isFront()) {
+                    ImageView gifView = backListen.findViewById(R.id.Imv_listen);
+                    Glide.with(MainActivity.this)
+                            .asGif()
+                            .load(R.drawable.story)
+                            .into(gifView);
 
-                gifView.setOnClickListener(view -> showListenOptionsDialog());
+                    gifView.setOnClickListener(view -> showListenOptionsDialog());
+                }
             }
         });
     }
 
     private void setupGameCard() {
         cardGame.setOnClickListener(v -> {
-            gameFlipAnimation.cancelAutoFlip();
-            gameFlipAnimation.flipCard();
+            if (gameFlipAnimation != null) {
+                gameFlipAnimation.cancelAutoFlip();
+                gameFlipAnimation.flipCard();
 
-            if (!gameFlipAnimation.isFront()) {
-                ImageView gifView = backGame.findViewById(R.id.Imv_game);
-                gifView.setOnClickListener(view -> ShowGameOptionsDialog());
+                if (!gameFlipAnimation.isFront()) {
+                    ImageView gifView = backGame.findViewById(R.id.Imv_game);
+                    gifView.setOnClickListener(view -> ShowGameOptionsDialog());
+                }
             }
         });
     }
 
     private void setupStoryCard() {
         cardStory.setOnClickListener(v -> {
-            storyFlipAnimation.cancelAutoFlip();
-            storyFlipAnimation.flipCard();
-            if (!storyFlipAnimation.isFront()) {
-                ImageView btnStory = backStory.findViewById(R.id.Imv_story);
-                btnStory.setOnClickListener(view -> {
-                    Intent intent = new Intent(MainActivity.this, StoryHistoryActivity.class);
-                    startActivity(intent);
-                });
+            if (storyFlipAnimation != null) {
+                storyFlipAnimation.cancelAutoFlip();
+                storyFlipAnimation.flipCard();
+                if (!storyFlipAnimation.isFront()) {
+                    ImageView btnStory = backStory.findViewById(R.id.Imv_story);
+                    btnStory.setOnClickListener(view -> {
+                        Intent intent = new Intent(MainActivity.this, StoryHistoryActivity.class);
+                        startActivity(intent);
+                    });
+                }
             }
         });
     }
@@ -677,18 +683,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Cancel all flip animations
-        numbersFlipAnimation.cancelAutoFlip();
-        readingFlipAnimation.cancelAutoFlip();
-        shapesFlipAnimation.cancelAutoFlip();
-        vocabFlipAnimation.cancelAutoFlip();
-        analysisFlipAnimation.cancelAutoFlip();
-        settingsFlipAnimation.cancelAutoFlip();
-        animalsFlipAnimation.cancelAutoFlip();
-        mathsFlipAnimation.cancelAutoFlip();
-        listenFlipAnimation.cancelAutoFlip();
-        gameFlipAnimation.cancelAutoFlip();
-        storyFlipAnimation.cancelAutoFlip();
-        pvpFlipAnimation.cancelAutoFlip();
+
+        // Clean up all flip animations
+        if (numbersFlipAnimation != null) numbersFlipAnimation.cancelAutoFlip();
+        if (readingFlipAnimation != null) readingFlipAnimation.cancelAutoFlip();
+        if (shapesFlipAnimation != null) shapesFlipAnimation.cancelAutoFlip();
+        if (vocabFlipAnimation != null) vocabFlipAnimation.cancelAutoFlip();
+        if (analysisFlipAnimation != null) analysisFlipAnimation.cancelAutoFlip();
+        if (settingsFlipAnimation != null) settingsFlipAnimation.cancelAutoFlip();
+        if (animalsFlipAnimation != null) animalsFlipAnimation.cancelAutoFlip();
+        if (mathsFlipAnimation != null) mathsFlipAnimation.cancelAutoFlip();
+        if (listenFlipAnimation != null) listenFlipAnimation.cancelAutoFlip();
+        if (gameFlipAnimation != null) gameFlipAnimation.cancelAutoFlip();
+        if (storyFlipAnimation != null) storyFlipAnimation.cancelAutoFlip();
+        if (pvpFlipAnimation != null) pvpFlipAnimation.cancelAutoFlip();
     }
 }

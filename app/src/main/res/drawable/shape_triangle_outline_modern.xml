@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Semi-transparent fill for the drop zone -->
+    <path
+        android:pathData="M60,10 L110,90 L10,90 z"
+        android:fillColor="#334CAF50" />
+
+    <!-- Stroke outline for the triangle -->
+    <path
+        android:pathData="M60,10 L110,90 L10,90 z"
+        android:strokeWidth="3"
+        android:strokeColor="#4CAF50"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeMiterLimit="10"
+        android:fillColor="#00000000" />
+
+    <!-- Dashed stroke overlay (to simulate dashed line) -->
+    <path
+        android:pathData="M60,10 L110,90"
+        android:strokeWidth="3"
+        android:strokeColor="#4CAF50"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <path
+        android:pathData="M110,90 L10,90"
+        android:strokeWidth="3"
+        android:strokeColor="#4CAF50"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+
+    <path
+        android:pathData="M10,90 L60,10"
+        android:strokeWidth="3"
+        android:strokeColor="#4CAF50"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+</vector>
