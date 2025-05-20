@@ -401,7 +401,7 @@ public class GameXepHinhActivity extends AppCompatActivity {
                                         Long minLevelLong = document.getLong("minGameLevel");
                                         if (minLevelLong != null && id != null && id.startsWith("puzzle")) {
                                             int minLevel = minLevelLong.intValue();
-                                            if (soLanChoi[0] >= minLevel && !achievements.contains(id)) {
+                                            if (soLanChoi[0] +1  >= minLevel && !achievements.contains(id)) {
                                                 achievements.add(id);
                                                 newAchievements.add(name != null ? name : id);
                                                 changed[0] = true;

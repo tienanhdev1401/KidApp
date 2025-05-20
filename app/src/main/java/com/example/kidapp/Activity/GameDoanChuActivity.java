@@ -142,7 +142,7 @@ public class GameDoanChuActivity extends AppCompatActivity implements TextToSpee
                                                 String imageUrl = document.getString("imageUrl");
                                                 if (minLevelLong != null && id != null && id.startsWith("wordguess")) {
                                                     int minLevel = minLevelLong.intValue();
-                                                    if (soManHoanThanh >= minLevel && !achievements.contains(id)) {
+                                                    if (soManHoanThanh+1 >= minLevel && !achievements.contains(id)) {
                                                         achievements.add(id);
                                                         newAchievements.add(name != null ? name : id);
                                                         changed[0] = true;
