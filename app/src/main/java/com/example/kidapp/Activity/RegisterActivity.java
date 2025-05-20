@@ -165,9 +165,30 @@ public class RegisterActivity extends AppCompatActivity {
             userData.put("achievements", new ArrayList<>()); // achievements rỗng
             userData.put("storyIds", new ArrayList<>()); // storyIds rỗng
             userData.put("totalListeningTime", 0); // tổng thời gian nghe mặc định 0
+            userData.put("scoreRanking", 0); // Thêm scoreRanking mặc định 0
+            userData.put("totalMatches", 0); // Thêm totalMatches mặc định 0
 
             // Tạo gameProgress mặc định
             Map<String, Object> gameProgress = new HashMap<>();
+
+            // Thêm các mục mặc định cho các game khi đăng ký
+            Map<String, Object> flipcardProgress = new HashMap<>();
+            flipcardProgress.put("levelReached", 0);
+            flipcardProgress.put("scores", new HashMap<String, Integer>()); // scores rỗng ban đầu
+            gameProgress.put("flipcard", flipcardProgress);
+
+            Map<String, Object> puzzleProgress = new HashMap<>();
+            puzzleProgress.put("levelReached", 0);
+            gameProgress.put("puzzle", puzzleProgress);
+
+            // Thêm mục mặc định cho game wordguess
+            Map<String, Object> wordguessProgress = new HashMap<>();
+            wordguessProgress.put("levelReached", 0);
+            wordguessProgress.put("scores", new HashMap<String, Integer>()); // scores rỗng ban đầu
+            gameProgress.put("guessword", wordguessProgress);
+
+            // Thêm gameProgress vào userData
+            userData.put("gameProgress", gameProgress);
 
             // Add a new document with the user's UID
             db.collection("users").document(user.getUid())

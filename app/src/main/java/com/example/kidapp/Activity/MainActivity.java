@@ -393,20 +393,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-//    private void setupReadingCard() {
-//        cardReading.setOnClickListener(v -> {
-//            readingFlipAnimation.cancelAutoFlip();
-//            readingFlipAnimation.flipCard();
-//
-//            if (!readingFlipAnimation.isFront()) {
-//                ImageView btnStart = backReading.findViewById(R.id.Imv_reading);
-//                btnStart.setOnClickListener(view -> {
-//                    Intent intent = new Intent(MainActivity.this, ReadingActivity.class);
-//                    startActivity(intent);
-//                });
-//            }
-//        });
-//    }
 
     private void setupShapesCard() {
         cardShapes.setOnClickListener(v -> {

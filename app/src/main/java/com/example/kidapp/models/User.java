@@ -46,7 +46,7 @@ public class User {
         this.totalMatches = 0;
     }
 
-    public User(String email, String password, String username, java.util.List<String> achievements, java.util.List<String> storyIds, int totalListeningTime, java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress, String gender, String dateOfBirth, String avatarUrl, String phone, int scoreRanking, int totalMatches) {
+    public User(String email, String password, String username, java.util.List<String> achievements, java.util.List<String> storyIds, int totalListeningTime, java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress, String gender, String dateOfBirth, String avatarUrl, String phone) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -58,8 +58,8 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.avatarUrl = avatarUrl;
         this.phone = phone;
-        this.scoreRanking = scoreRanking;
-        this.totalMatches = totalMatches;
+        this.scoreRanking = 0;
+        this.totalMatches = 0;
     }
 
     // Getters and setters
@@ -151,11 +151,11 @@ public class User {
         this.phone = phone;
     }
 
-    public int getScoreRanking() {
+    public int getScoreranking() {
         return scoreRanking;
     }
 
-    public void setScoreRanking(int scoreRanking) {
+    public void setScoreranking(int scoreRanking) {
         this.scoreRanking = scoreRanking;
     }
 
