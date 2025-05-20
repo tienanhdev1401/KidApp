@@ -7,7 +7,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -35,6 +39,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.kidapp.ViewModel.LoginViewModel;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 
 import java.util.ArrayList;
@@ -442,8 +447,159 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (settingsFlipAnimation != null) {
                 settingsFlipAnimation.cancelAutoFlip();
                 settingsFlipAnimation.flipCard();
+                
+                if (!settingsFlipAnimation.isFront()) {
+                    showSettingsDialog();
+                }
             }
         });
+    }
+    
+    private void showSettingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialogTheme);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_settings, null);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+        // Custom animation
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+        }
+        
+        // Initialize volume controls
+        SeekBar volumeSeekBar = dialogView.findViewById(R.id.volumeSeekBar);
+        SwitchMaterial soundSwitch = dialogView.findViewById(R.id.soundSwitch);
+        
+        // Initialize brightness control
+        SeekBar brightnessSeekBar = dialogView.findViewById(R.id.brightnessSeekBar);
+        
+        // Get the shared preferences for settings
+        android.content.SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        int volume = prefs.getInt("volume", 70);
+        boolean soundEnabled = prefs.getBoolean("soundEnabled", true);
+        int brightness = prefs.getInt("brightness", getCurrentBrightness());
+        
+        // Set initial values
+        volumeSeekBar.setProgress(volume);
+        soundSwitch.setChecked(soundEnabled);
+        brightnessSeekBar.setProgress(brightness);
+        
+        // Set up volume change listener
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Save volume setting
+                android.content.SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("volume", progress);
+                editor.apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Not needed
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Not needed
+            }
+        });
+        
+        // Set up sound switch listener
+        soundSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Save sound enabled setting
+            android.content.SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("soundEnabled", isChecked);
+            editor.apply();
+        });
+        
+        // Set up brightness change listener
+        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    setBrightness(progress);
+                    
+                    // Save brightness setting
+                    android.content.SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("brightness", progress);
+                    editor.apply();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Not needed
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Not needed
+            }
+        });
+        
+        // Set up app version
+        TextView appVersionText = dialogView.findViewById(R.id.appVersionText);
+        appVersionText.setText("App Version: 1.0.0");
+        
+        // Set up about button
+        LinearLayout aboutButton = dialogView.findViewById(R.id.aboutButton);
+        aboutButton.setOnClickListener(v -> {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("About Kid App")
+                    .setMessage("Kid App is an educational application designed for children to learn and play. This app provides various activities in different subjects like numbers, shapes, vocabulary, and more.")
+                    .setPositiveButton("OK", null)
+                    .show();
+        });
+        
+        // Set up logout button
+        LinearLayout logoutButton = dialogView.findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> {
+            // Confirm before logout
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        // Sign out from Firebase
+                        FirebaseAuth.getInstance().signOut();
+                        // Navigate to login screen
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+        
+        dialog.show();
+    }
+    
+    private int getCurrentBrightness() {
+        try {
+            // Get current window brightness
+            float curBrightnessValue = getWindow().getAttributes().screenBrightness;
+            if (curBrightnessValue < 0) { // If brightness is automatic
+                // Get system brightness instead
+                curBrightnessValue = android.provider.Settings.System.getInt(
+                        getContentResolver(), 
+                        android.provider.Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
+            }
+            return (int) (curBrightnessValue * 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 50; // Default to 50% if we can't get current brightness
+        }
+    }
+    
+    private void setBrightness(int progress) {
+        // Convert 0-100 to 0.0-1.0
+        float brightness = progress / 100.0f;
+        
+        // Set the brightness of the current window only
+        android.view.WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = brightness;
+        getWindow().setAttributes(layoutParams);
     }
 
     private void setupAnimalsCard() {
