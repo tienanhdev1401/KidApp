@@ -22,7 +22,7 @@
             android:layout_height="40dp"
             android:src="@drawable/ic_back"
             android:padding="8dp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -205,7 +205,7 @@
                             android:layout_height="wrap_content"
                             android:text="S"
                             android:textAlignment="center"
-                            android:textColor="#757575"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_sun"
@@ -222,14 +222,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:background="@drawable/selected_day_background">
+                        android:gravity="center">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="M"
                             android:textAlignment="center"
-                            android:textColor="#FFFFFF"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_mon"
@@ -237,7 +236,7 @@
                             android:layout_height="wrap_content"
                             android:text="19"
                             android:textAlignment="center"
-                            android:textColor="#FFFFFF"
+                            android:textColor="#212121"
                             android:textSize="14sp"/>
                     </LinearLayout>
 
@@ -252,7 +251,7 @@
                             android:layout_height="wrap_content"
                             android:text="T"
                             android:textAlignment="center"
-                            android:textColor="#757575"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_tue"
@@ -269,14 +268,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:background="@drawable/selected_item_background">
+                        android:gravity="center">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="W"
                             android:textAlignment="center"
-                            android:textColor="#FFFFFF"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_wed"
@@ -284,7 +282,7 @@
                             android:layout_height="wrap_content"
                             android:text="21"
                             android:textAlignment="center"
-                            android:textColor="#FFFFFF"
+                            android:textColor="#212121"
                             android:textSize="14sp"/>
                     </LinearLayout>
 
@@ -299,7 +297,7 @@
                             android:layout_height="wrap_content"
                             android:text="T"
                             android:textAlignment="center"
-                            android:textColor="#757575"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_thu"
@@ -322,7 +320,7 @@
                             android:layout_height="wrap_content"
                             android:text="F"
                             android:textAlignment="center"
-                            android:textColor="#757575"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_fri"
@@ -345,7 +343,7 @@
                             android:layout_height="wrap_content"
                             android:text="S"
                             android:textAlignment="center"
-                            android:textColor="#757575"
+                            android:textColor="#212121"
                             android:textSize="12sp"/>
                         <TextView
                             android:id="@+id/day_sat"
@@ -375,6 +373,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- LinearLayout for Title and ProgressBar -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -399,75 +398,26 @@
                             android:progressTint="#8BC34A"/>
                     </LinearLayout>
 
-                    <!-- Achievements Row 1 -->
-                    <LinearLayout
+                    <!-- HorizontalScrollView for scrolling achievements -->
+                    <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="16dp"
+                        android:scrollbars="none">
 
-                        <ImageView
-                            android:id="@+id/achievement_1"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
+                        <!-- LinearLayout to add achievement items dynamically - ID IS HERE -->
+                        <LinearLayout
+                            android:id="@+id/ll_beginner_achievements"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                        <ImageView
-                            android:id="@+id/achievement_2"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
+                            <!-- Dynamic achievement items will go here -->
 
-                        <ImageView
-                            android:id="@+id/achievement_3"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-                    </LinearLayout>
+                        </LinearLayout>
+                    </HorizontalScrollView>
 
-                    <!-- Achievements Row 2 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
-
-                        <ImageView
-                            android:id="@+id/achievement_4"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-
-                        <ImageView
-                            android:id="@+id/achievement_5"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-
-                        <ImageView
-                            android:id="@+id/achievement_6"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -487,6 +437,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- LinearLayout for Title and ProgressBar -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -510,75 +461,27 @@
                             android:progress="20"
                             android:progressTint="#8BC34A"/>
                     </LinearLayout>
-                    <!-- Achievements Row 1 -->
-                    <LinearLayout
+
+                    <!-- HorizontalScrollView for scrolling achievements -->
+                    <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="16dp"
+                        android:scrollbars="none">
 
-                        <ImageView
-                            android:id="@+id/achievement_7"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
+                        <!-- LinearLayout to add achievement items dynamically - ID IS HERE -->
+                        <LinearLayout
+                            android:id="@+id/ll_middle_achievements"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                        <ImageView
-                            android:id="@+id/achievement_8"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
+                            <!-- Dynamic achievement items will go here -->
 
-                        <ImageView
-                            android:id="@+id/achievement_9"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-                    </LinearLayout>
+                        </LinearLayout>
+                    </HorizontalScrollView>
 
-                    <!-- Achievements Row 2 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
-
-                        <ImageView
-                            android:id="@+id/achievement_10"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-
-                        <ImageView
-                            android:id="@+id/achievement_11"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-
-                        <ImageView
-                            android:id="@+id/achievement_12"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"/>
-                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -599,6 +502,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- LinearLayout for Title and ProgressBar -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -623,81 +527,26 @@
                             android:progressTint="#FFC107"/>
                     </LinearLayout>
 
-                    <!-- Achievements Row 1 -->
-                    <LinearLayout
+                    <!-- HorizontalScrollView for scrolling achievements -->
+                    <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
+                        android:layout_marginTop="16dp"
+                        android:scrollbars="none">
 
-                        <ImageView
-                            android:id="@+id/achievement_master_1"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"
-                            android:alpha="0.5"/>
+                        <!-- LinearLayout to add achievement items dynamically - ID IS HERE -->
+                        <LinearLayout
+                            android:id="@+id/ll_master_achievements"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
 
-                        <ImageView
-                            android:id="@+id/achievement_master_2"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"
-                            android:alpha="0.5"/>
+                            <!-- Dynamic achievement items will go here -->
 
-                        <ImageView
-                            android:id="@+id/achievement_master_3"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"
-                            android:alpha="0.5"/>
-                    </LinearLayout>
+                        </LinearLayout>
+                    </HorizontalScrollView>
 
-                    <!-- Achievements Row 2 -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp">
-
-                        <ImageView
-                            android:id="@+id/achievement_master_4"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"
-                            android:alpha="0.5"/>
-
-                        <ImageView
-                            android:id="@+id/achievement_master_5"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"
-                            android:alpha="0.5"/>
-
-                        <ImageView
-                            android:id="@+id/achievement_master_6"
-                            android:layout_width="0dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="1"
-                            android:src="@drawable/back_game"
-                            android:scaleType="fitCenter"
-                            android:padding="8dp"
-                            android:alpha="0.5"/>
-                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

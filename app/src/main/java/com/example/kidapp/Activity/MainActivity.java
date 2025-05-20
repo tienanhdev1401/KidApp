@@ -23,6 +23,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.kidapp.DB.FirebaseHelpers;
 import com.example.kidapp.R;
 import com.example.kidapp.Utils.FlipAnimationUtil;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private String userEmail;
 
+    TextView tvUserName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        tvUserName=findViewById(R.id.tvUserName);
 
         mAuth = FirebaseAuth.getInstance();
         // Initialize ViewModel
@@ -122,6 +127,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         + " | Email: " + user.getEmail());
                 // Cập nhật UI với thông tin người dùng
                 usernametext.setText("Chào Mừng, " +user.getUsername()); // Hoặc các view khác
+                tvUserName.setText(user.getUsername());
+
+                if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                    Glide.with(MainActivity.this)
+                            .load(user.getAvatarUrl())
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(profileButton);
+
+
+                } else {
+                    // Set a default avatar if the URL is null or empty
+                    profileButton.setImageResource(R.drawable.avt);
+                }
 
                 // Kiểm tra xem tvUserName đã được ánh xạ chưa, nếu chưa thì tìm trong headerView
                 TextView tvUserName = headerView.findViewById(R.id.tvUserName);
@@ -129,25 +147,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     tvUserName.setText(user.getUsername());
                 }
 
-                ImageView avartar=headerView.findViewById(R.id.animal_image);
-                Log.d("USER_PROFILE", "Avatar"+ user.getAvatarUrl());
+                ImageView nav_header_avatar=headerView.findViewById(R.id.nav_header_avatar);
+                if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                    Glide.with(MainActivity.this)
+                            .load(user.getAvatarUrl())
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(nav_header_avatar);
 
-                // Kiểm tra xem avartar có khác null không trước khi sử dụng
-                if (avartar != null) {
-                    // Tải avatar từ user.getAvatarUrl() bằng Glide
-                    if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
-                        Glide.with(this)
-                                .load(user.getAvatarUrl())
-                                .placeholder(R.drawable.animal_avatar)
-                                .into(avartar);
-                    } else {
-                        // Hiển thị ảnh mặc định nếu không có avatarUrl
-                        avartar.setImageResource(R.drawable.animal_avatar);
-                        Log.e("USER_PROFILE", "ImageView avartar not found in headerView");
-                    }
+
                 } else {
-                    Log.e("MainActivity", "ImageView avartar not found in headerView");
+                    // Set a default avatar if the URL is null or empty
+                    nav_header_avatar.setImageResource(R.drawable.avt);
                 }
+
+
+
 
             } else {
                 Log.d("USER_PROFILE", "No user found with email: " + currentUser.getEmail());
@@ -379,20 +393,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-//    private void setupReadingCard() {
-//        cardReading.setOnClickListener(v -> {
-//            readingFlipAnimation.cancelAutoFlip();
-//            readingFlipAnimation.flipCard();
-//
-//            if (!readingFlipAnimation.isFront()) {
-//                ImageView btnStart = backReading.findViewById(R.id.Imv_reading);
-//                btnStart.setOnClickListener(view -> {
-//                    Intent intent = new Intent(MainActivity.this, ReadingActivity.class);
-//                    startActivity(intent);
-//                });
-//            }
-//        });
-//    }
 
     private void setupShapesCard() {
         cardShapes.setOnClickListener(v -> {
