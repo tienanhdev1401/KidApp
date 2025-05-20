@@ -319,7 +319,7 @@
                         android:id="@+id/tvMyRankingScore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Điểm xếp hạng: 1200" <!-- Placeholder -->
+                        android:text="Điểm xếp hạng: 10"
                         android:textColor="#3F51B5"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -329,7 +329,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="+10 ↑" <!-- Placeholder -->
+                        android:text="+1 ↑"
                         android:textColor="@android:color/holo_green_light"
                         android:textSize="16sp"
                         android:textStyle="bold"
