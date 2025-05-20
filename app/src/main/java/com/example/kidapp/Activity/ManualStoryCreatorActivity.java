@@ -47,6 +47,7 @@ import com.example.kidapp.models.ManualStory;
 import com.example.kidapp.models.StoryElement;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -68,7 +69,7 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
     private EditText etStoryTitle;
     private ImageView ivCoverImage;
     private RecyclerView rvPages;
-    private FloatingActionButton fabAddPage;
+    private ExtendedFloatingActionButton fabAddPage;
     private View loadingView;
     private MaterialCardView cardStoryElements;
     private TextView tvSelectedElements;

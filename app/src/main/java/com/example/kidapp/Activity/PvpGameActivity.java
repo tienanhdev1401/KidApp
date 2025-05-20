@@ -1527,19 +1527,16 @@ public class PvpGameActivity extends AppCompatActivity {
         // Set result information
         if (isWin != null) {
             if (isWin) {
-                ivGameResultIcon.setImageResource(R.drawable.panda_icon);
-                ivGameResultIcon.setColorFilter(getResources().getColor(android.R.color.holo_green_light));
+                ivGameResultIcon.setImageResource(R.drawable.victory);
                 tvGameResultTitle.setText("Chiến thắng!");
                 btnGameResultAction.setText("Quay lại Lobby");
             } else {
-                ivGameResultIcon.setImageResource(R.drawable.panda_icon);
-                ivGameResultIcon.setColorFilter(getResources().getColor(android.R.color.holo_red_light));
+                ivGameResultIcon.setImageResource(R.drawable.lose);
                 tvGameResultTitle.setText("Thua cuộc!");
                 btnGameResultAction.setText("Quay lại Lobby");
             }
         } else {
-            ivGameResultIcon.setImageResource(R.drawable.panda_icon);
-            ivGameResultIcon.setColorFilter(getResources().getColor(android.R.color.holo_blue_light));
+            ivGameResultIcon.setImageResource(R.drawable.draw);
             tvGameResultTitle.setText("Hòa!");
             btnGameResultAction.setText("Quay lại Lobby");
         }
