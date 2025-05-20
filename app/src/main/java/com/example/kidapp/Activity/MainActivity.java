@@ -152,17 +152,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     tvUserName.setText(user.getUsername());
                 }
 
-                ImageView nav_header_avatar=headerView.findViewById(R.id.nav_header_avatar);
+                ImageView profile_image=headerView.findViewById(R.id.profile_image);
                 if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
                     Glide.with(MainActivity.this)
                             .load(user.getAvatarUrl())
                             .apply(RequestOptions.circleCropTransform())
-                            .into(nav_header_avatar);
+                            .into(profile_image);
 
 
                 } else {
                     // Set a default avatar if the URL is null or empty
-                    nav_header_avatar.setImageResource(R.drawable.avt);
+                    profile_image.setImageResource(R.drawable.avt);
                 }
 
 
