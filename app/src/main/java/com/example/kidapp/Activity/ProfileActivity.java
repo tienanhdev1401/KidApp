@@ -90,7 +90,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 // Update level based on score
                 TextView levelTextView = findViewById(R.id.level);
-                int score = user.getScoreRanking(); // Assuming User object has getScore() method
+                int score = user.getScoreranking(); // Assuming User object has getScore() method
                 String level;
                 if (score >= 0 && score <= 10) {
                     level = "Beginner";
