@@ -30,8 +30,6 @@ import java.util.Locale;
 
 public class ProfileActivity extends AppCompatActivity {
     private TextView profileTitle;
-    private RecyclerView achievementRecyclerView;
-    private AchievementAdapter achievementAdapter;
     private List<Achievement> allAchievements = new ArrayList<>();
     private TextView[] dayViews = new TextView[7];
     private LinearLayout llBeginnerAchievements;
@@ -41,7 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_profile_2);
 
         profileTitle = findViewById(R.id.profile_title);
 
@@ -77,6 +75,38 @@ public class ProfileActivity extends AppCompatActivity {
         userViewModel.getUserByEmail(currentUser.getEmail()).observe(this, user -> {
             if (user != null) {
                 profileTitle.setText(user.getUsername());
+
+                // Load avatar using Glide
+                ImageView avatarImageView = findViewById(R.id.avatar);
+                if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                    Glide.with(ProfileActivity.this)
+                            .load(user.getAvatarUrl())
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(avatarImageView);
+                } else {
+                    // Set a default avatar if the URL is null or empty
+                    avatarImageView.setImageResource(R.drawable.avt);
+                }
+
+                // Update level based on score
+                TextView levelTextView = findViewById(R.id.level);
+                int score = user.getScoreRanking(); // Assuming User object has getScore() method
+                String level;
+                if (score >= 0 && score <= 10) {
+                    level = "Beginner";
+                } else if (score >= 11 && score <= 30) {
+                    level = "Middle";
+                } else if (score > 30) {
+                    level = "Master";
+                } else {
+                    level = "Unknown"; // Handle potential negative scores or other cases
+                }
+                levelTextView.setText(level);
+
+                // Update score
+                TextView scoreTextView = findViewById(R.id.score);
+                scoreTextView.setText(String.valueOf(score));
+
                 List<String> userAchievements = user.getAchievements() != null ? user.getAchievements() : new ArrayList<>();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("achievement").get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -104,22 +134,29 @@ public class ProfileActivity extends AppCompatActivity {
 
         for (int i = 0; i < 7; i++) {
             // Lấy thứ (S, M, T,...)
-            String dayName = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
-                    .toUpperCase().charAt(0) + "";
+//            String dayName = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
+//                    .toUpperCase().charAt(0) + "";
 
             // Lấy ngày trong tháng
             int dayNumber = calendar.get(Calendar.DAY_OF_MONTH);
 
             // Đặt text cho TextView
-            dayViews[i].setText(dayName + "\n" + dayNumber);
+            dayViews[i].setText(String.valueOf(dayNumber));
 
-            // Highlight ngày hiện tại
+            // Lấy LinearLayout cha
+            LinearLayout parentLayout = (LinearLayout) dayViews[i].getParent();
+            // Lấy TextView chữ cái thứ (con đầu tiên của LinearLayout)
+            TextView dayLetterView = (TextView) parentLayout.getChildAt(0);
+
+            // Highlight ngày hiện tại bằng cách đổi background của LinearLayout cha
             if (i == (currentDayOfWeek - 1)) {
-                dayViews[i].setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                parentLayout.setBackgroundResource(R.drawable.selected_day_background);
                 dayViews[i].setTextColor(getResources().getColor(android.R.color.white));
+                dayLetterView.setTextColor(getResources().getColor(android.R.color.white)); // Đổi màu chữ cái thứ thành trắng
             } else {
-                dayViews[i].setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                parentLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 dayViews[i].setTextColor(getResources().getColor(android.R.color.black));
+                dayLetterView.setTextColor(getResources().getColor(R.color.black)); // Đổi màu chữ cái thứ thành màu xám như trong XML
             }
 
             // Tăng ngày lên 1

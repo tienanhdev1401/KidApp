@@ -15,6 +15,8 @@ public class User {
     private String dateOfBirth;
     private String avatarUrl;
     private String phone;
+    private int scoreRanking;
+    private int totalMatches;
 
     // Default constructor for Firebase
     public User() {
@@ -28,6 +30,8 @@ public class User {
         this.dateOfBirth = null;
         this.avatarUrl = null;
         this.phone = null;
+        this.scoreRanking = 0;
+        this.totalMatches = 0;
     }
 
     public User(String email, String password, String username, String gender, String dateOfBirth, String avatarUrl, String phone) {
@@ -38,9 +42,11 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.avatarUrl = avatarUrl;
         this.phone = phone;
+        this.scoreRanking = 0;
+        this.totalMatches = 0;
     }
 
-    public User(String email, String password, String username, java.util.List<String> achievements, java.util.List<String> storyIds, int totalListeningTime, java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress, String gender, String dateOfBirth, String avatarUrl, String phone) {
+    public User(String email, String password, String username, java.util.List<String> achievements, java.util.List<String> storyIds, int totalListeningTime, java.util.Map<String, com.example.kidapp.models.GameProgress> gameProgress, String gender, String dateOfBirth, String avatarUrl, String phone, int scoreRanking, int totalMatches) {
         this.email = email;
         this.password = password;
         this.username = username;
@@ -52,6 +58,8 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.avatarUrl = avatarUrl;
         this.phone = phone;
+        this.scoreRanking = scoreRanking;
+        this.totalMatches = totalMatches;
     }
 
     // Getters and setters
@@ -141,6 +149,22 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public int getScoreRanking() {
+        return scoreRanking;
+    }
+
+    public void setScoreRanking(int scoreRanking) {
+        this.scoreRanking = scoreRanking;
+    }
+
+    public int getTotalMatches() {
+        return totalMatches;
+    }
+
+    public void setTotalMatches(int totalMatches) {
+        this.totalMatches = totalMatches;
     }
 }
 
