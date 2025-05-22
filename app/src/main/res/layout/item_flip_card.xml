@@ -44,8 +44,8 @@
             android:id="@+id/cardFrontLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:background="#FFFFFF"
+            android:gravity="center"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -53,7 +53,10 @@
                 android:id="@+id/ivCardImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:adjustViewBounds="true"
+
                 android:scaleType="centerCrop" />
         </LinearLayout>
 
