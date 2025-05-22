@@ -81,4 +81,7 @@
     <color name="favorite">#FF0B55</color>
     <color name="non_favorite">#E9ECEF</color>
 
+    <color name="light_gray">#9B9B9B</color>
+    <color name="dark_gray">#424242</color>
+
 </resources>

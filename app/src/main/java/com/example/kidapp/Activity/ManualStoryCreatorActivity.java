@@ -30,6 +30,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,9 +46,10 @@ import com.example.kidapp.ViewModel.ManualStoryViewModel;
 import com.example.kidapp.ViewModel.StoryElementViewModel;
 import com.example.kidapp.models.ManualStory;
 import com.example.kidapp.models.StoryElement;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
@@ -68,11 +70,13 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
     private EditText etStoryTitle;
     private ImageView ivCoverImage;
     private RecyclerView rvPages;
-    private FloatingActionButton fabAddPage;
+    private ExtendedFloatingActionButton fabAddPage;
     private View loadingView;
     private MaterialCardView cardStoryElements;
     private TextView tvSelectedElements;
     private Button btnSelectElements;
+    private NestedScrollView nestedScrollView;
+    private AppBarLayout appBarLayout;
 
     private ManualStoryViewModel viewModel;
     private StoryElementViewModel storyElementViewModel;
@@ -141,6 +145,8 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
         cardStoryElements = findViewById(R.id.cardStoryElements);
         tvSelectedElements = findViewById(R.id.tvSelectedElements);
         btnSelectElements = findViewById(R.id.btnSelectElements);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+        appBarLayout = findViewById(R.id.appBarLayout);
         
         // Thiết lập toolbar
         setSupportActionBar(toolbar);
@@ -158,6 +164,9 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
         
         // Thiết lập listener
         setupListeners();
+        
+        // Setup FAB scrolling behavior
+        setupScrollingBehavior();
         
         // Theo dõi trạng thái loading
         viewModel.getIsLoading().observe(this, isLoading -> {
@@ -181,6 +190,21 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
         // Khởi tạo CloudinaryService và ExecutorService
         cloudinaryService = new CloudinaryService(this);
         executorService = Executors.newSingleThreadExecutor();
+    }
+
+    private void setupScrollingBehavior() {
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // Khi cuộn xuống, thu nhỏ FAB chỉ hiển thị icon
+                if (scrollY > oldScrollY && scrollY > 0) {
+                    fabAddPage.shrink();
+                } else {
+                    // Khi cuộn lên, mở rộng FAB hiển thị cả text
+                    fabAddPage.extend();
+                }
+            }
+        });
     }
 
     private void setupStoryElementObservers() {
@@ -250,7 +274,18 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
     }
 
     private void setupListeners() {
-        // Cập nhật tiêu đề
+        // Khi nhấp vào nút thêm trang
+        fabAddPage.setOnClickListener(v -> {
+            showAddPageDialog();
+        });
+
+        // Khi nhấp vào ảnh bìa để thay đổi
+        ivCoverImage.setOnClickListener(v -> {
+            isEditingCover = true;
+            checkPermissionAndOpenImagePicker();
+        });
+
+        // Khi thay đổi tiêu đề
         etStoryTitle.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 String title = etStoryTitle.getText().toString().trim();
@@ -259,19 +294,8 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
                 }
             }
         });
-        
-        // Sự kiện click vào ảnh bìa
-        ivCoverImage.setOnClickListener(v -> {
-            isEditingCover = true;
-            checkPermissionAndOpenImagePicker();
-        });
-        
-        // Sự kiện click vào nút thêm trang
-        fabAddPage.setOnClickListener(v -> {
-            showAddPageDialog();
-        });
-        
-        // Sự kiện click vào nút chọn phần tử truyện
+
+        // Khi nhấp vào nút chọn phần tử
         btnSelectElements.setOnClickListener(v -> {
             showElementSelectionDialog();
         });
@@ -498,16 +522,6 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
                 });
         });
         
-        // Thêm thông tin về cách ảnh trang được tạo
-        TextView tvPageImageInfo = new TextView(this);
-        tvPageImageInfo.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvPageImageInfo.setPadding(16, 8, 16, 8);
-        tvPageImageInfo.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
-        tvPageImageInfo.setText("Lưu ý: Ảnh trang sẽ được tự động tạo dựa trên bối cảnh đã chọn.");
-        ((LinearLayout) dialogView).addView(tvPageImageInfo, ((LinearLayout) dialogView).getChildCount() - 1); // Thêm vào trước nút cuối cùng
-        
         builder.setTitle("Thêm trang mới")
                 .setPositiveButton("Thêm", (dialog, which) -> {
                     String content = etPageContent.getText().toString().trim();
@@ -733,6 +747,7 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
     @Override
     public void onBackPressed() {
         // Hiển thị hộp thoại xác nhận nếu có thay đổi chưa lưu
+        super.onBackPressed();
         new AlertDialog.Builder(this)
                 .setTitle("Thoát")
                 .setMessage("Bạn có muốn lưu truyện trước khi thoát?")
@@ -1357,152 +1372,97 @@ public class ManualStoryCreatorActivity extends AppCompatActivity implements Man
     }
 
     private void showPreviewPageDialog(int position) {
-        ManualStory.Page page = story.getPages().get(position);
+        List<ManualStory.Page> pages = story.getPages();
+        if (position < 0 || position >= pages.size()) {
+            return;
+        }
         
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_preview_page, null);
+        // Sử dụng dialog với layout mới
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.FullScreenDialogTheme);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_page_preview, null);
         builder.setView(dialogView);
         
-        // Ánh xạ các view
-        ImageView ivSettingBackground = dialogView.findViewById(R.id.ivSettingBackground);
-        LinearLayout charactersContainer = dialogView.findViewById(R.id.charactersContainer);
-        LinearLayout itemsContainer = dialogView.findViewById(R.id.itemsContainer);
-        TextView tvEmptyPreview = dialogView.findViewById(R.id.tvEmptyPreview);
+        // Ánh xạ các view trong dialog
+        ImageView ivPageImage = dialogView.findViewById(R.id.ivPageImage);
+        ImageView ivClose = dialogView.findViewById(R.id.ivClose);
+        TextView tvPageNumber = dialogView.findViewById(R.id.tvPageNumber);
         TextView tvPageContent = dialogView.findViewById(R.id.tvPageContent);
-        TextView tvElementsPreview = dialogView.findViewById(R.id.tvElementsPreview);
-        TextView tvPreviewTitle = dialogView.findViewById(R.id.tvPreviewTitle);
-        Button btnClosePreview = dialogView.findViewById(R.id.btnClosePreview);
+        TextView tvPageElements = dialogView.findViewById(R.id.tvPageElements);
+        Button btnPreviousPage = dialogView.findViewById(R.id.btnPreviousPage);
+        Button btnNextPage = dialogView.findViewById(R.id.btnNextPage);
         
-        // Thiết lập tiêu đề
-        tvPreviewTitle.setText("Xem trước trang " + (position + 1));
+        // Tạo và hiển thị dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
         
-        // Thiết lập nội dung trang
-        tvPageContent.setText(page.getContent());
+        // Thiết lập nút đóng dialog
+        ivClose.setOnClickListener(v -> dialog.dismiss());
         
-        // Xóa các view cũ
-        charactersContainer.removeAllViews();
-        itemsContainer.removeAllViews();
+        // Biến để theo dõi trang hiện tại
+        final int[] currentPosition = {position};
         
-        // Kiểm tra có bối cảnh không
-        if (page.getSetting() != null && page.getSetting().getImageUrl() != null) {
-            tvEmptyPreview.setVisibility(View.GONE);
-            
-            // Hiển thị ảnh bối cảnh
-            Glide.with(this)
-                .load(page.getSetting().getImageUrl())
-                .placeholder(R.drawable.img_placeholder)
-                .error(R.drawable.img_placeholder)
-                .into(ivSettingBackground);
-            
-            // Thêm nhân vật vào container
-            if (page.getCharacters() != null && !page.getCharacters().isEmpty()) {
-                // Giới hạn số lượng nhân vật hiển thị (tối đa 3)
-                int numCharsToShow = Math.min(page.getCharacters().size(), 3);
-                
-                for (int i = 0; i < numCharsToShow; i++) {
-                    StoryElement character = page.getCharacters().get(i);
-                    if (character.getImageUrl() != null && !character.getImageUrl().isEmpty()) {
-                        // Tạo ImageView cho mỗi nhân vật
-                        ImageView characterImage = new ImageView(this);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                180); // Chiều cao cố định cho nhân vật
-                        params.setMargins(16, 0, 16, 0); // Margin giữa các nhân vật
-                        characterImage.setLayoutParams(params);
-                        characterImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        
-                        // Load ảnh nhân vật
-                        Glide.with(this)
-                            .load(character.getImageUrl())
-                            .into(characterImage);
-                        
-                        // Thêm vào container
-                        charactersContainer.addView(characterImage);
-                    }
-                }
+        // Cập nhật UI theo trang hiện tại
+        updatePreviewDialogUI(dialogView, currentPosition[0]);
+        
+        // Thiết lập nút chuyển trang
+        btnPreviousPage.setOnClickListener(v -> {
+            if (currentPosition[0] > 0) {
+                currentPosition[0]--;
+                updatePreviewDialogUI(dialogView, currentPosition[0]);
             }
-            
-            // Thêm vật phẩm vào container
-            if (page.getItems() != null && !page.getItems().isEmpty()) {
-                // Giới hạn số lượng vật phẩm hiển thị (tối đa 2)
-                int numItemsToShow = Math.min(page.getItems().size(), 2);
-                
-                for (int i = 0; i < numItemsToShow; i++) {
-                    StoryElement item = page.getItems().get(i);
-                    if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                        // Tạo ImageView cho mỗi vật phẩm
-                        ImageView itemImage = new ImageView(this);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                140, 140); // Kích thước cố định cho vật phẩm
-                        params.setMargins(8, 0, 8, 0); // Margin giữa các vật phẩm
-                        itemImage.setLayoutParams(params);
-                        itemImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        
-                        // Load ảnh vật phẩm
-                        Glide.with(this)
-                            .load(item.getImageUrl())
-                            .into(itemImage);
-                        
-                        // Thêm vào container
-                        itemsContainer.addView(itemImage);
-                    }
-                }
-            }
-        } else {
-            tvEmptyPreview.setVisibility(View.VISIBLE);
-            tvEmptyPreview.setText("Trang chưa có bối cảnh");
-        }
-        
-        // Hiển thị hoặc ẩn TextView các phần tử trang
-        StringBuilder elementsText = new StringBuilder();
-        
-        // Thêm thông tin về bối cảnh
-        if (page.getSetting() != null) {
-            elementsText.append("Bối cảnh: ").append(page.getSetting().getName());
-        }
-        
-        // Thêm thông tin về nhân vật
-        if (page.getCharacters() != null && !page.getCharacters().isEmpty()) {
-            if (elementsText.length() > 0) {
-                elementsText.append("\n");
-            }
-            elementsText.append("Nhân vật: ");
-            for (int i = 0; i < page.getCharacters().size(); i++) {
-                elementsText.append(page.getCharacters().get(i).getName());
-                if (i < page.getCharacters().size() - 1) {
-                    elementsText.append(", ");
-                }
-            }
-        }
-        
-        // Thêm thông tin về vật phẩm
-        if (page.getItems() != null && !page.getItems().isEmpty()) {
-            if (elementsText.length() > 0) {
-                elementsText.append("\n");
-            }
-            elementsText.append("Vật phẩm: ");
-            for (int i = 0; i < page.getItems().size(); i++) {
-                elementsText.append(page.getItems().get(i).getName());
-                if (i < page.getItems().size() - 1) {
-                    elementsText.append(", ");
-                }
-            }
-        }
-        
-        // Hiển thị hoặc ẩn TextView các phần tử trang
-        if (elementsText.length() > 0) {
-            tvElementsPreview.setVisibility(View.VISIBLE);
-            tvElementsPreview.setText(elementsText.toString());
-        } else {
-            tvElementsPreview.setVisibility(View.GONE);
-        }
-        
-        // Thiết lập sự kiện cho nút đóng
-        btnClosePreview.setOnClickListener(v -> {
-            builder.create().dismiss();
         });
         
-        builder.create().show();
+        btnNextPage.setOnClickListener(v -> {
+            if (currentPosition[0] < pages.size() - 1) {
+                currentPosition[0]++;
+                updatePreviewDialogUI(dialogView, currentPosition[0]);
+            }
+        });
+    }
+    
+    private void updatePreviewDialogUI(View dialogView, int position) {
+        List<ManualStory.Page> pages = story.getPages();
+        if (position < 0 || position >= pages.size()) {
+            return;
+        }
+        
+        ManualStory.Page page = pages.get(position);
+        
+        // Ánh xạ các view trong dialog
+        ImageView ivPageImage = dialogView.findViewById(R.id.ivPageImage);
+        TextView tvPageNumber = dialogView.findViewById(R.id.tvPageNumber);
+        TextView tvPageContent = dialogView.findViewById(R.id.tvPageContent);
+        TextView tvPageElements = dialogView.findViewById(R.id.tvPageElements);
+        Button btnPreviousPage = dialogView.findViewById(R.id.btnPreviousPage);
+        Button btnNextPage = dialogView.findViewById(R.id.btnNextPage);
+        
+        // Cập nhật số trang
+        tvPageNumber.setText("Trang " + (position + 1));
+        
+        // Cập nhật nội dung trang
+        tvPageContent.setText(page.getContent());
+        
+        // Cập nhật phần tử trang
+        updateSelectedPageElementsText(tvPageElements, page.getSetting(), page.getCharacters(), page.getItems());
+        
+        // Hiển thị ảnh trang
+        if (page.getImageUrl() != null && !page.getImageUrl().isEmpty()) {
+            Glide.with(this)
+                .load(page.getImageUrl())
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
+                .into(ivPageImage);
+        } else {
+            ivPageImage.setImageResource(R.drawable.img_placeholder);
+        }
+        
+        // Cập nhật trạng thái nút chuyển trang
+        btnPreviousPage.setEnabled(position > 0);
+        btnNextPage.setEnabled(position < pages.size() - 1);
+        
+        // Thêm hiệu ứng cho nút
+        btnPreviousPage.setAlpha(position > 0 ? 1.0f : 0.5f);
+        btnNextPage.setAlpha(position < pages.size() - 1 ? 1.0f : 0.5f);
     }
 
     @Override

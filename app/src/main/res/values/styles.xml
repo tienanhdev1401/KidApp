@@ -28,4 +28,13 @@
         <item name="textAllCaps">false</item>
     </style>
 
+    <!-- Add a new style for full-screen dialog -->
+    <style name="FullScreenDialogTheme" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="android:windowMinWidthMajor">95%</item>
+        <item name="android:windowMinWidthMinor">95%</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
 </resources>

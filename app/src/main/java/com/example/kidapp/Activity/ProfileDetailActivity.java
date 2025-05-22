@@ -47,7 +47,7 @@ public class ProfileDetailActivity extends AppCompatActivity {
     private EditText etDob, etPhone;
     private RadioButton radioMale, radioFemale;
     private Button btnEdit, btnSave;
-    private ImageView cameraIcon;
+    private ImageView cameraIcon, backBtn;
     private UserViewModel userViewModel;
     private FirebaseUser currentUser;
     private TextView tvUsername, tvEmail;
@@ -75,6 +75,15 @@ public class ProfileDetailActivity extends AppCompatActivity {
         btnEdit = findViewById(R.id.btn_edit);
         btnSave = findViewById(R.id.btn_save);
         cameraIcon = findViewById(R.id.camera_icon);
+        backBtn = findViewById(R.id.backBtn);
+
+        // Xử lý sự kiện khi nhấn nút back
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                }
+        });
 
         // Lấy user từ FirebaseAuth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
