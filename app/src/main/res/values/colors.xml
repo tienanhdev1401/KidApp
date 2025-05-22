@@ -84,4 +84,14 @@
     <color name="light_gray">#9B9B9B</color>
     <color name="dark_gray">#424242</color>
 
+    <!-- Màu dành cho giao diện trẻ em -->
+    <color name="kids_primary">#FF4081</color>
+    <color name="kids_secondary">#7C4DFF</color>
+    <color name="kids_tertiary">#00BCD4</color>
+    <color name="kids_accent">#FFC107</color>
+    <color name="kids_text_primary">#3E2723</color>
+    <color name="kids_text_secondary">#5D4037</color>
+    <color name="kids_text_hint">#9E9E9E</color>
+    <color name="kids_card_background">#FFFDE7</color>
+
 </resources>

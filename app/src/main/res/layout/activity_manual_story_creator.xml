@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_background"
+    android:background="@color/background"
     tools:context=".Activity.ManualStoryCreatorActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:background="@color/primary">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Sáng Tạo Truyện Của Bé"
+            app:titleTextColor="@color/white"
             app:layout_scrollFlags="scroll|enterAlways" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -40,10 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -54,23 +52,26 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Thông tin truyện"
-                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:text="Thông Tin Truyện"
                         android:textColor="@color/primary"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:hint="Tiêu đề truyện"
                         android:backgroundTint="@color/white"
                         android:textColorHint="@color/gray"
-                        app:boxBackgroundColor="@color/card_background"
+                        app:boxBackgroundColor="@color/white"
                         app:boxStrokeColor="@color/primary"
                         app:boxStrokeWidth="1dp"
-                        >
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusTopStart="12dp">
 
                         <EditText
                             android:id="@+id/etStoryTitle"
@@ -79,25 +80,25 @@
                             android:background="@android:color/transparent"
                             android:inputType="textCapSentences"
                             android:maxLines="1"
-                            android:minHeight="40dp"
-                            android:padding="6dp"
-                            android:textColor="@color/black" />
+                            android:minHeight="48dp"
+                            android:padding="12dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Ảnh bìa truyện"
-                        android:fontFamily="@font/kids_font"
-                        android:textAppearance="?attr/textAppearanceBody1"
-                        android:textColor="@color/black" />
+                        android:text="Ảnh Bìa Truyện"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="220dp"
                         android:layout_marginTop="8dp"
-                        app:cardCornerRadius="8dp"
+                        app:cardCornerRadius="12dp"
                         app:cardElevation="2dp">
 
                         <FrameLayout
@@ -109,7 +110,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                android:src="@drawable/img_placeholder" />
+                                android:src="@drawable/preview_background_placeholder" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -118,14 +119,14 @@
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 android:padding="12dp"
-                                android:background="@drawable/rounded_transparent_bg">
+                                android:background="@drawable/rounded_label_bg">
 
                                 <ImageView
                                     android:layout_width="48dp"
                                     android:layout_height="48dp"
                                     android:layout_gravity="center"
                                     android:alpha="0.9"
-                                    android:src="@drawable/ic_add_photo" />
+                                    android:src="@android:drawable/ic_menu_camera" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -140,15 +141,13 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Thêm card cho phần tử truyện -->
+            <!-- Thêm card cho phần trang truyện -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -166,16 +165,17 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Các trang truyện"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:textColor="@color/primary"
+                            android:text="Các Trang Truyện"
+                            android:textColor="@color/setting_category"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="(Vuốt để xóa, kéo để sắp xếp)"
-                            android:textAppearance="?attr/textAppearanceCaption"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
                             android:textStyle="italic" />
                     </LinearLayout>
 
@@ -183,7 +183,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="12dp"
+                        android:layout_marginBottom="8dp"
                         android:background="@color/light_gray" />
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -191,6 +191,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
+                        android:clipToPadding="false"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
                         tools:itemCount="3"
                         tools:listitem="@layout/item_story_page" />
 
@@ -201,8 +204,8 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:padding="16dp"
-                        android:text="Chưa có trang nào. Nhấn + để thêm trang mới."
-                        android:textColor="@color/gray"
+                        android:text="Chưa có trang nào. Nhấn nút + để thêm trang mới."
+                        android:textColor="@color/text_secondary"
                         android:textStyle="italic"
                         android:visibility="gone" />
                 </LinearLayout>
@@ -214,10 +217,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:visibility="gone"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp"
                 tools:visibility="gone">
 
                 <LinearLayout
@@ -237,9 +238,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Phần tử truyện"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:textColor="@color/primary"
+                            android:text="Phần Tử Truyện"
+                            android:textColor="@color/character_category"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <Button
@@ -248,8 +249,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Chọn"
-                            android:textColor="@color/primary"
-                            android:textSize="12sp" />
+                            android:textColor="@color/character_category"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <View
@@ -265,25 +266,26 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Chưa có phần tử nào được chọn"
-                        android:textAppearance="?attr/textAppearanceBody2" />
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/fabAddPage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:contentDescription="Tạo trang mới"
+                android:text="Tạo truyện mới"
+                android:textColor="@color/white"
+                app:icon="@android:drawable/ic_input_add"
+                app:iconTint="@color/white"
+                app:backgroundTint="@color/primary" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAddPage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="Thêm trang mới"
-        android:text="Thêm trang"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/primary"
-        app:icon="@drawable/ic_add"
-        app:iconTint="@color/white" />
 
     <!-- Loading overlay -->
     <FrameLayout
@@ -299,7 +301,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="8dp">
 
             <LinearLayout
@@ -312,15 +314,16 @@
                 <ProgressBar
                     android:layout_width="56dp"
                     android:layout_height="56dp"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/primary" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Đang xử lý..."
-                    android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="@color/black" />
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
