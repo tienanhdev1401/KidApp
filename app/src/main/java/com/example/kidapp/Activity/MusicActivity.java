@@ -35,16 +35,17 @@ import com.example.kidapp.models.Music;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import me.relex.circleindicator.CircleIndicator3;
 
 public class MusicActivity extends AppCompatActivity {
 
     private MusicAdapter musicAdapter;
-    private List<Music> musicList = new ArrayList<>();
-
+    private final List<Music> musicList = new ArrayList<>();
+    private  List<Music> allMusicList = new ArrayList<>();
     private MusicViewModel musicViewModel;
-    private CardView playerCard;
+    private CardView playerCard, abcSong_cv, star_cv, bus_cv;
     private ImageView playPauseButton, previousButton, nextButton, expandButton;
     private TextView songTitle, artistName;
     private MusicService musicService;
@@ -71,9 +72,9 @@ public class MusicActivity extends AppCompatActivity {
         setupPlayerControls();
 
         musicAdapter.setOnItemClickListener((position, music) -> {
-            Log.d("MusicActivity", "Playlist sent: " + musicList.size());
+            Log.d("MusicActivity", "Playlist sent: " + allMusicList.size());
             Intent intent = new Intent(MusicActivity.this, MusicDetailActivity.class);
-            intent.putParcelableArrayListExtra("playlist", new ArrayList<>(musicList));
+            intent.putParcelableArrayListExtra("playlist", new ArrayList<>(allMusicList));
             intent.putExtra("musicPosition", position);
             intent.putExtra("music", music);
             startActivity(intent);
@@ -175,8 +176,10 @@ public class MusicActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-    }
 
+
+    }
+    
     private void updatePlayerUI() {
         runOnUiThread(() -> {
             try {
@@ -286,7 +289,23 @@ public class MusicActivity extends AppCompatActivity {
         songTitle = findViewById(R.id.songTitle);
         artistName = findViewById(R.id.artistName);
         btnBack = findViewById(R.id.backButton);
-
+        abcSong_cv = findViewById(R.id.abcSong_cv);
+        star_cv = findViewById(R.id.twinkle_star_cv);
+        bus_cv = findViewById(R.id.wheels_on_bus_cv);
+        
+        // Thiết lập click listeners cho các card "Just For You"
+        abcSong_cv.setOnClickListener(v -> {
+            navigateToMusicDetail(3); // Index 0 for ABC Song
+        });
+        
+        star_cv.setOnClickListener(v -> {
+            navigateToMusicDetail(0); // Index 1 for Twinkle Star
+        });
+        
+        bus_cv.setOnClickListener(v -> {
+            navigateToMusicDetail(1); // Index 2 for Wheels on Bus
+        });
+        
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -318,6 +337,13 @@ public class MusicActivity extends AppCompatActivity {
                 List<Music> limitedMusics = musics.size() > 3 ? musics.subList(0, 3) : musics;
                 musicList.clear();
                 musicList.addAll(limitedMusics);
+                musicAdapter.notifyDataSetChanged();
+            }
+        });
+        musicViewModel.getAllMusics().observe(this, musics -> {
+            if (musics != null && !musics.isEmpty()) {
+                allMusicList.clear();
+                allMusicList.addAll(musics);
                 musicAdapter.notifyDataSetChanged();
             }
         });
@@ -374,5 +400,20 @@ public class MusicActivity extends AppCompatActivity {
 
 
         });
+    }
+
+    // Helper method to navigate to music detail
+    private void navigateToMusicDetail(int position) {
+        if (allMusicList != null && !allMusicList.isEmpty() && position < allMusicList.size()) {
+            Music selectedMusic = allMusicList.get(position);
+            Intent intent = new Intent(MusicActivity.this, MusicDetailActivity.class);
+            intent.putParcelableArrayListExtra("playlist", new ArrayList<>(allMusicList));
+            intent.putExtra("musicPosition", position);
+            intent.putExtra("music", selectedMusic);
+            startActivity(intent);
+            overridePendingTransition(R.animator.slide_up, 0);
+        } else {
+            Log.e("MusicActivity", "Cannot navigate to detail: Invalid position or empty list");
+        }
     }
 }

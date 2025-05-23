@@ -474,6 +474,7 @@
 
                 <!-- New Story 1 -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cinderella_card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -506,6 +507,7 @@
 
                 <!-- New Story 2 -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/jungle_book_card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -537,6 +539,7 @@
 
                 <!-- New Story 3 -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/pinocchio_card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -568,6 +571,7 @@
 
                 <!-- New Story 4 -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/three_pigs_card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"

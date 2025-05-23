@@ -44,6 +44,7 @@ public class StoryActivity extends AppCompatActivity {
     private List<Story> allStoryList = new ArrayList<>();
     private StoryViewModel storyViewModel;
     private CardView playerCard, animalCard, moralCard, adventureCard, fairyCard;
+    private CardView cinderellaCard, jungleBookCard, pinocchioCard, threePigsCard;
     private ImageView playPauseButton, expandButton;
     private TextView storyTitle, storyDuration;
     private StoryService storyService;
@@ -218,6 +219,23 @@ public class StoryActivity extends AppCompatActivity {
             intent.putExtra("categoryName", "Adventure");
             startActivity(intent);
         });
+        
+        // Just For You story cards click listeners
+        cinderellaCard.setOnClickListener(v -> {
+            navigateToStoryDetail(0);
+        });
+        
+//        jungleBookCard.setOnClickListener(v -> {
+//            navigateToStoryDetail(1);
+//        });
+        
+        pinocchioCard.setOnClickListener(v -> {
+            navigateToStoryDetail(1);
+        });
+        
+//        threePigsCard.setOnClickListener(v -> {
+//            navigateToStoryDetail(3);
+//        });
 
         // Thiết lập điều khiển player
         setupPlayerControls();
@@ -290,6 +308,12 @@ public class StoryActivity extends AppCompatActivity {
         adventureCard = findViewById(R.id.adventureStory);
         fairyCard = findViewById(R.id.fairyStory);
         moralCard = findViewById(R.id.moralStory);
+        
+        // Initialize "Just For You" story cards
+        cinderellaCard = findViewById(R.id.cinderella_card);
+        jungleBookCard = findViewById(R.id.jungle_book_card);
+        pinocchioCard = findViewById(R.id.pinocchio_card);
+        threePigsCard = findViewById(R.id.three_pigs_card);
 
         // Ẩn playerCard ban đầu cho đến khi có story chạy
         playerCard.setVisibility(View.GONE);
@@ -387,5 +411,19 @@ public class StoryActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Helper method to navigate to story detail
+    private void navigateToStoryDetail(int position) {
+        if (allStoryList != null && !allStoryList.isEmpty() && position < allStoryList.size()) {
+            Story selectedStory = allStoryList.get(position);
+            Intent intent = new Intent(StoryActivity.this, StoryDetailActivity.class);
+            intent.putExtra("story", selectedStory);
+            intent.putParcelableArrayListExtra("playlist", new ArrayList<>(allStoryList));
+            intent.putExtra("storyPosition", position);
+            startActivity(intent);
+        } else {
+            Log.e("StoryActivity", "Cannot navigate to detail: Invalid position or empty list");
+        }
     }
 }

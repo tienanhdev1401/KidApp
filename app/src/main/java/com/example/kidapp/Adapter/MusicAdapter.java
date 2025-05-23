@@ -45,6 +45,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     private String userEmail;
     private FavoriteViewModel favoriteViewModel;
 
+
     public MusicAdapter(Context context, List<Music> musicList, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.musicList = musicList != null ? musicList : new ArrayList<>();
