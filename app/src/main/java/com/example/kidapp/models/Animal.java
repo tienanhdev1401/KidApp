@@ -6,10 +6,10 @@ public class Animal {
     private int soundResId;
     private  int animalAvt;
 
-    public Animal(String name, int imageResId,  int animalAvt) {
+    public Animal(String name, int imageResId,  int animalAvt, int soundResId) {
         this.name = name;
         this.imageResId = imageResId;
-//        this.soundResId = soundResId;
+        this.soundResId = soundResId;
         this.animalAvt = animalAvt;
     }
 

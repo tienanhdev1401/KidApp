@@ -1,6 +1,7 @@
 package com.example.kidapp.Adapter;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,19 +75,19 @@ public class AnimalPagerAdapter extends RecyclerView.Adapter<AnimalPagerAdapter.
                     .into(animalImage);
             animalName.setText(animal.getName().toUpperCase());
 
-//            soundButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    MediaPlayer mediaPlayer = MediaPlayer.create(context, animal.getSoundResId());
-//                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                        @Override
-//                        public void onCompletion(MediaPlayer mp) {
-//                            mp.release();
-//                        }
-//                    });
-//                    mediaPlayer.start();
-//                }
-//            });
+            soundButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MediaPlayer mediaPlayer = MediaPlayer.create(context, animal.getSoundResId());
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            mp.release();
+                        }
+                    });
+                    mediaPlayer.start();
+                }
+            });
         }
     }
 }

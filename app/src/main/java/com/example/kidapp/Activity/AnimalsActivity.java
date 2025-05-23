@@ -30,14 +30,14 @@ public class AnimalsActivity extends AppCompatActivity {
 
         // Khởi tạo danh sách con vật
         animalsList = new ArrayList<>();
-        animalsList.add(new Animal("Elephant", R.drawable.elephant, R.drawable.elephant_icon));
-        animalsList.add(new Animal("Lion", R.drawable.lion, R.drawable.lion_icon));
-        animalsList.add(new Animal("Monkey", R.drawable.monkey, R.drawable.monkey_icon));
-        animalsList.add(new Animal("Giraffe", R.drawable.giraffe, R.drawable.giraffe_icon));
-        animalsList.add(new Animal("Sheep", R.drawable.sheep, R.drawable.sheep_icon));
-        animalsList.add(new Animal("squirell", R.drawable.squirrel, R.drawable.squirell_icon));
-        animalsList.add(new Animal("Panda", R.drawable.panda, R.drawable.panda_icon));
-        animalsList.add(new Animal("Kangaroo", R.drawable.kangaroo, R.drawable.kangaroo_icon));
+        animalsList.add(new Animal("Elephant", R.drawable.elephant, R.drawable.elephant_icon,R.raw.elephant_sound));
+        animalsList.add(new Animal("Lion", R.drawable.lion, R.drawable.lion_icon,R.raw.lion_sound));
+        animalsList.add(new Animal("Monkey", R.drawable.monkey, R.drawable.monkey_icon,R.raw.monkey_sound));
+        animalsList.add(new Animal("Giraffe", R.drawable.giraffe, R.drawable.giraffe_icon,R.raw.giraffe_sound));
+        animalsList.add(new Animal("Sheep", R.drawable.sheep, R.drawable.sheep_icon,R.raw.sheep_sound));
+        animalsList.add(new Animal("squirell", R.drawable.squirrel, R.drawable.squirell_icon,R.raw.squirrel_sound));
+        animalsList.add(new Animal("Panda", R.drawable.panda, R.drawable.panda_icon,R.raw.panda_sound));
+        animalsList.add(new Animal("Kangaroo", R.drawable.kangaroo, R.drawable.kangaroo_icon,R.raw.kangaroo_sound));
 
         // Thiết lập ViewPager
         viewPager = findViewById(R.id.view_pager);
