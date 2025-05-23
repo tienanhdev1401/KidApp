@@ -1,5 +1,6 @@
 package com.example.kidapp.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kidapp.Activity.StoryDetailActivity;
 import com.example.kidapp.Adapter.StoryAdapter;
 import com.example.kidapp.R;
 import com.example.kidapp.ViewModel.FavoriteViewModel;
@@ -76,6 +78,15 @@ public class FavoriteStoryFragment extends Fragment {
                     emptyView.setVisibility(View.VISIBLE);
                 }
             }
+        });
+        
+        // Thiết lập listener cho sự kiện click vào item để mở trang chi tiết
+        adapter.setOnItemClickListener((position, story) -> {
+            Intent intent = new Intent(getActivity(), StoryDetailActivity.class);
+            intent.putExtra("story", story);
+            intent.putParcelableArrayListExtra("playlist", new ArrayList<>(currentStoryList));
+            intent.putExtra("storyPosition", position);
+            startActivity(intent);
         });
         
         recyclerView.setAdapter(adapter);

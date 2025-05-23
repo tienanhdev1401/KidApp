@@ -1,6 +1,8 @@
 package com.example.kidapp.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kidapp.Activity.MusicActivity;
+import com.example.kidapp.Activity.MusicDetailActivity;
 import com.example.kidapp.Adapter.MusicAdapter;
 import com.example.kidapp.R;
 import com.example.kidapp.ViewModel.FavoriteViewModel;
@@ -77,6 +81,15 @@ public class FavoriteMusicFragment extends Fragment {
             }
         });
         
+        // Thiết lập listener cho sự kiện click vào item để mở trang chi tiết
+        adapter.setOnItemClickListener((position, music) -> {
+            Intent intent = new Intent(getActivity(), MusicDetailActivity.class);
+            intent.putParcelableArrayListExtra("playlist", new ArrayList<>(currentMusicList));
+            intent.putExtra("musicPosition", position);
+            intent.putExtra("music", music);
+            startActivity(intent);
+        });
+
         recyclerView.setAdapter(adapter);
 
         favoriteViewModel = new ViewModelProvider(requireActivity()).get(FavoriteViewModel.class);

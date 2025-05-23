@@ -1,6 +1,8 @@
 package com.example.kidapp.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -466,23 +468,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
         }
         
+        // Initialize AudioManager
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        
         // Initialize volume controls
         SeekBar volumeSeekBar = dialogView.findViewById(R.id.volumeSeekBar);
         SwitchMaterial soundSwitch = dialogView.findViewById(R.id.soundSwitch);
+        ImageView volumeIcon = dialogView.findViewById(R.id.volumeIcon);
         
         // Initialize brightness control
         SeekBar brightnessSeekBar = dialogView.findViewById(R.id.brightnessSeekBar);
         
         // Get the shared preferences for settings
         android.content.SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
-        int volume = prefs.getInt("volume", 70);
+        
+        // Get current system volume and convert to percentage for the volume SeekBar (0-100)
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int volumePercent = (currentVolume * 100) / maxVolume;
+        
+        // Get saved settings
         boolean soundEnabled = prefs.getBoolean("soundEnabled", true);
         int brightness = prefs.getInt("brightness", getCurrentBrightness());
         
         // Set initial values
-        volumeSeekBar.setProgress(volume);
+        volumeSeekBar.setProgress(volumePercent);
         soundSwitch.setChecked(soundEnabled);
         brightnessSeekBar.setProgress(brightness);
+        
+        // Set initial volume icon based on system volume
+        updateVolumeIcon(volumeIcon, volumePercent);
         
         // Set up volume change listener
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -492,6 +507,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 android.content.SharedPreferences.Editor editor = prefs.edit();
                 editor.putInt("volume", progress);
                 editor.apply();
+                
+                // Set system volume based on SeekBar progress (0-100 to 0-max)
+                int volumeValue = (progress * maxVolume) / 100;
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeValue, 0);
+                
+                // Update volume icon based on current progress
+                updateVolumeIcon(volumeIcon, progress);
             }
 
             @Override
@@ -795,6 +817,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
+    private void updateVolumeIcon(ImageView volumeIcon, int volume) {
+        if (volume == 0) {
+            // Muted - use volume_off icon
+            volumeIcon.setImageResource(R.drawable.volume_off);
+        } else if (volume < 50) {
+            // Low volume - use volume_down icon
+            volumeIcon.setImageResource(R.drawable.volume_down);
+        } else {
+            // High volume - use default volume icon
+            volumeIcon.setImageResource(R.drawable.volume);
+        }
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
