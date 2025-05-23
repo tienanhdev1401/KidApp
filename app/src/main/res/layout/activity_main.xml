@@ -129,7 +129,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(números)"
                             android:textColor="#888888"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -215,7 +214,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Formas)"
                             android:textColor="#888888"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -258,7 +256,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Vocabulario)"
                             android:textColor="#888888"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -300,7 +297,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(AI Stories)"
                             android:textColor="#888888"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -349,7 +345,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Animales)"
                             android:fontFamily="@font/kids_font"
                             android:textColor="#888888"
                             android:textSize="12sp" />
@@ -397,7 +392,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Escuchando)"
                             android:fontFamily="@font/kids_font"
                             android:textColor="#888888"
                             android:textSize="12sp" />
@@ -447,7 +441,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Matemáticas)"
                             android:fontFamily="@font/kids_font"
                             android:textColor="#888888"
                             android:textSize="12sp" />
@@ -495,7 +488,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Juegos)"
                             android:fontFamily="@font/kids_font"
                             android:textColor="#888888"
                             android:textSize="12sp" />
@@ -592,7 +584,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(análisis de aprendizaje)"
                             android:fontFamily="@font/kids_font"
                             android:textColor="#888888"
                             android:textSize="12sp" />
@@ -640,7 +631,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="(Ajustes de aplicación)"
                             android:fontFamily="@font/kids_font"
                             android:textColor="#888888"
                             android:textSize="12sp" />
