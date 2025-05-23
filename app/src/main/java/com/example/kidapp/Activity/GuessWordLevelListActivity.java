@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,7 +60,8 @@ public class GuessWordLevelListActivity extends AppCompatActivity implements Gue
         titleTextView.setText("Chọn Màn Đoán Chữ");
         subtitleTextView.setText("Hãy chọn một màn chơi để bắt đầu!");
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2)
+        );
         adapter = new GuessWordLevelAdapter(this);
         recyclerView.setAdapter(adapter);
 
